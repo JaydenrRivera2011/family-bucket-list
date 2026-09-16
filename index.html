@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Family Seasonal Bucket List</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
     * {
       box-sizing: border-box;
@@ -539,16 +537,22 @@
       ============================================================
     */
 
-    const SUPABASE_URL = "https://elprfpqivxmdrtvdtojh.supabase.co/";
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    const SUPABASE_KEY = "sb_publishable_bgSXEqqOpsyKA9wdgeVkKA_B_WoD23b";
+<script>
+  const SUPABASE_URL =
+    "https://elprfpqivxmdrtvdtojh.supabase.co";
 
-    const { createClient } = supabase;
+  const SUPABASE_KEY =
+    "sb_publishable_bgSXEqqOpsyKA9wdgeVkKA_B_WoD23b";
 
-    const db = createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
+  const { createClient } = supabase;
+
+  const db = createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+</script>
 
 
     /*
