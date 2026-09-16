@@ -1,1547 +1,1222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Family Seasonal Bucket List</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-:root{
-  --bg:#fff9f2;
-  --ink:#35251d;
-  --muted:#806d61;
-  --card:#fffdf9;
-  --line:#eadbcf;
-  --accent:#d66a35;
-  --accent2:#e4a13e;
-  --shadow:0 18px 45px #4d2d1a14
-}
-
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--ink);
-  font-family:system-ui,-apple-system,Segoe UI,sans-serif
-}
-
-header{
-  height:72px;
-  border-bottom:1px solid var(--line);
-  background:#ffffffd9;
-  backdrop-filter:blur(12px);
-  display:flex;
-  align-items:center;
-  padding:0 18px;
-  position:sticky;
-  top:0;
-  z-index:5
-}
-
-.menu-btn{
-  width:46px;
-  height:46px;
-  border:0;
-  background:transparent;
-  border-radius:12px;
-  cursor:pointer;
-  display:grid;
-  place-items:center
-}
-
-.menu-btn:hover{background:#f4e9de}
-
-.hamb{width:22px}
-
-.hamb i{
-  display:block;
-  height:2px;
-  background:var(--ink);
-  margin:5px 0;
-  border-radius:2px
-}
-
-.brand{
-  font-family:Georgia,serif;
-  font-size:23px;
-  font-weight:700;
-  margin-left:8px
-}
-
-.user-area{
-  margin-left:auto;
-  display:flex;
-  align-items:center;
-  gap:10px
-}
-
-.user-email{
-  font-size:13px;
-  color:var(--muted);
-  max-width:180px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap
-}
-
-.logout{
-  border:0;
-  background:#f1e5d9;
-  color:var(--ink);
-  padding:9px 12px;
-  border-radius:10px;
-  font-weight:800;
-  cursor:pointer
-}
-
-.drawer{
-  position:fixed;
-  top:0;
-  left:-310px;
-  width:290px;
-  height:100vh;
-  background:#fffdf9;
-  box-shadow:10px 0 35px #0002;
-  z-index:20;
-  padding:22px;
-  transition:left .25s ease
-}
-
-.drawer.open{left:0}
-
-.drawer h2{
-  font-family:Georgia,serif;
-  margin:8px 0 24px;
-  font-size:27px
-}
-
-.close{
-  float:right;
-  border:0;
-  background:#f1e5d9;
-  border-radius:10px;
-  width:38px;
-  height:38px;
-  font-size:20px;
-  cursor:pointer
-}
-
-.nav{
-  display:grid;
-  gap:9px
-}
-
-.nav button{
-  border:0;
-  background:transparent;
-  text-align:left;
-  padding:15px;
-  border-radius:14px;
-  font-weight:800;
-  font-size:16px;
-  color:var(--ink);
-  cursor:pointer
-}
-
-.nav button:hover,
-.nav button.active{
-  background:#f5e5d6
-}
-
-.overlay{
-  position:fixed;
-  inset:0;
-  background:#24170e55;
-  z-index:10;
-  display:none
-}
-
-.overlay.show{display:block}
-
-main{
-  max-width:1050px;
-  margin:auto;
-  padding:48px 20px 70px
-}
-
-.hero{
-  text-align:center;
-  margin-bottom:30px
-}
-
-.season-icon{font-size:58px}
-
-.hero h1{
-  font-family:Georgia,serif;
-  font-size:clamp(42px,8vw,72px);
-  margin:8px 0
-}
-
-.hero p{
-  color:var(--muted);
-  max-width:650px;
-  margin:auto;
-  font-size:17px
-}
-
-.panel{
-  background:#ffffffb8;
-  border:1px solid var(--line);
-  border-radius:26px;
-  padding:20px;
-  box-shadow:var(--shadow)
-}
-
-.toolbar{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap
-}
-
-input,select,button{font:inherit}
-
-input,select{
-  border:1px solid var(--line);
-  border-radius:13px;
-  padding:12px 14px;
-  background:white;
-  color:var(--ink);
-  outline:0
-}
-
-#activity{
-  flex:1;
-  min-width:220px
-}
-
-.add{
-  background:var(--accent);
-  color:white;
-  border:0;
-  border-radius:13px;
-  padding:12px 18px;
-  font-weight:800;
-  cursor:pointer
-}
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-  margin:18px 0
-}
-
-.stat{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:17px;
-  padding:15px
-}
-
-.stat strong{
-  display:block;
-  font-size:27px
-}
-
-.stat span{
-  font-size:11px;
-  color:var(--muted);
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:.08em
-}
-
-.progress{
-  height:10px;
-  background:#eadfd5;
-  border-radius:99px;
-  overflow:hidden;
-  margin-top:9px
-}
-
-.bar{
-  height:100%;
-  width:0;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));
-  transition:.3s
-}
-
-.list{
-  display:grid;
-  gap:10px;
-  margin-top:18px
-}
-
-.item{
-  display:flex;
-  align-items:center;
-  gap:13px;
-  padding:14px;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:17px
-}
-
-.check{
-  width:24px;
-  height:24px;
-  accent-color:var(--accent)
-}
-
-.text{flex:1}
-
-.text b{display:block}
-
-.text small{color:var(--muted)}
-
-.item.done .text b{
-  text-decoration:line-through;
-  opacity:.45
-}
-
-.delete{
-  border:0;
-  background:transparent;
-  color:#a88978;
-  font-weight:800;
-  cursor:pointer;
-  padding:8px
-}
-
-.filters{
-  display:flex;
-  gap:8px;
-  margin-top:20px
-}
-
-.filter{
-  border:1px solid var(--line);
-  background:white;
-  border-radius:99px;
-  padding:8px 13px;
-  cursor:pointer;
-  color:var(--muted);
-  font-weight:700
-}
-
-.filter.active{
-  background:var(--ink);
-  color:white
-}
-
-.empty{
-  text-align:center;
-  color:var(--muted);
-  padding:45px 10px
-}
-
-.empty div{font-size:45px}
-
-.actions{
-  display:flex;
-  justify-content:flex-end;
-  margin-top:18px
-}
-
-.clear{
-  border:0;
-  background:#f1e5d9;
-  padding:10px 14px;
-  border-radius:12px;
-  font-weight:800;
-  cursor:pointer
-}
-
-.status{
-  text-align:center;
-  margin:15px 0;
-  color:var(--muted);
-  font-size:13px
-}
-
-.auth-screen{
-  position:fixed;
-  inset:0;
-  background:var(--bg);
-  z-index:100;
-  display:grid;
-  place-items:center;
-  padding:20px
-}
-
-.auth-box{
-  width:min(430px,100%);
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:26px;
-  padding:30px;
-  box-shadow:var(--shadow);
-  text-align:center
-}
-
-.auth-box h1{
-  font-family:Georgia,serif;
-  margin:0 0 8px
-}
-
-.auth-box p{
-  color:var(--muted);
-  margin:0 0 25px
-}
-
-.auth-box input{
-  width:100%;
-  margin-bottom:10px
-}
-
-.auth-btn{
-  width:100%;
-  border:0;
-  background:var(--accent);
-  color:white;
-  padding:13px;
-  border-radius:13px;
-  font-weight:800;
-  cursor:pointer
-}
-
-.auth-message{
-  min-height:20px;
-  margin-top:14px;
-  color:#a05232;
-  font-size:13px
-}
-
-.hidden{display:none!important}
-
-.season-bg{
-  position:fixed;
-  inset:0;
-  overflow:hidden;
-  pointer-events:none;
-  z-index:-1
-}
-
-.particle{
-  position:absolute;
-  top:-12vh;
-  left:var(--x);
-  width:var(--size);
-  height:var(--size);
-  opacity:.75;
-  animation:seasonFall var(--duration) linear infinite;
-  animation-delay:var(--delay)
-}
-
-@keyframes seasonFall{
-  0%{
-    transform:translate3d(0,-15vh,0) rotate(0deg);
-    opacity:0
-  }
-
-  10%{opacity:.8}
-
-  50%{
-    transform:translate3d(var(--drift),55vh,0) rotate(180deg)
-  }
-
-  90%{opacity:.7}
-
-  100%{
-    transform:translate3d(calc(var(--drift) * -1),115vh,0) rotate(360deg);
-    opacity:0
-  }
-}
-
-body:has(.drawer.open) .season-bg{opacity:.35}
-
-body.spring{
-  --bg:#fff8fc;
-  --line:#ead9e4
-}
-
-.spring .particle{
-  background:#e99ab9;
-  border-radius:50% 0 50% 0
-}
-
-body.summer{
-  --bg:#fffaf0;
-  --line:#eddfc2
-}
-
-.summer .particle{
-  background:#f4c64e;
-  border-radius:50%;
-  box-shadow:0 0 10px #f4c64e66
-}
-
-body.fall{
-  --bg:#fff9f2;
-  --line:#eadbcf
-}
-
-.fall .particle{
-  background:#c96a32;
-  border-radius:50% 0 50% 50%;
-  transform:rotate(25deg)
-}
-
-body.winter{
-  --bg:#f5fbff;
-  --line:#d8e7ee
-}
-
-.winter .particle{
-  background:white;
-  border-radius:50%;
-  box-shadow:0 0 5px #8eb8ca88
-}
-
-.p1{--x:4%;--size:13px;--duration:8s;--delay:-2s;--drift:45px}
-.p2{--x:12%;--size:9px;--duration:11s;--delay:-7s;--drift:-30px}
-.p3{--x:21%;--size:15px;--duration:9s;--delay:-4s;--drift:55px}
-.p4{--x:31%;--size:8px;--duration:13s;--delay:-9s;--drift:-45px}
-.p5{--x:42%;--size:12px;--duration:10s;--delay:-1s;--drift:35px}
-.p6{--x:53%;--size:7px;--duration:12s;--delay:-6s;--drift:-60px}
-.p7{--x:63%;--size:14px;--duration:9s;--delay:-3s;--drift:40px}
-.p8{--x:72%;--size:9px;--duration:14s;--delay:-11s;--drift:-35px}
-.p9{--x:81%;--size:13px;--duration:10s;--delay:-5s;--drift:60px}
-.p10{--x:89%;--size:8px;--duration:12s;--delay:-8s;--drift:-50px}
-.p11{--x:95%;--size:11px;--duration:9s;--delay:-1s;--drift:30px}
-.p12{--x:26%;--size:6px;--duration:15s;--delay:-12s;--drift:-25px}
-
-@media(prefers-reduced-motion:reduce){
-  .particle{
-    animation:none;
-    display:none
-  }
-}
-
-@media(max-width:600px){
-  .stats{
-    grid-template-columns:1fr 1fr
-  }
-
-  .stats .stat:last-child{
-    grid-column:1/-1
-  }
-
-  .hero{
-    margin-bottom:22px
-  }
-
-  .user-email{
-    display:none
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Seasonal Bucket List</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      background: #f4f1ea;
+      color: #333;
+      transition: background 0.5s ease;
+    }
+
+    /* AUTH */
+
+    .auth-screen {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #dce8d5, #f5e7c8);
+    }
+
+    .auth-box {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      padding: 35px;
+      border-radius: 20px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
+      text-align: center;
+    }
+
+    .auth-box h1 {
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    .auth-box p {
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    .auth-box input {
+      width: 100%;
+      padding: 13px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    .auth-btn {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      background: #526b45;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .auth-btn:hover {
+      background: #405536;
+    }
+
+    .auth-switch {
+      background: none;
+      border: none;
+      color: #526b45;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 16px;
+      font-size: 14px;
+    }
+
+    .auth-message {
+      margin-top: 15px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    /* APP */
+
+    #app {
+      display: none;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 25px 20px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 32px;
+    }
+
+    header p {
+      margin: 8px 0 15px;
+      color: #666;
+    }
+
+    .logout-btn {
+      border: none;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #ddd;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      margin: auto;
+      padding: 25px 20px 50px;
+    }
+
+    /* SEASON BUTTONS */
+
+    .season-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .season-btn {
+      border: none;
+      padding: 14px 8px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 15px;
+      background: white;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+      transition: transform 0.2s;
+    }
+
+    .season-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .season-btn.active {
+      background: #526b45;
+      color: white;
+    }
+
+    /* ADD AREA */
+
+    .add-area {
+      background: white;
+      padding: 18px;
+      border-radius: 15px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.07);
+      margin-bottom: 20px;
+    }
+
+    .add-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .add-row input {
+      flex: 1;
+      padding: 13px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    .add-row button {
+      padding: 13px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #526b45;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* FILTERS */
+
+    .filters {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 7px;
+    }
+
+    .filter-buttons button,
+    .clear-btn {
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      background: white;
+    }
+
+    .filter-buttons button.active {
+      background: #526b45;
+      color: white;
+    }
+
+    .clear-btn {
+      color: #a33;
+    }
+
+    /* LIST */
+
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .activity {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .activity input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .activity-text {
+      flex: 1;
+      font-size: 16px;
+    }
+
+    .activity.done .activity-text {
+      text-decoration: line-through;
+      color: #999;
+    }
+
+    .delete-btn {
+      border: none;
+      background: transparent;
+      color: #999;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .delete-btn:hover {
+      color: #a33;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #777;
+      background: rgba(255,255,255,0.6);
+      border-radius: 15px;
+    }
+
+    .status {
+      text-align: center;
+      margin-bottom: 15px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 700px) {
+      .season-buttons {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .add-row {
+        flex-direction: column;
+      }
+
+      .add-row button {
+        width: 100%;
+      }
+
+      header h1 {
+        font-size: 26px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- LOGIN SCREEN -->
-<div class="auth-screen" id="authScreen">
+  <!-- LOGIN / SIGN UP SCREEN -->
 
-  <div class="auth-box">
+  <div class="auth-screen" id="authScreen">
 
-    <h1>Family Bucket List</h1>
+    <div class="auth-box">
 
-    <p>Sign in to access your family's shared bucket list.</p>
+      <h1 id="authTitle">Family Bucket List</h1>
 
-    <form id="loginForm">
+      <p id="authSubtitle">
+        Log in to access your family's shared bucket list.
+      </p>
 
-      <input
-        id="email"
-        type="email"
-        placeholder="Email"
-        autocomplete="email"
-        required
+      <!-- LOGIN FORM -->
+
+      <form id="loginForm">
+
+        <input
+          id="email"
+          type="email"
+          placeholder="Email"
+          autocomplete="email"
+          required
+        >
+
+        <input
+          id="password"
+          type="password"
+          placeholder="Password"
+          autocomplete="current-password"
+          required
+        >
+
+        <button class="auth-btn" type="submit">
+          Log In
+        </button>
+
+      </form>
+
+      <!-- SIGN UP FORM -->
+
+      <form id="signupForm" style="display:none;">
+
+        <input
+          id="signupEmail"
+          type="email"
+          placeholder="Email"
+          autocomplete="email"
+          required
+        >
+
+        <input
+          id="signupPassword"
+          type="password"
+          placeholder="Create a password"
+          autocomplete="new-password"
+          minlength="6"
+          required
+        >
+
+        <input
+          id="signupPasswordConfirm"
+          type="password"
+          placeholder="Confirm password"
+          autocomplete="new-password"
+          minlength="6"
+          required
+        >
+
+        <button class="auth-btn" type="submit">
+          Create Account
+        </button>
+
+      </form>
+
+      <button
+        class="auth-switch"
+        id="authSwitch"
+        type="button"
       >
-
-      <input
-        id="password"
-        type="password"
-        placeholder="Password"
-        autocomplete="current-password"
-        required
-      >
-
-      <button class="auth-btn" type="submit">
-        Log In
+        Don't have an account? Create one
       </button>
 
-    </form>
+      <div class="auth-message" id="authMessage"></div>
 
-    <div class="auth-message" id="authMessage"></div>
+    </div>
 
   </div>
 
-</div>
 
-<div class="season-bg" id="seasonBg" aria-hidden="true">
-  <div class="particle p1"></div>
-  <div class="particle p2"></div>
-  <div class="particle p3"></div>
-  <div class="particle p4"></div>
-  <div class="particle p5"></div>
-  <div class="particle p6"></div>
-  <div class="particle p7"></div>
-  <div class="particle p8"></div>
-  <div class="particle p9"></div>
-  <div class="particle p10"></div>
-  <div class="particle p11"></div>
-  <div class="particle p12"></div>
-</div>
+  <!-- MAIN APP -->
 
-<header>
+  <div id="app">
 
-  <button
-    class="menu-btn"
-    id="menuBtn"
-    aria-label="Open menu"
-  >
-    <span class="hamb">
-      <i></i>
-      <i></i>
-      <i></i>
-    </span>
-  </button>
+    <header>
 
-  <div class="brand">Bucket List</div>
+      <h1>🌿 Family Seasonal Bucket List</h1>
 
-  <div class="user-area">
+      <p id="seasonSubtitle">
+        Make memories together all year long.
+      </p>
 
-    <span class="user-email" id="userEmail"></span>
-
-    <button class="logout" id="logout">
-      Log Out
-    </button>
-
-  </div>
-
-</header>
-
-<div class="overlay" id="overlay"></div>
-
-<aside class="drawer" id="drawer">
-
-  <button class="close" id="close">×</button>
-
-  <h2>Seasons</h2>
-
-  <nav class="nav">
-
-    <button data-season="spring">
-      🌷 Spring
-    </button>
-
-    <button data-season="summer">
-      ☀️ Summer
-    </button>
-
-    <button data-season="fall" class="active">
-      🍂 Fall
-    </button>
-
-    <button data-season="winter">
-      ❄️ Winter
-    </button>
-
-  </nav>
-
-</aside>
-
-<main>
-
-  <section class="hero">
-
-    <div class="season-icon" id="icon">
-      🍂
-    </div>
-
-    <h1 id="title">
-      Fall Bucket List
-    </h1>
-
-    <p id="subtitle">
-      Cozy days, crisp air, colorful leaves, and everything that makes autumn special.
-    </p>
-
-  </section>
-
-  <section class="panel">
-
-    <div class="toolbar">
-
-      <input
-        id="activity"
-        maxlength="100"
-        placeholder="Add something to your bucket list..."
-      >
-
-      <button class="add" id="add">
-        Add Activity
+      <button class="logout-btn" id="logoutBtn">
+        Log Out
       </button>
 
-    </div>
+    </header>
 
-    <div class="status" id="status">
-      Connecting...
-    </div>
 
-    <div class="stats">
+    <main class="container">
 
-      <div class="stat">
-        <strong id="total">0</strong>
-        <span>Total</span>
-      </div>
+      <!-- SEASONS -->
 
-      <div class="stat">
-        <strong id="completed">0</strong>
-        <span>Completed</span>
-      </div>
+      <div class="season-buttons">
 
-      <div class="stat">
+        <button
+          class="season-btn active"
+          data-season="spring"
+        >
+          🌸 Spring
+        </button>
 
-        <strong id="percent">
-          0%
-        </strong>
+        <button
+          class="season-btn"
+          data-season="summer"
+        >
+          ☀️ Summer
+        </button>
 
-        <span>Progress</span>
+        <button
+          class="season-btn"
+          data-season="fall"
+        >
+          🍂 Fall
+        </button>
 
-        <div class="progress">
-          <div class="bar" id="bar"></div>
-        </div>
+        <button
+          class="season-btn"
+          data-season="winter"
+        >
+          ❄️ Winter
+        </button>
 
       </div>
 
-    </div>
 
-    <div class="filters">
+      <div class="status" id="status">
+        Loading...
+      </div>
 
-      <button
-        class="filter active"
-        data-filter="all"
-      >
-        All
-      </button>
 
-      <button
-        class="filter"
-        data-filter="active"
-      >
-        To Do
-      </button>
+      <!-- ADD ACTIVITY -->
 
-      <button
-        class="filter"
-        data-filter="done"
-      >
-        Completed
-      </button>
+      <div class="add-area">
 
-    </div>
-
-    <div class="list" id="list"></div>
-
-    <div class="empty" id="empty">
-
-      <div>✨</div>
-
-      <b>Your list is empty.</b>
-
-      <br>
-
-      Add your first activity!
-
-    </div>
-
-    <div class="actions">
-
-      <button class="clear" id="clear">
-        Clear Completed
-      </button>
-
-    </div>
-
-  </section>
-
-</main>
-
-<script>
-
-/* =========================================================
-   SUPABASE SETUP
-   ========================================================= */
-
-const SUPABASE_URL =
-  "YOUR_SUPABASE_URL";
-
-const SUPABASE_KEY =
-  "YOUR_SUPABASE_PUBLISHABLE_KEY";
-
-const { createClient } =
-  supabase;
-
-const db =
-  createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-
-/* =========================================================
-   BUCKET LIST DATA
-   ========================================================= */
-
-const data = {
-
-  spring:{
-    icon:"🌷",
-    title:"Spring Bucket List",
-    subtitle:"Fresh air, blooming flowers, sunny days, and new adventures.",
-    items:[
-      "See the cherry blossoms",
-      "Have a picnic",
-      "Plant some flowers",
-      "Go on a nature walk",
-      "Fly a kite",
-      "Have a spring cleaning day",
-      "Visit a farmers market",
-      "Take photos of flowers"
-    ]
-  },
-
-  summer:{
-    icon:"☀️",
-    title:"Summer Bucket List",
-    subtitle:"Long days, warm nights, adventures, and making summer memories.",
-    items:[
-      "Go to the beach",
-      "Watch a sunset",
-      "Have a BBQ",
-      "Go swimming",
-      "Have a water balloon fight",
-      "Go camping",
-      "Get ice cream",
-      "Have a late-night hangout"
-    ]
-  },
-
-  fall:{
-    icon:"🍂",
-    title:"Fall Bucket List",
-    subtitle:"Cozy days, crisp air, colorful leaves, and everything that makes autumn special.",
-    items:[
-      "Go apple picking",
-      "Visit a pumpkin patch",
-      "Take a fall foliage walk",
-      "Have a bonfire",
-      "Bake pumpkin bread",
-      "Have a Halloween movie marathon",
-      "Drink apple cider",
-      "Take autumn photos"
-    ]
-  },
-
-  winter:{
-    icon:"❄️",
-    title:"Winter Bucket List",
-    subtitle:"Snowy days, warm drinks, holiday lights, and cozy winter adventures.",
-    items:[
-      "Build a snowman",
-      "Go sledding",
-      "Drink hot chocolate",
-      "See holiday lights",
-      "Have a cozy movie night",
-      "Bake holiday cookies",
-      "Go ice skating",
-      "Have a snowball fight"
-    ]
-  }
-
-};
-
-
-/* =========================================================
-   APP STATE
-   ========================================================= */
-
-let season =
-  localStorage.getItem("bucketSeason") || "fall";
-
-let filter =
-  "all";
-
-let items = [];
-
-
-/* =========================================================
-   ELEMENTS
-   ========================================================= */
-
-const authScreen =
-  document.getElementById("authScreen");
-
-const loginForm =
-  document.getElementById("loginForm");
-
-const email =
-  document.getElementById("email");
-
-const password =
-  document.getElementById("password");
-
-const authMessage =
-  document.getElementById("authMessage");
-
-const userEmail =
-  document.getElementById("userEmail");
-
-const logout =
-  document.getElementById("logout");
-
-const menuBtn =
-  document.getElementById("menuBtn");
-
-const drawer =
-  document.getElementById("drawer");
-
-const overlay =
-  document.getElementById("overlay");
-
-const close =
-  document.getElementById("close");
-
-const activity =
-  document.getElementById("activity");
-
-const add =
-  document.getElementById("add");
-
-const list =
-  document.getElementById("list");
-
-const empty =
-  document.getElementById("empty");
-
-const total =
-  document.getElementById("total");
-
-const completed =
-  document.getElementById("completed");
-
-const percent =
-  document.getElementById("percent");
-
-const bar =
-  document.getElementById("bar");
-
-const status =
-  document.getElementById("status");
-
-const icon =
-  document.getElementById("icon");
-
-const title =
-  document.getElementById("title");
-
-const subtitle =
-  document.getElementById("subtitle");
-
-
-/* =========================================================
-   AUTHENTICATION
-   ========================================================= */
-
-async function checkLogin(){
-
-  const {
-    data:{
-      session
-    }
-  } = await db.auth.getSession();
-
-  if(session){
-
-    showApp(session);
-
-  }else{
-
-    showLogin();
-
-  }
-
-}
-
-
-function showLogin(){
-
-  authScreen.classList.remove("hidden");
-
-  status.textContent =
-    "Please log in.";
-
-}
-
-
-function showApp(session){
-
-  authScreen.classList.add("hidden");
-
-  userEmail.textContent =
-    session.user.email || "";
-
-  loadActivities();
-
-}
-
-
-loginForm.addEventListener(
-  "submit",
-  async function(e){
-
-    e.preventDefault();
-
-    authMessage.textContent =
-      "Logging in...";
-
-    const {
-      error
-    } = await db.auth.signInWithPassword({
-
-      email:
-        email.value.trim(),
-
-      password:
-        password.value
-
-    });
-
-    if(error){
-
-      authMessage.textContent =
-        error.message;
-
-      return;
-
-    }
-
-    authMessage.textContent =
-      "";
-
-  }
-);
-
-
-logout.addEventListener(
-  "click",
-  async function(){
-
-    await db.auth.signOut();
-
-    items = [];
-
-    list.innerHTML = "";
-
-    showLogin();
-
-  }
-);
-
-
-db.auth.onAuthStateChange(
-  function(event,session){
-
-    if(session){
-
-      showApp(session);
-
-    }else{
-
-      showLogin();
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   LOAD ACTIVITIES
-   ========================================================= */
-
-async function loadActivities(){
-
-  status.textContent =
-    "Loading shared family list...";
-
-  const {
-    data,
-    error
-  } = await db
-    .from("activities")
-    .select("*")
-    .order("created_at",{ascending:false});
-
-  if(error){
-
-    console.error(error);
-
-    status.textContent =
-      "Could not load the list.";
-
-    return;
-
-  }
-
-  items =
-    data || [];
-
-  status.textContent =
-    "Shared with your family ✓";
-
-  render();
-
-}
-
-
-/* =========================================================
-   RENDER
-   ========================================================= */
-
-function render(){
-
-  const d =
-    data[season];
-
-  document.body.className =
-    season;
-
-  document.documentElement.style.setProperty(
-    "--accent",
-    season === "summer"
-      ? "#e39a25"
-      : season === "spring"
-        ? "#cc7191"
-        : season === "winter"
-          ? "#5793b5"
-          : "#d66a35"
-  );
-
-  icon.textContent =
-    d.icon;
-
-  title.textContent =
-    d.title;
-
-  subtitle.textContent =
-    d.subtitle;
-
-  document
-    .querySelectorAll(".nav button")
-    .forEach(function(button){
-
-      button.classList.toggle(
-        "active",
-        button.dataset.season === season
-      );
-
-    });
-
-
-  const seasonItems =
-    items.filter(function(item){
-
-      return item.season === season;
-
-    });
-
-
-  const shown =
-    seasonItems.filter(function(item){
-
-      if(filter === "all")
-        return true;
-
-      if(filter === "done")
-        return item.done;
-
-      if(filter === "active")
-        return !item.done;
-
-    });
-
-
-  list.innerHTML =
-    shown.map(function(item){
-
-      return `
-
-        <div class="item ${item.done ? "done" : ""}">
+        <div class="add-row">
 
           <input
-            class="check"
-            type="checkbox"
-            ${item.done ? "checked" : ""}
-            onchange="toggleItem(${item.id},${item.done})"
+            id="activityInput"
+            type="text"
+            placeholder="Add something your family wants to do..."
+            maxlength="200"
           >
 
-          <div class="text">
-
-            <b>${esc(item.text)}</b>
-
-            <small>
-              ${item.done
-                ? "Completed ✓"
-                : "Not completed"}
-            </small>
-
-          </div>
-
-          <button
-            class="delete"
-            onclick="removeItem(${item.id})"
-          >
-            ✕
+          <button id="addBtn">
+            Add
           </button>
 
         </div>
 
-      `;
-
-    }).join("");
+      </div>
 
 
-  empty.style.display =
-    shown.length
-      ? "none"
-      : "block";
+      <!-- FILTERS -->
+
+      <div class="filters">
+
+        <div class="filter-buttons">
+
+          <button
+            class="filter-btn active"
+            data-filter="all"
+          >
+            All
+          </button>
+
+          <button
+            class="filter-btn"
+            data-filter="todo"
+          >
+            To Do
+          </button>
+
+          <button
+            class="filter-btn"
+            data-filter="done"
+          >
+            Done
+          </button>
+
+        </div>
+
+        <button
+          class="clear-btn"
+          id="clearBtn"
+        >
+          Clear Completed
+        </button>
+
+      </div>
 
 
-  const completedCount =
-    seasonItems.filter(function(item){
+      <!-- ACTIVITIES -->
 
-      return item.done;
+      <div class="list" id="activityList"></div>
 
-    }).length;
+    </main>
 
-
-  const progress =
-    seasonItems.length
-      ? Math.round(
-          completedCount /
-          seasonItems.length *
-          100
-        )
-      : 0;
+  </div>
 
 
-  total.textContent =
-    seasonItems.length;
+  <script>
 
-  completed.textContent =
-    completedCount;
+    /*
+      ============================================================
+      SUPABASE SETUP
+      ============================================================
+    */
 
-  percent.textContent =
-    progress + "%";
+    const SUPABASE_URL = "https://elprfpqivxmdrtvdtojh.supabase.co/";
 
-  bar.style.width =
-    progress + "%";
+    const SUPABASE_KEY = "https://elprfpqivxmdrtvdtojh.supabase.co/rest/v1/family-bucket-list";
 
-}
+    const { createClient } = supabase;
 
-
-/* =========================================================
-   ESCAPE HTML
-   ========================================================= */
-
-function esc(s){
-
-  return s.replace(
-    /[&<>"']/g,
-    function(c){
-
-      return {
-
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        '"':"&quot;",
-        "'":"&#39;"
-
-      }[c];
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   ADD ACTIVITY
-   ========================================================= */
-
-async function addActivity(){
-
-  const text =
-    activity.value.trim();
-
-  if(!text)
-    return;
-
-
-  const {
-    data:{
-      user
-    }
-  } =
-    await db.auth.getUser();
-
-
-  if(!user){
-
-    alert("Please log in first.");
-
-    return;
-
-  }
-
-
-  add.disabled =
-    true;
-
-  add.textContent =
-    "Adding...";
-
-
-  const {
-    data:newItem,
-    error
-  } =
-    await db
-      .from("activities")
-      .insert({
-
-        season:
-          season,
-
-        text:
-          text,
-
-        done:
-          false,
-
-        created_by:
-          user.id
-
-      })
-      .select()
-      .single();
-
-
-  if(error){
-
-    console.error(error);
-
-    alert(
-      "Could not add the activity."
+    const db = createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
     );
 
-  }else{
 
-    items.unshift(
-      newItem
-    );
+    /*
+      ============================================================
+      APP VARIABLES
+      ============================================================
+    */
 
-    activity.value =
-      "";
+    let currentSeason = "spring";
 
-    render();
+    let currentFilter = "all";
 
-  }
+    let activities = [];
 
-
-  add.disabled =
-    false;
-
-  add.textContent =
-    "Add Activity";
-
-}
+    let authMode = "login";
 
 
-/* =========================================================
-   TOGGLE ACTIVITY
-   ========================================================= */
+    /*
+      ============================================================
+      HTML ELEMENTS
+      ============================================================
+    */
 
-async function toggleItem(
-  id,
-  currentState
-){
+    const authScreen =
+      document.getElementById("authScreen");
 
-  const {
-    error
-  } =
-    await db
-      .from("activities")
-      .update({
+    const app =
+      document.getElementById("app");
 
-        done:
-          !currentState
+    const loginForm =
+      document.getElementById("loginForm");
 
-      })
-      .eq("id",id);
+    const signupForm =
+      document.getElementById("signupForm");
+
+    const authTitle =
+      document.getElementById("authTitle");
+
+    const authSubtitle =
+      document.getElementById("authSubtitle");
+
+    const authSwitch =
+      document.getElementById("authSwitch");
+
+    const authMessage =
+      document.getElementById("authMessage");
+
+    const activityInput =
+      document.getElementById("activityInput");
+
+    const activityList =
+      document.getElementById("activityList");
+
+    const status =
+      document.getElementById("status");
+
+    const seasonSubtitle =
+      document.getElementById("seasonSubtitle");
 
 
-  if(error){
+    /*
+      ============================================================
+      AUTH MODE SWITCH
+      ============================================================
+    */
 
-    console.error(error);
+    authSwitch.addEventListener("click", function () {
 
-    alert(
-      "Could not update the activity."
-    );
+      authMessage.textContent = "";
 
-    render();
+      if (authMode === "login") {
 
-    return;
+        authMode = "signup";
 
-  }
+        loginForm.style.display = "none";
 
+        signupForm.style.display = "block";
 
-  const item =
-    items.find(function(x){
+        authTitle.textContent =
+          "Create Your Account";
 
-      return x.id === id;
+        authSubtitle.textContent =
+          "Create an account to join your family's shared bucket list.";
+
+        authSwitch.textContent =
+          "Already have an account? Log in";
+
+      } else {
+
+        authMode = "login";
+
+        signupForm.style.display = "none";
+
+        loginForm.style.display = "block";
+
+        authTitle.textContent =
+          "Family Bucket List";
+
+        authSubtitle.textContent =
+          "Log in to access your family's shared bucket list.";
+
+        authSwitch.textContent =
+          "Don't have an account? Create one";
+
+      }
 
     });
 
 
-  if(item){
+    /*
+      ============================================================
+      LOGIN
+      ============================================================
+    */
 
-    item.done =
-      !currentState;
+    loginForm.addEventListener("submit", async function (e) {
 
-  }
+      e.preventDefault();
 
+      authMessage.textContent =
+        "Logging in...";
 
-  render();
+      const email =
+        document.getElementById("email").value.trim();
 
-}
-
-
-/* =========================================================
-   DELETE ACTIVITY
-   ========================================================= */
-
-async function removeItem(id){
-
-  if(
-    !confirm(
-      "Delete this activity?"
-    )
-  ){
-
-    render();
-
-    return;
-
-  }
+      const password =
+        document.getElementById("password").value;
 
 
-  const {
-    error
-  } =
-    await db
-      .from("activities")
-      .delete()
-      .eq("id",id);
+      const { error } =
+        await db.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
 
 
-  if(error){
+      if (error) {
 
-    console.error(error);
+        authMessage.textContent =
+          error.message;
 
-    alert(
-      "Could not delete the activity."
-    );
-
-    return;
-
-  }
+        return;
+      }
 
 
-  items =
-    items.filter(function(item){
-
-      return item.id !== id;
+      authMessage.textContent = "";
 
     });
 
 
-  render();
+    /*
+      ============================================================
+      CREATE ACCOUNT
+      ============================================================
+    */
 
-}
+    signupForm.addEventListener("submit", async function (e) {
+
+      e.preventDefault();
 
 
-/* =========================================================
-   CLEAR COMPLETED
-   ========================================================= */
+      const email =
+        document.getElementById("signupEmail")
+          .value
+          .trim();
 
-document
-  .getElementById("clear")
-  .addEventListener(
-    "click",
-    async function(){
+      const password =
+        document.getElementById("signupPassword")
+          .value;
 
-      const seasonItems =
-        items.filter(function(item){
+      const confirmPassword =
+        document.getElementById("signupPasswordConfirm")
+          .value;
 
-          return item.season === season &&
-                 item.done;
+
+      if (password !== confirmPassword) {
+
+        authMessage.textContent =
+          "The passwords don't match.";
+
+        return;
+      }
+
+
+      if (password.length < 6) {
+
+        authMessage.textContent =
+          "Your password must be at least 6 characters.";
+
+        return;
+      }
+
+
+      authMessage.textContent =
+        "Creating your account...";
+
+
+      const { data, error } =
+        await db.auth.signUp({
+
+          email: email,
+
+          password: password
 
         });
 
 
-      if(!seasonItems.length)
+      if (error) {
+
+        authMessage.textContent =
+          error.message;
+
         return;
+      }
 
 
-      if(
-        !confirm(
-          "Delete all completed activities from this season?"
-        )
-      )
-        return;
+      /*
+        If Supabase automatically signs the user in,
+        open the app immediately.
+      */
+
+      if (data.session) {
+
+        authMessage.textContent = "";
+
+        showApp(data.session);
+
+      } else {
+
+        /*
+          If email confirmation is enabled,
+          Supabase won't create a session until
+          the user confirms their email.
+        */
+
+        authMessage.textContent =
+          "Account created! Check your email to confirm your account, then log in.";
+
+      }
+
+    });
 
 
-      const ids =
-        seasonItems.map(function(item){
+    /*
+      ============================================================
+      LOG OUT
+      ============================================================
+    */
 
-          return item.id;
+    document
+      .getElementById("logoutBtn")
+      .addEventListener("click", async function () {
+
+        await db.auth.signOut();
+
+      });
+
+
+    /*
+      ============================================================
+      CHECK LOGIN
+      ============================================================
+    */
+
+    async function checkLogin() {
+
+      const {
+        data: { session }
+      } = await db.auth.getSession();
+
+
+      if (session) {
+
+        showApp(session);
+
+      } else {
+
+        showLogin();
+
+      }
+
+    }
+
+
+    /*
+      ============================================================
+      SHOW LOGIN
+      ============================================================
+    */
+
+    function showLogin() {
+
+      authScreen.style.display = "flex";
+
+      app.style.display = "none";
+
+    }
+
+
+    /*
+      ============================================================
+      SHOW APP
+      ============================================================
+    */
+
+    async function showApp(session) {
+
+      authScreen.style.display = "none";
+
+      app.style.display = "block";
+
+      await loadActivities();
+
+    }
+
+
+    /*
+      ============================================================
+      AUTH STATE CHANGES
+      ============================================================
+    */
+
+    db.auth.onAuthStateChange(function (event, session) {
+
+      if (session) {
+
+        showApp(session);
+
+      } else {
+
+        showLogin();
+
+      }
+
+    });
+
+
+    /*
+      ============================================================
+      SEASON BUTTONS
+      ============================================================
+    */
+
+    document
+      .querySelectorAll(".season-btn")
+      .forEach(function (button) {
+
+        button.addEventListener("click", function () {
+
+          document
+            .querySelectorAll(".season-btn")
+            .forEach(function (btn) {
+
+              btn.classList.remove("active");
+
+            });
+
+
+          button.classList.add("active");
+
+
+          currentSeason =
+            button.dataset.season;
+
+
+          updateSeasonBackground();
+
+          renderActivities();
 
         });
+
+      });
+
+
+    /*
+      ============================================================
+      SEASON BACKGROUNDS
+      ============================================================
+    */
+
+    function updateSeasonBackground() {
+
+      if (currentSeason === "spring") {
+
+        document.body.style.background =
+          "linear-gradient(135deg, #e5f1df, #f7e8ef)";
+
+        seasonSubtitle.textContent =
+          "Fresh air, flowers, and new adventures.";
+
+      }
+
+      else if (currentSeason === "summer") {
+
+        document.body.style.background =
+          "linear-gradient(135deg, #fff3c4, #d9f0f7)";
+
+        seasonSubtitle.textContent =
+          "Sunshine, adventures, and family fun.";
+
+      }
+
+      else if (currentSeason === "fall") {
+
+        document.body.style.background =
+          "linear-gradient(135deg, #f4dfc1, #ead4c4)";
+
+        seasonSubtitle.textContent =
+          "Cozy days, colorful leaves, and traditions.";
+
+      }
+
+      else if (currentSeason === "winter") {
+
+        document.body.style.background =
+          "linear-gradient(135deg, #dce8f4, #eee9f4)";
+
+        seasonSubtitle.textContent =
+          "Snowy days, cozy nights, and winter memories.";
+
+      }
+
+    }
+
+
+    /*
+      ============================================================
+      LOAD ACTIVITIES
+      ============================================================
+    */
+
+    async function loadActivities() {
+
+      status.textContent =
+        "Loading your family bucket list...";
 
 
       const {
+        data,
         error
-      } =
-        await db
-          .from("activities")
-          .delete()
-          .in("id",ids);
+      } = await db
+        .from("activities")
+        .select("*")
+        .order("created_at", {
+          ascending: true
+        });
 
 
-      if(error){
+      if (error) {
 
-        console.error(error);
+        status.textContent =
+          "Error loading activities: " +
+          error.message;
+
+        return;
+
+      }
+
+
+      activities = data || [];
+
+      renderActivities();
+
+    }
+
+
+    /*
+      ============================================================
+      RENDER ACTIVITIES
+      ============================================================
+    */
+
+    function renderActivities() {
+
+      activityList.innerHTML = "";
+
+
+      let visibleActivities =
+        activities.filter(function (activity) {
+
+          return activity.season === currentSeason;
+
+        });
+
+
+      if (currentFilter === "todo") {
+
+        visibleActivities =
+          visibleActivities.filter(function (activity) {
+
+            return !activity.done;
+
+          });
+
+      }
+
+
+      if (currentFilter === "done") {
+
+        visibleActivities =
+          visibleActivities.filter(function (activity) {
+
+            return activity.done;
+
+          });
+
+      }
+
+
+      if (visibleActivities.length === 0) {
+
+        activityList.innerHTML = `
+          <div class="empty">
+            Nothing here yet! Add something your family wants to do.
+          </div>
+        `;
+
+      } else {
+
+        visibleActivities.forEach(function (activity) {
+
+          const item =
+            document.createElement("div");
+
+          item.className =
+            "activity" +
+            (activity.done ? " done" : "");
+
+
+          item.innerHTML = `
+
+            <input
+              type="checkbox"
+              ${activity.done ? "checked" : ""}
+              aria-label="Mark activity complete"
+            >
+
+            <div class="activity-text">
+              ${escapeHtml(activity.text)}
+            </div>
+
+            <button
+              class="delete-btn"
+              aria-label="Delete activity"
+            >
+              ✕
+            </button>
+
+          `;
+
+
+          const checkbox =
+            item.querySelector("input");
+
+          const deleteButton =
+            item.querySelector(".delete-btn");
+
+
+          checkbox.addEventListener(
+            "change",
+            function () {
+
+              toggleActivity(
+                activity.id,
+                checkbox.checked
+              );
+
+            }
+          );
+
+
+          deleteButton.addEventListener(
+            "click",
+            function () {
+
+              deleteActivity(activity.id);
+
+            }
+          );
+
+
+          activityList.appendChild(item);
+
+        });
+
+      }
+
+
+      updateStatus();
+
+    }
+
+
+    /*
+      ============================================================
+      ADD ACTIVITY
+      ============================================================
+    */
+
+    document
+      .getElementById("addBtn")
+      .addEventListener("click", addActivity);
+
+
+    activityInput.addEventListener(
+      "keydown",
+      function (e) {
+
+        if (e.key === "Enter") {
+
+          addActivity();
+
+        }
+
+      }
+    );
+
+
+    async function addActivity() {
+
+      const text =
+        activityInput.value.trim();
+
+
+      if (!text) {
+
+        return;
+
+      }
+
+
+      const {
+        data: { user }
+      } = await db.auth.getUser();
+
+
+      if (!user) {
+
+        return;
+
+      }
+
+
+      const {
+        data,
+        error
+      } = await db
+        .from("activities")
+        .insert({
+
+          season: currentSeason,
+
+          text: text,
+
+          done: false,
+
+          created_by: user.id
+
+        })
+        .select()
+        .single();
+
+
+      if (error) {
 
         alert(
-          "Could not clear completed activities."
+          "Couldn't add activity: " +
+          error.message
         );
 
         return;
@@ -1549,166 +1224,284 @@ document
       }
 
 
-      items =
-        items.filter(function(item){
+      activities.push(data);
 
-          return !ids.includes(item.id);
+      activityInput.value = "";
+
+      renderActivities();
+
+    }
+
+
+    /*
+      ============================================================
+      TOGGLE ACTIVITY
+      ============================================================
+    */
+
+    async function toggleActivity(id, done) {
+
+      const {
+        error
+      } = await db
+        .from("activities")
+        .update({
+          done: done
+        })
+        .eq("id", id);
+
+
+      if (error) {
+
+        alert(
+          "Couldn't update activity: " +
+          error.message
+        );
+
+        return;
+
+      }
+
+
+      const activity =
+        activities.find(function (item) {
+
+          return item.id === id;
 
         });
 
 
-      render();
+      if (activity) {
 
-    }
-  );
+        activity.done = done;
 
-
-/* =========================================================
-   MENU
-   ========================================================= */
-
-menuBtn.onclick =
-  function(){
-
-    drawer.classList.add(
-      "open"
-    );
-
-    overlay.classList.add(
-      "show"
-    );
-
-  };
+      }
 
 
-close.onclick =
-overlay.onclick =
-  function(){
-
-    drawer.classList.remove(
-      "open"
-    );
-
-    overlay.classList.remove(
-      "show"
-    );
-
-  };
-
-
-/* =========================================================
-   SEASON SWITCHING
-   ========================================================= */
-
-document
-  .querySelectorAll(".nav button")
-  .forEach(function(button){
-
-    button.onclick =
-      function(){
-
-        season =
-          button.dataset.season;
-
-        filter =
-          "all";
-
-        document
-          .querySelectorAll(".filter")
-          .forEach(function(x){
-
-            x.classList.toggle(
-              "active",
-              x.dataset.filter === "all"
-            );
-
-          });
-
-
-        localStorage.setItem(
-          "bucketSeason",
-          season
-        );
-
-
-        render();
-
-
-        drawer.classList.remove(
-          "open"
-        );
-
-        overlay.classList.remove(
-          "show"
-        );
-
-      };
-
-  });
-
-
-/* =========================================================
-   FILTERS
-   ========================================================= */
-
-document
-  .querySelectorAll(".filter")
-  .forEach(function(button){
-
-    button.onclick =
-      function(){
-
-        filter =
-          button.dataset.filter;
-
-        document
-          .querySelectorAll(".filter")
-          .forEach(function(x){
-
-            x.classList.toggle(
-              "active",
-              x === button
-            );
-
-          });
-
-
-        render();
-
-      };
-
-  });
-
-
-/* =========================================================
-   INPUT
-   ========================================================= */
-
-add.onclick =
-  addActivity;
-
-
-activity.addEventListener(
-  "keydown",
-  function(e){
-
-    if(e.key === "Enter"){
-
-      addActivity();
+      renderActivities();
 
     }
 
-  }
-);
+
+    /*
+      ============================================================
+      DELETE ACTIVITY
+      ============================================================
+    */
+
+    async function deleteActivity(id) {
+
+      const {
+        error
+      } = await db
+        .from("activities")
+        .delete()
+        .eq("id", id);
 
 
-/* =========================================================
-   START APP
-   ========================================================= */
+      if (error) {
 
-checkLogin();
+        alert(
+          "Couldn't delete activity: " +
+          error.message
+        );
 
-</script>
+        return;
+
+      }
+
+
+      activities =
+        activities.filter(function (activity) {
+
+          return activity.id !== id;
+
+        });
+
+
+      renderActivities();
+
+    }
+
+
+    /*
+      ============================================================
+      FILTER BUTTONS
+      ============================================================
+    */
+
+    document
+      .querySelectorAll(".filter-btn")
+      .forEach(function (button) {
+
+        button.addEventListener(
+          "click",
+          function () {
+
+            document
+              .querySelectorAll(".filter-btn")
+              .forEach(function (btn) {
+
+                btn.classList.remove("active");
+
+              });
+
+
+            button.classList.add("active");
+
+
+            currentFilter =
+              button.dataset.filter;
+
+
+            renderActivities();
+
+          }
+        );
+
+      });
+
+
+    /*
+      ============================================================
+      CLEAR COMPLETED
+      ============================================================
+    */
+
+    document
+      .getElementById("clearBtn")
+      .addEventListener(
+        "click",
+        clearCompleted
+      );
+
+
+    async function clearCompleted() {
+
+      const completed =
+        activities.filter(function (activity) {
+
+          return (
+            activity.season === currentSeason &&
+            activity.done
+          );
+
+        });
+
+
+      if (completed.length === 0) {
+
+        return;
+
+      }
+
+
+      const ids =
+        completed.map(function (activity) {
+
+          return activity.id;
+
+        });
+
+
+      const {
+        error
+      } = await db
+        .from("activities")
+        .delete()
+        .in("id", ids);
+
+
+      if (error) {
+
+        alert(
+          "Couldn't clear completed activities: " +
+          error.message
+        );
+
+        return;
+
+      }
+
+
+      activities =
+        activities.filter(function (activity) {
+
+          return !ids.includes(activity.id);
+
+        });
+
+
+      renderActivities();
+
+    }
+
+
+    /*
+      ============================================================
+      STATUS
+      ============================================================
+    */
+
+    function updateStatus() {
+
+      const seasonActivities =
+        activities.filter(function (activity) {
+
+          return activity.season === currentSeason;
+
+        });
+
+
+      const completed =
+        seasonActivities.filter(function (activity) {
+
+          return activity.done;
+
+        }).length;
+
+
+      const total =
+        seasonActivities.length;
+
+
+      status.textContent =
+        total === 0
+          ? "No activities yet"
+          : `${completed} of ${total} completed`;
+
+    }
+
+
+    /*
+      ============================================================
+      SECURITY
+      ============================================================
+    */
+
+    function escapeHtml(text) {
+
+      const div =
+        document.createElement("div");
+
+      div.textContent = text;
+
+      return div.innerHTML;
+
+    }
+
+
+    /*
+      ============================================================
+      START APP
+      ============================================================
+    */
+
+    updateSeasonBackground();
+
+    checkLogin();
+
+  </script>
 
 </body>
 </html>
