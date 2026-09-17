@@ -1388,16 +1388,21 @@ authForm.addEventListener(
       }else{
 
         const {
-          data,
-          error
-        } =
-          await db.auth.signUp({
+  data,
+  error
+} =
+  await db.auth.signUp({
 
-            email:email,
+    email:email,
 
-            password:password
+    password:password,
 
-          });
+    options:{
+      emailRedirectTo:
+        "https://jaydenrrivera2011.github.io/family-bucket-list/"
+    }
+
+  });
 
 
         if(error)
