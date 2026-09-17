@@ -1323,7 +1323,7 @@ main{
         </div>
 
         <div class="update-date">
-          First major update
+          Major update
         </div>
 
         <ul>
@@ -1335,6 +1335,18 @@ main{
           <li>Added Settings and Update Log.</li>
           <li><strong>Removed the password system for private lists.</strong></li>
           <li>Private lists are now hidden from everyone except their owner.</li>
+        </ul>
+
+        <div class="update-version">
+          Version 1.1.0
+        </div>
+
+        <div class="update-date">
+          Minor update
+        </div>
+
+        <ul>
+          <li>Updated delete function.</li>
         </ul>
 
       </div>
@@ -2860,14 +2872,6 @@ async function toggleActivity(id){
 ===================================================== */
 
 async function deleteActivity(id){
-
-  const confirmed =
-    confirm(
-      "Delete this activity?"
-    );
-
-  if(!confirmed) return;
-
 
   const {
     error
