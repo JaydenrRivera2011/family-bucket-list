@@ -2,962 +2,1038 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Seasonal Bucket List</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Bucket List</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root{
-  --bg:#fff9f2;
-  --ink:#35251d;
-  --muted:#806d61;
-  --card:#fffdf9;
-  --line:#eadbcf;
-  --accent:#d66a35;
-  --accent2:#e4a13e;
-  --shadow:0 18px 45px #4d2d1a14;
-  --panel:#ffffffb8
+  --bg:#f7f1e7;
+  --bg2:#fffaf3;
+  --card:#fffdf8;
+  --text:#302820;
+  --muted:#7d7165;
+  --border:#e6daca;
+  --accent:#a56b3b;
+  --accent2:#d8a76b;
+  --soft:#f1e4d3;
+  --shadow:0 12px 35px rgba(72,50,30,.10);
 }
 
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
 
 body{
   margin:0;
+  min-height:100vh;
   background:var(--bg);
-  color:var(--ink);
-  font-family:system-ui,-apple-system,Segoe UI,sans-serif;
-  transition:.25s
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+  transition:.25s;
 }
 
-header{
-  height:72px;
-  border-bottom:1px solid var(--line);
-  background:#ffffffd9;
-  backdrop-filter:blur(12px);
-  display:flex;
-  align-items:center;
-  padding:0 18px;
-  position:sticky;
-  top:0;
-  z-index:5
-}
-
-.menu-btn{
-  width:46px;
-  height:46px;
-  border:0;
-  background:transparent;
-  border-radius:12px;
-  cursor:pointer;
-  display:grid;
-  place-items:center
-}
-
-.menu-btn:hover{
-  background:#f4e9de
-}
-
-.hamb{
-  width:22px
-}
-
-.hamb i{
-  display:block;
-  height:2px;
-  background:var(--ink);
-  margin:5px 0;
-  border-radius:2px
-}
-
-.brand{
-  font-family:Georgia,serif;
-  font-size:23px;
-  font-weight:700;
-  margin-left:8px
-}
-
-.header-right{
-  margin-left:auto;
-  display:flex;
-  align-items:center;
-  gap:9px
-}
-
-.user-name{
-  color:var(--muted);
-  font-size:13px;
-  font-weight:800
-}
-
-.logout{
-  border:0;
-  background:#f1e5d9;
-  color:var(--ink);
-  border-radius:12px;
-  padding:9px 13px;
-  font-weight:800;
-  cursor:pointer
-}
-
-.theme-button{
-  border:1px solid var(--line);
-  background:var(--card);
-  border-radius:12px;
-  width:42px;
-  height:42px;
-  cursor:pointer;
-  font-size:19px
-}
-
-.theme-menu{
-  position:absolute;
-  right:18px;
-  top:62px;
-  width:210px;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:17px;
-  padding:9px;
-  box-shadow:var(--shadow);
-  display:none
-}
-
-.theme-menu.open{
-  display:block
-}
-
-.theme-menu button{
-  width:100%;
-  border:0;
-  background:transparent;
-  padding:11px;
-  border-radius:11px;
-  text-align:left;
-  font-weight:700;
-  color:var(--ink);
-  cursor:pointer
-}
-
-.theme-menu button:hover{
-  background:#f3e7dc
-}
-
-
-/* DRAWER */
-
-.drawer{
-  position:fixed;
-  top:0;
-  left:-330px;
-  width:310px;
-  height:100vh;
-  background:var(--card);
-  box-shadow:10px 0 35px #0002;
-  z-index:20;
-  padding:22px;
-  transition:left .25s ease;
-  overflow-y:auto
-}
-
-.drawer.open{
-  left:0
-}
-
-.drawer h2{
-  font-family:Georgia,serif;
-  margin:8px 0 24px;
-  font-size:27px
-}
-
-.close{
-  float:right;
-  border:0;
-  background:#f1e5d9;
-  border-radius:10px;
-  width:38px;
-  height:38px;
-  font-size:20px;
-  cursor:pointer
-}
-
-.drawer-section{
-  margin-bottom:25px
-}
-
-.drawer-label{
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.1em;
-  color:var(--muted);
-  font-weight:900;
-  margin:18px 8px 8px
-}
-
-.nav{
-  display:grid;
-  gap:7px
-}
-
-.nav button{
-  border:0;
-  background:transparent;
-  text-align:left;
-  padding:13px;
-  border-radius:14px;
-  font-weight:800;
-  font-size:15px;
-  color:var(--ink);
-  cursor:pointer
-}
-
-.nav button:hover,
-.nav button.active{
-  background:#f5e5d6
-}
-
-.custom-list-button{
-  display:flex!important;
-  align-items:center;
-  gap:9px
-}
-
-.list-lock{
-  margin-left:auto;
-  font-size:13px
-}
-
-.create-list{
-  width:100%;
-  border:1px dashed #cfae96;
-  background:#fff8ef;
-  color:var(--accent);
-  padding:13px;
-  border-radius:14px;
-  font-weight:900;
-  cursor:pointer;
-  margin-top:8px
-}
-
-.settings-button{
-  width:100%;
-  border:0;
-  background:#f1e5d9;
-  padding:13px;
-  border-radius:14px;
-  text-align:left;
-  font-weight:900;
-  cursor:pointer
-}
-
-.overlay{
+body::before{
+  content:"";
   position:fixed;
   inset:0;
-  background:#24170e55;
-  z-index:10;
-  display:none
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 10% 10%,rgba(255,255,255,.7),transparent 30%),
+    radial-gradient(circle at 90% 80%,rgba(216,167,107,.12),transparent 30%);
+  z-index:-1;
 }
 
-.overlay.show{
-  display:block
+h1,h2,h3{
+  font-family:Georgia,"Times New Roman",serif;
 }
 
-
-/* MAIN */
-
-main{
-  max-width:1050px;
-  margin:auto;
-  padding:48px 20px 70px
+button,
+input{
+  font:inherit;
 }
 
-.hero{
-  text-align:center;
-  margin-bottom:30px
+button{
+  cursor:pointer;
 }
 
-.season-icon{
-  font-size:58px
+/* ======================================================
+   THEMES
+====================================================== */
+
+.theme-light{
+  --bg:#f7f1e7;
+  --bg2:#fffaf3;
+  --card:#fffdf8;
+  --text:#302820;
+  --muted:#7d7165;
+  --border:#e6daca;
+  --accent:#a56b3b;
+  --accent2:#d8a76b;
+  --soft:#f1e4d3;
 }
 
-.hero h1{
-  font-family:Georgia,serif;
-  font-size:clamp(42px,8vw,72px);
-  margin:8px 0
+.theme-dark{
+  --bg:#151515;
+  --bg2:#202020;
+  --card:#252525;
+  --text:#f4eee6;
+  --muted:#b5aaa0;
+  --border:#3a3530;
+  --accent:#d59a62;
+  --accent2:#9f6b42;
+  --soft:#302a25;
 }
 
-.hero p{
-  color:var(--muted);
-  max-width:650px;
-  margin:auto;
-  font-size:17px
+.theme-summer{
+  --bg:#fff5df;
+  --bg2:#fffdf5;
+  --card:#ffffff;
+  --text:#3c3022;
+  --muted:#81705d;
+  --border:#efd7aa;
+  --accent:#e18b2d;
+  --accent2:#f2bd55;
+  --soft:#ffedc4;
 }
 
+.theme-spring{
+  --bg:#f0f7ec;
+  --bg2:#fbfff8;
+  --card:#ffffff;
+  --text:#30402d;
+  --muted:#71806c;
+  --border:#d5e5cd;
+  --accent:#6e9b5e;
+  --accent2:#a8c992;
+  --soft:#e2f0da;
+}
 
-/* PANEL */
+.theme-winter{
+  --bg:#edf4f8;
+  --bg2:#fafdff;
+  --card:#ffffff;
+  --text:#293943;
+  --muted:#71818a;
+  --border:#d5e3ea;
+  --accent:#5e88a5;
+  --accent2:#8eb4cc;
+  --soft:#deedf5;
+}
 
-.panel{
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:26px;
+.theme-fall{
+  --bg:#f7eee4;
+  --bg2:#fffaf5;
+  --card:#fffdf9;
+  --text:#3d2d24;
+  --muted:#806d61;
+  --border:#ead7c8;
+  --accent:#ad6235;
+  --accent2:#d49457;
+  --soft:#f3dfcd;
+}
+
+/* ======================================================
+   AUTH
+====================================================== */
+
+.auth-gate{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   padding:20px;
-  box-shadow:var(--shadow)
+  background:var(--bg);
+  z-index:9999;
 }
 
-
-/* LOGIN */
-
-.login-panel{
-  max-width:500px;
-  margin:auto;
-  text-align:center
+.auth-card{
+  width:min(430px,100%);
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:28px;
+  padding:36px;
+  box-shadow:var(--shadow);
+  text-align:center;
 }
 
-.login-panel h2{
-  font-family:Georgia,serif
+.auth-icon{
+  font-size:50px;
+  margin-bottom:10px;
 }
 
-.login-panel p{
+.auth-card h1{
+  margin:0 0 10px;
+  font-size:34px;
+}
+
+.auth-card p{
   color:var(--muted);
-  line-height:1.6
+  line-height:1.6;
 }
 
 .github-btn{
   width:100%;
   border:0;
+  border-radius:14px;
+  padding:15px;
   background:#24292f;
   color:white;
-  border-radius:14px;
-  padding:14px;
-  font-weight:900;
-  cursor:pointer
+  font-weight:bold;
+  margin-top:15px;
+  transition:.2s;
 }
 
-.auth-message{
-  color:#a34e32;
-  font-size:13px;
-  margin-top:10px
+.github-btn:hover{
+  transform:translateY(-2px);
+  opacity:.92;
 }
 
+.auth-error{
+  margin-top:15px;
+  color:#b64736;
+  font-size:14px;
+}
 
-/* TOOLBAR */
+/* ======================================================
+   HEADER
+====================================================== */
+
+header{
+  height:72px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 22px;
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.55);
+  backdrop-filter:blur(15px);
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+
+.theme-dark header{
+  background:rgba(20,20,20,.72);
+}
+
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.brand{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:22px;
+  font-weight:bold;
+}
+
+.menu-btn{
+  width:42px;
+  height:42px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--card);
+  color:var(--text);
+  font-size:20px;
+}
+
+.header-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.user-name{
+  color:var(--muted);
+  font-size:14px;
+}
+
+.settings-btn{
+  width:42px;
+  height:42px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--card);
+}
+
+/* ======================================================
+   DRAWER
+====================================================== */
+
+.drawer{
+  position:fixed;
+  top:0;
+  left:0;
+  width:320px;
+  height:100vh;
+  background:var(--card);
+  border-right:1px solid var(--border);
+  box-shadow:20px 0 45px rgba(0,0,0,.10);
+  z-index:500;
+  transform:translateX(-105%);
+  transition:.25s ease;
+  overflow-y:auto;
+  padding:25px 18px;
+}
+
+.drawer.open{
+  transform:translateX(0);
+}
+
+.drawer-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:25px;
+}
+
+.drawer-top h2{
+  margin:0;
+}
+
+.close-drawer{
+  border:0;
+  background:transparent;
+  font-size:24px;
+  color:var(--text);
+}
+
+.section-label{
+  font-size:11px;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:20px 8px 8px;
+  font-weight:bold;
+}
+
+.season-btn,
+.custom-list-btn{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:var(--text);
+  border-radius:13px;
+  padding:12px;
+  margin:3px 0;
+  text-align:left;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.season-btn:hover,
+.custom-list-btn:hover{
+  background:var(--soft);
+}
+
+.season-btn.active,
+.custom-list-btn.active{
+  background:var(--soft);
+  font-weight:bold;
+}
+
+.custom-list-row{
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+
+.custom-list-row .custom-list-btn{
+  flex:1;
+}
+
+.list-controls{
+  display:flex;
+  gap:3px;
+}
+
+.list-control{
+  width:32px;
+  height:32px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:var(--card);
+}
+
+.create-list-btn,
+.unlock-list-btn{
+  width:100%;
+  border:1px dashed var(--border);
+  background:transparent;
+  color:var(--accent);
+  padding:12px;
+  border-radius:13px;
+  margin-top:8px;
+  font-weight:bold;
+}
+
+.unlock-list-btn{
+  color:var(--text);
+}
+
+.drawer-note{
+  font-size:12px;
+  line-height:1.5;
+  color:var(--muted);
+  margin:15px 8px;
+}
+
+/* ======================================================
+   OVERLAY
+====================================================== */
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.35);
+  z-index:400;
+  display:none;
+}
+
+.overlay.show{
+  display:block;
+}
+
+/* ======================================================
+   MAIN
+====================================================== */
+
+main{
+  width:min(1100px,calc(100% - 30px));
+  margin:0 auto;
+  padding:35px 0 70px;
+}
+
+.hero{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:28px;
+  padding:34px;
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+}
+
+.hero::after{
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  right:-70px;
+  top:-70px;
+  border-radius:50%;
+  background:var(--soft);
+}
+
+.hero-content{
+  position:relative;
+  z-index:1;
+}
+
+.eyebrow{
+  text-transform:uppercase;
+  letter-spacing:2px;
+  font-size:11px;
+  color:var(--accent);
+  font-weight:bold;
+}
+
+.hero h1{
+  margin:8px 0 8px;
+  font-size:clamp(35px,7vw,58px);
+  line-height:1;
+}
+
+.hero p{
+  color:var(--muted);
+  margin:0;
+  line-height:1.6;
+}
+
+.list-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:18px;
+}
+
+.meta-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  background:var(--soft);
+  padding:7px 11px;
+  border-radius:999px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.meta-id{
+  user-select:all;
+}
+
+/* ======================================================
+   TOOLBAR
+====================================================== */
 
 .toolbar{
+  margin-top:20px;
   display:flex;
   gap:10px;
-  flex-wrap:wrap
+  flex-wrap:wrap;
 }
 
-input,select,button{
-  font:inherit
-}
-
-input{
-  border:1px solid var(--line);
-  border-radius:13px;
-  padding:12px 14px;
-  background:white;
-  color:var(--ink);
-  outline:0
-}
-
-#activity{
+.toolbar input{
   flex:1;
-  min-width:220px
+  min-width:180px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  padding:13px 15px;
+  border-radius:13px;
+  outline:none;
 }
 
-.add{
+.add-btn{
+  border:0;
   background:var(--accent);
   color:white;
-  border:0;
   border-radius:13px;
-  padding:12px 18px;
-  font-weight:800;
-  cursor:pointer
+  padding:13px 18px;
+  font-weight:bold;
 }
 
-
-/* STATS */
+/* ======================================================
+   STATS
+====================================================== */
 
 .stats{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:12px;
-  margin:18px 0
+  margin-top:20px;
 }
 
 .stat{
   background:var(--card);
-  border:1px solid var(--line);
-  border-radius:17px;
-  padding:15px
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:18px;
 }
 
 .stat strong{
   display:block;
-  font-size:27px
+  font-size:27px;
+  margin-bottom:3px;
 }
 
 .stat span{
-  font-size:11px;
   color:var(--muted);
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:.08em
+  font-size:13px;
+}
+
+.progress-wrap{
+  margin-top:20px;
+  background:var(--card);
+  border:1px solid var(--border);
+  padding:17px;
+  border-radius:18px;
+}
+
+.progress-top{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:9px;
+  font-size:13px;
+}
+
+.progress-top span:last-child{
+  font-weight:bold;
+  color:var(--accent);
 }
 
 .progress{
   height:10px;
-  background:#eadfd5;
-  border-radius:99px;
+  background:var(--soft);
+  border-radius:999px;
   overflow:hidden;
-  margin-top:9px
 }
 
-.bar{
+.progress-bar{
   height:100%;
+  background:var(--accent);
+  border-radius:999px;
   width:0;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));
-  transition:.3s
+  transition:.4s;
 }
 
+.complete-banner{
+  margin-top:14px;
+  background:var(--soft);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:14px;
+  text-align:center;
+  font-weight:bold;
+}
 
-/* FILTERS */
+/* ======================================================
+   FILTERS
+====================================================== */
 
 .filters{
   display:flex;
   gap:8px;
-  margin-top:20px
+  flex-wrap:wrap;
+  margin-top:20px;
 }
 
-.filter{
-  border:1px solid var(--line);
-  background:white;
-  border-radius:99px;
-  padding:8px 13px;
-  cursor:pointer;
-  color:var(--muted);
-  font-weight:700
+.filter-btn{
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  padding:8px 12px;
+  border-radius:999px;
 }
 
-.filter.active{
-  background:var(--ink);
-  color:white
+.filter-btn.active{
+  background:var(--soft);
+  border-color:var(--accent);
 }
 
+/* ======================================================
+   ACTIVITY LIST
+====================================================== */
 
-/* ITEMS */
-
-.list{
+.activity-list{
+  margin-top:15px;
   display:grid;
   gap:10px;
-  margin-top:18px
 }
 
-.item{
-  display:flex;
-  align-items:center;
-  gap:13px;
-  padding:14px;
+.activity{
   background:var(--card);
-  border:1px solid var(--line);
-  border-radius:17px
+  border:1px solid var(--border);
+  border-radius:17px;
+  padding:15px;
+  display:flex;
+  gap:13px;
+  align-items:flex-start;
+  box-shadow:0 5px 18px rgba(50,35,20,.04);
 }
 
 .check{
-  width:24px;
-  height:24px;
-  accent-color:var(--accent)
+  width:25px;
+  height:25px;
+  min-width:25px;
+  border-radius:8px;
+  border:2px solid var(--border);
+  background:transparent;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:14px;
+  padding:0;
 }
 
-.text{
+.activity.done .check{
+  background:var(--accent);
+  border-color:var(--accent);
+}
+
+.activity-main{
   flex:1;
-  min-width:0
 }
 
-.text b{
-  display:block;
-  word-break:break-word
+.activity-text{
+  line-height:1.45;
 }
 
-.text small{
-  color:var(--muted)
-}
-
-.item.done .text b{
+.activity.done .activity-text{
   text-decoration:line-through;
-  opacity:.45
+  color:var(--muted);
 }
 
-.delete{
+.activity-info{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.delete-activity{
   border:0;
   background:transparent;
-  color:#a88978;
-  font-weight:800;
-  cursor:pointer;
-  padding:8px
+  color:var(--muted);
+  font-size:17px;
+  padding:2px 5px;
 }
 
 .empty{
+  padding:40px 20px;
   text-align:center;
   color:var(--muted);
-  padding:45px 10px
+  background:var(--card);
+  border:1px dashed var(--border);
+  border-radius:18px;
 }
 
-.empty div{
-  font-size:45px
+/* ======================================================
+   THEME FAB
+====================================================== */
+
+.theme-fab{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  width:52px;
+  height:52px;
+  border:1px solid var(--border);
+  border-radius:50%;
+  background:var(--card);
+  box-shadow:var(--shadow);
+  z-index:300;
+  font-size:21px;
 }
 
-.actions{
-  display:flex;
-  justify-content:flex-end;
-  margin-top:18px
-}
-
-.clear{
-  border:0;
-  background:#f1e5d9;
-  padding:10px 14px;
-  border-radius:12px;
-  font-weight:800;
-  cursor:pointer
-}
-
-.complete-message{
+.theme-menu{
+  position:fixed;
+  right:18px;
+  bottom:80px;
+  width:230px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  padding:10px;
+  z-index:300;
   display:none;
-  text-align:center;
-  background:#f5ead9;
-  border:1px solid #ead4bb;
-  border-radius:17px;
-  padding:15px;
-  margin-top:18px;
-  font-family:Georgia,serif;
-  font-size:20px;
-  font-weight:700
 }
 
-
-/* LIST INFO */
-
-.list-info{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-bottom:15px
+.theme-menu.show{
+  display:block;
 }
 
-.list-owner{
-  color:var(--muted);
-  font-size:13px;
-  font-weight:700
-}
-
-.lock-status{
-  background:#f1e5d9;
-  border-radius:99px;
-  padding:6px 10px;
-  font-size:12px;
-  font-weight:900
-}
-
-.owner-tools{
-  margin-left:auto;
-  display:flex;
-  gap:7px
-}
-
-.small-btn{
+.theme-choice{
+  width:100%;
   border:0;
-  background:#f1e5d9;
-  padding:8px 11px;
+  background:transparent;
+  color:var(--text);
+  text-align:left;
+  padding:10px;
   border-radius:10px;
-  font-weight:800;
-  cursor:pointer
 }
 
-.small-btn.danger{
-  color:#a34e32
+.theme-choice:hover,
+.theme-choice.active{
+  background:var(--soft);
 }
 
+/* ======================================================
+   MODALS
+====================================================== */
 
-/* MODALS */
-
-.modal-bg{
+.modal-backdrop{
   position:fixed;
   inset:0;
-  background:#24170e66;
-  z-index:50;
+  background:rgba(0,0,0,.42);
   display:none;
   align-items:center;
   justify-content:center;
-  padding:20px
+  padding:20px;
+  z-index:1000;
 }
 
-.modal-bg.show{
-  display:flex
+.modal-backdrop.show{
+  display:flex;
 }
 
 .modal{
-  width:min(500px,100%);
+  width:min(480px,100%);
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:25px;
+  box-shadow:var(--shadow);
   max-height:90vh;
   overflow:auto;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:25px;
-  padding:24px;
-  box-shadow:var(--shadow)
 }
 
 .modal h2{
-  font-family:Georgia,serif;
-  margin-top:0
+  margin-top:0;
 }
 
 .modal p{
   color:var(--muted);
-  line-height:1.5
+  line-height:1.5;
 }
 
 .modal input{
   width:100%;
-  margin:7px 0 13px
+  border:1px solid var(--border);
+  background:var(--bg2);
+  color:var(--text);
+  padding:13px;
+  border-radius:12px;
+  margin:8px 0;
+  outline:none;
 }
 
 .modal-actions{
   display:flex;
-  justify-content:flex-end;
   gap:8px;
-  margin-top:15px
+  justify-content:flex-end;
+  margin-top:18px;
 }
 
-.modal-actions button{
+.cancel-btn,
+.primary-btn,
+.danger-btn{
   border:0;
   border-radius:11px;
-  padding:10px 14px;
-  font-weight:800;
-  cursor:pointer
+  padding:11px 15px;
+  font-weight:bold;
 }
 
-.cancel{
-  background:#f1e5d9
+.cancel-btn{
+  background:var(--soft);
+  color:var(--text);
 }
 
-.confirm{
+.primary-btn{
   background:var(--accent);
-  color:white
+  color:white;
 }
 
-.danger-confirm{
-  background:#a34e32;
-  color:white
+.danger-btn{
+  background:#a94738;
+  color:white;
 }
 
+/* ======================================================
+   SETTINGS
+====================================================== */
 
-/* SETTINGS */
-
-.settings-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  padding:13px 0;
-  border-bottom:1px solid var(--line)
+.settings-section{
+  margin-top:22px;
 }
 
-.version{
-  font-family:monospace;
-  background:#f1e5d9;
-  padding:5px 8px;
-  border-radius:7px
+.settings-section h3{
+  margin-bottom:8px;
+}
+
+.theme-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+
+.theme-option{
+  border:1px solid var(--border);
+  background:var(--bg2);
+  color:var(--text);
+  padding:12px;
+  border-radius:12px;
+  text-align:left;
+}
+
+.theme-option.active{
+  border-color:var(--accent);
+  background:var(--soft);
 }
 
 .update{
-  border:1px solid var(--line);
-  background:#fffaf4;
-  border-radius:15px;
-  padding:14px;
-  margin:10px 0
+  border-top:1px solid var(--border);
+  padding:15px 0;
+}
+
+.update:first-child{
+  border-top:0;
 }
 
 .update-version{
-  font-weight:900;
-  margin-bottom:5px
+  font-weight:bold;
 }
 
 .update-date{
-  font-size:12px;
   color:var(--muted);
-  margin-bottom:8px
+  font-size:12px;
 }
 
 .update ul{
-  margin-bottom:0
+  color:var(--muted);
+  padding-left:20px;
+  line-height:1.6;
 }
 
-.hidden{
-  display:none!important
-}
-
-
-/* THEMES */
-
-body.theme-dark{
-  --bg:#171411;
-  --ink:#f4eadf;
-  --muted:#bba99b;
-  --card:#241f1b;
-  --line:#493d34;
-  --panel:#241f1bd9;
-  --shadow:0 18px 45px #0008
-}
-
-body.theme-dark header{
-  background:#1d1916e8
-}
-
-body.theme-dark input,
-body.theme-dark .filter{
-  background:#2b2520;
-  color:var(--ink)
-}
-
-body.theme-dark .theme-menu button{
-  color:var(--ink)
-}
-
-body.theme-spring{
-  --bg:#fff8fc;
-  --line:#ead9e4;
-  --accent:#cc7191
-}
-
-body.theme-summer{
-  --bg:#fffaf0;
-  --line:#eddfc2;
-  --accent:#e39a25
-}
-
-body.theme-winter{
-  --bg:#f5fbff;
-  --line:#d8e7ee;
-  --accent:#5793b5
-}
-
-body.theme-fall{
-  --bg:#fff9f2;
-  --line:#eadbcf;
-  --accent:#d66a35
-}
-
-body.theme-light{
-  --bg:#fff9f2;
-  --line:#eadbcf;
-  --accent:#d66a35
-}
-
-
-/* PARTICLES */
-
-.season-bg{
-  position:fixed;
-  inset:0;
-  overflow:hidden;
-  pointer-events:none;
-  z-index:-1
-}
+/* ======================================================
+   PARTICLES
+====================================================== */
 
 .particle{
-  position:absolute;
-  top:-12vh;
-  left:var(--x);
-  width:var(--size);
-  height:var(--size);
-  opacity:.75;
-  animation:seasonFall var(--duration) linear infinite;
-  animation-delay:var(--delay)
+  position:fixed;
+  top:-20px;
+  pointer-events:none;
+  z-index:-1;
+  animation:fall linear forwards;
+  opacity:.65;
 }
 
-@keyframes seasonFall{
-  0%{
-    transform:translate3d(0,-15vh,0) rotate(0deg);
-    opacity:0
-  }
-  10%{opacity:.8}
-  50%{
-    transform:translate3d(var(--drift),55vh,0) rotate(180deg)
-  }
-  90%{opacity:.7}
-  100%{
-    transform:translate3d(calc(var(--drift) * -1),115vh,0) rotate(360deg);
-    opacity:0
+@keyframes fall{
+  to{
+    transform:translateY(110vh) rotate(360deg);
   }
 }
 
-body.spring .particle{
-  background:#e99ab9;
-  border-radius:50% 0 50% 0
-}
-
-body.summer .particle{
-  background:#f4c64e;
-  border-radius:50%;
-  box-shadow:0 0 10px #f4c64e66
-}
-
-body.fall .particle{
-  background:#c96a32;
-  border-radius:50% 0 50% 50%
-}
-
-body.winter .particle{
-  background:white;
-  border-radius:50%;
-  box-shadow:0 0 5px #8eb8ca88
-}
-
-.p1{--x:4%;--size:13px;--duration:8s;--delay:-2s;--drift:45px}
-.p2{--x:12%;--size:9px;--duration:11s;--delay:-7s;--drift:-30px}
-.p3{--x:21%;--size:15px;--duration:9s;--delay:-4s;--drift:55px}
-.p4{--x:31%;--size:8px;--duration:13s;--delay:-9s;--drift:-45px}
-.p5{--x:42%;--size:12px;--duration:10s;--delay:-1s;--drift:35px}
-.p6{--x:53%;--size:7px;--duration:12s;--delay:-6s;--drift:-60px}
-.p7{--x:63%;--size:14px;--duration:9s;--delay:-3s;--drift:40px}
-.p8{--x:72%;--size:9px;--duration:14s;--delay:-11s;--drift:-35px}
-.p9{--x:81%;--size:13px;--duration:10s;--delay:-5s;--drift:60px}
-.p10{--x:89%;--size:8px;--duration:12s;--delay:-8s;--drift:-50px}
-.p11{--x:95%;--size:11px;--duration:9s;--delay:-1s;--drift:30px}
-.p12{--x:26%;--size:6px;--duration:15s;--delay:-12s;--drift:-25px}
-
-@media(prefers-reduced-motion:reduce){
-  .particle{
-    animation:none;
-    display:none
-  }
-}
+/* ======================================================
+   MOBILE
+====================================================== */
 
 @media(max-width:650px){
 
+  header{
+    padding:0 14px;
+  }
+
+  .brand{
+    font-size:18px;
+  }
+
   .user-name{
-    display:none
+    display:none;
   }
 
-  .stats{
-    grid-template-columns:1fr 1fr
-  }
-
-  .stats .stat:last-child{
-    grid-column:1/-1
-  }
-
-  .toolbar{
-    flex-direction:column
-  }
-
-  #activity{
-    width:100%
-  }
-
-  .add{
-    width:100%
+  main{
+    width:min(100% - 20px,1100px);
+    padding-top:20px;
   }
 
   .hero{
-    margin-bottom:22px
+    padding:25px 20px;
+    border-radius:22px;
   }
 
-  .owner-tools{
-    margin-left:0;
-    width:100%
+  .hero h1{
+    font-size:40px;
   }
+
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  .toolbar{
+    flex-direction:column;
+  }
+
+  .toolbar input,
+  .add-btn{
+    width:100%;
+  }
+
+  .drawer{
+    width:min(320px,90vw);
+  }
+
 }
 </style>
 </head>
 
-<body class="fall theme-fall">
+<body class="theme-light">
 
-<div class="season-bg">
-  <div class="particle p1"></div>
-  <div class="particle p2"></div>
-  <div class="particle p3"></div>
-  <div class="particle p4"></div>
-  <div class="particle p5"></div>
-  <div class="particle p6"></div>
-  <div class="particle p7"></div>
-  <div class="particle p8"></div>
-  <div class="particle p9"></div>
-  <div class="particle p10"></div>
-  <div class="particle p11"></div>
-  <div class="particle p12"></div>
+<!-- =====================================================
+     AUTH SCREEN
+===================================================== -->
+
+<div class="auth-gate" id="authGate">
+  <div class="auth-card">
+    <div class="auth-icon">🍂</div>
+
+    <h1>Family Bucket List</h1>
+
+    <p>
+      Sign in with GitHub to access your family's shared
+      seasonal bucket list.
+    </p>
+
+    <button class="github-btn" id="githubBtn">
+      Continue with GitHub
+    </button>
+
+    <div class="auth-error" id="authError"></div>
+  </div>
 </div>
 
 
-<header>
+<!-- =====================================================
+     DRAWER
+===================================================== -->
 
-  <button
-    class="menu-btn"
-    id="menuBtn"
-  >
-    <span class="hamb">
-      <i></i><i></i><i></i>
-    </span>
+<div class="overlay" id="drawerOverlay"></div>
+
+<aside class="drawer" id="drawer">
+
+  <div class="drawer-top">
+    <h2>Lists</h2>
+    <button class="close-drawer" id="closeDrawer">×</button>
+  </div>
+
+  <div class="section-label">Seasons</div>
+
+  <div id="seasonNav"></div>
+
+  <div class="section-label">Family Lists</div>
+
+  <div id="customNav"></div>
+
+  <button class="create-list-btn" id="createListBtn">
+    ＋ Create list
   </button>
 
-  <div class="brand">
-    Bucket List
+  <button class="unlock-list-btn" id="unlockListBtn">
+    🔐 Unlock private list
+  </button>
+
+  <p class="drawer-note">
+    Public lists appear for everyone. Private lists are
+    visible only to their owner until they are made public.
+  </p>
+
+</aside>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header>
+
+  <div class="header-left">
+
+    <button class="menu-btn" id="menuBtn">
+      ☰
+    </button>
+
+    <div class="brand">
+      Family Bucket List
+    </div>
+
   </div>
 
   <div class="header-right">
 
-    <span
-      class="user-name hidden"
-      id="headerUser"
-    ></span>
+    <span class="user-name" id="userName"></span>
 
-    <button
-      class="theme-button"
-      id="themeButton"
-      title="Themes"
-    >
-      🎨
-    </button>
-
-    <div
-      class="theme-menu"
-      id="themeMenu"
-    >
-
-      <button data-theme="light">
-        ☀️ Light
-      </button>
-
-      <button data-theme="dark">
-        🌙 Dark
-      </button>
-
-      <button data-theme="summer">
-        ☀️ Summer
-      </button>
-
-      <button data-theme="spring">
-        🌷 Spring
-      </button>
-
-      <button data-theme="winter">
-        ❄️ Winter
-      </button>
-
-      <button data-theme="fall">
-        🍂 Fall
-      </button>
-
-    </div>
-
-    <button
-      class="logout hidden"
-      id="logoutBtn"
-    >
-      Log Out
+    <button class="settings-btn" id="settingsBtn">
+      ⚙️
     </button>
 
   </div>
@@ -965,329 +1041,185 @@ body.winter .particle{
 </header>
 
 
-<!-- DRAWER -->
-
-<div
-  class="overlay"
-  id="overlay"
-></div>
-
-<aside
-  class="drawer"
-  id="drawer"
->
-
-  <button
-    class="close"
-    id="close"
-  >
-    ×
-  </button>
-
-  <h2>
-    Lists
-  </h2>
-
-
-  <div class="drawer-section">
-
-    <div class="drawer-label">
-      Seasons
-    </div>
-
-    <nav class="nav">
-
-      <button data-season="spring">
-        🌷 Spring
-      </button>
-
-      <button data-season="summer">
-        ☀️ Summer
-      </button>
-
-      <button data-season="fall">
-        🍂 Fall
-      </button>
-
-      <button data-season="winter">
-        ❄️ Winter
-      </button>
-
-    </nav>
-
-  </div>
-
-
-  <div class="drawer-section">
-
-    <div class="drawer-label">
-      Your Lists
-    </div>
-
-    <div
-      class="nav"
-      id="customListsNav"
-    ></div>
-
-    <button
-      class="create-list"
-      id="createListButton"
-    >
-      ＋ Create List
-    </button>
-
-  </div>
-
-
-  <div class="drawer-section">
-
-    <div class="drawer-label">
-      Settings
-    </div>
-
-    <button
-      class="settings-button"
-      id="settingsButton"
-    >
-      ⚙️ Settings & Update Log
-    </button>
-
-  </div>
-
-</aside>
-
+<!-- =====================================================
+     MAIN
+===================================================== -->
 
 <main>
 
   <section class="hero">
 
-    <div
-      class="season-icon"
-      id="icon"
-    >
-      🍂
+    <div class="hero-content">
+
+      <div class="eyebrow" id="heroEyebrow">
+        Family adventures
+      </div>
+
+      <h1 id="heroTitle">
+        Fall
+      </h1>
+
+      <p id="heroSubtitle">
+        Cozy things to do together.
+      </p>
+
+      <div class="list-meta" id="listMeta"></div>
+
     </div>
-
-    <h1 id="title">
-      Fall Bucket List
-    </h1>
-
-    <p id="subtitle">
-      Cozy days, crisp air, colorful leaves,
-      and everything that makes autumn special.
-    </p>
 
   </section>
 
 
-  <!-- LOGIN -->
+  <!-- TOOLBAR -->
 
-  <section
-    class="panel login-panel"
-    id="loginPanel"
-  >
+  <div class="toolbar">
 
-    <h2>
-      Welcome to the Family Bucket List
-    </h2>
-
-    <p>
-      Sign in with GitHub to access your
-      family's shared lists.
-    </p>
-
-    <button
-      class="github-btn"
-      id="githubLogin"
+    <input
+      id="activityInput"
+      type="text"
+      maxlength="150"
+      placeholder="Add something to the list..."
     >
-      Continue with GitHub
+
+    <button class="add-btn" id="addBtn">
+      Add activity
     </button>
 
-    <div
-      class="auth-message"
-      id="authMessage"
-    ></div>
+  </div>
+
+
+  <!-- STATS -->
+
+  <section class="stats">
+
+    <div class="stat">
+      <strong id="totalCount">0</strong>
+      <span>Total activities</span>
+    </div>
+
+    <div class="stat">
+      <strong id="doneCount">0</strong>
+      <span>Completed</span>
+    </div>
+
+    <div class="stat">
+      <strong id="percentCount">0%</strong>
+      <span>Progress</span>
+    </div>
+
+  </section>
+
+
+  <!-- PROGRESS -->
+
+  <section class="progress-wrap">
+
+    <div class="progress-top">
+      <span>Progress</span>
+      <span id="progressPercent">0%</span>
+    </div>
+
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div id="completeBanner"></div>
 
   </section>
 
 
-  <!-- APP -->
+  <!-- FILTERS -->
 
-  <section
-    class="panel hidden"
-    id="appPanel"
-  >
+  <div class="filters">
 
-    <div
-      class="list-info"
-      id="listInfo"
-    ></div>
+    <button class="filter-btn active" data-filter="all">
+      All
+    </button>
 
+    <button class="filter-btn" data-filter="todo">
+      To do
+    </button>
 
-    <div class="toolbar">
+    <button class="filter-btn" data-filter="done">
+      Completed
+    </button>
 
-      <input
-        id="activity"
-        maxlength="100"
-        placeholder="Add something to your bucket list..."
-      >
-
-      <button
-        class="add"
-        id="add"
-      >
-        Add Activity
-      </button>
-
-    </div>
+  </div>
 
 
-    <div class="stats">
+  <!-- ACTIVITIES -->
 
-      <div class="stat">
-        <strong id="total">
-          0
-        </strong>
-        <span>Total</span>
-      </div>
-
-      <div class="stat">
-        <strong id="completed">
-          0
-        </strong>
-        <span>Completed</span>
-      </div>
-
-      <div class="stat">
-
-        <strong id="percent">
-          0%
-        </strong>
-
-        <span>Progress</span>
-
-        <div class="progress">
-          <div
-            class="bar"
-            id="bar"
-          ></div>
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <div
-      class="complete-message"
-      id="completeMessage"
-    >
-      🎉 You did everything!
-      What an amazing adventure!
-    </div>
-
-
-    <div class="filters">
-
-      <button
-        class="filter active"
-        data-filter="all"
-      >
-        All
-      </button>
-
-      <button
-        class="filter"
-        data-filter="active"
-      >
-        To Do
-      </button>
-
-      <button
-        class="filter"
-        data-filter="done"
-      >
-        Completed
-      </button>
-
-    </div>
-
-
-    <div
-      class="list"
-      id="list"
-    ></div>
-
-
-    <div
-      class="empty"
-      id="empty"
-    >
-      <div>✨</div>
-      <b>Your list is empty.</b>
-      <br>
-      Add your first activity!
-    </div>
-
-
-    <div class="actions">
-
-      <button
-        class="clear"
-        id="clear"
-      >
-        Clear Completed
-      </button>
-
-    </div>
-
-  </section>
+  <section class="activity-list" id="activityList"></section>
 
 </main>
 
 
-<!-- CREATE LIST MODAL -->
+<!-- =====================================================
+     THEME BUTTON
+===================================================== -->
 
-<div
-  class="modal-bg"
-  id="createModal"
->
+<button class="theme-fab" id="themeFab">
+  🎨
+</button>
+
+<div class="theme-menu" id="themeMenu">
+
+  <button class="theme-choice" data-theme="light">
+    ☀️ Light
+  </button>
+
+  <button class="theme-choice" data-theme="dark">
+    🌙 Dark
+  </button>
+
+  <button class="theme-choice" data-theme="summer">
+    ☀️ Summer
+  </button>
+
+  <button class="theme-choice" data-theme="spring">
+    🌷 Spring
+  </button>
+
+  <button class="theme-choice" data-theme="winter">
+    ❄️ Winter
+  </button>
+
+  <button class="theme-choice" data-theme="fall">
+    🍂 Fall
+  </button>
+
+</div>
+
+
+<!-- =====================================================
+     CREATE LIST MODAL
+===================================================== -->
+
+<div class="modal-backdrop" id="createModal">
 
   <div class="modal">
 
-    <h2>
-      Create a List
-    </h2>
+    <h2>Create a list</h2>
 
     <p>
-      Create a shared family list. You can make
-      it private with a password.
+      New lists are public by default. You can make the list
+      private later using the lock button.
     </p>
-
-    <label>
-      List name
-    </label>
 
     <input
       id="newListName"
       maxlength="60"
-      placeholder="e.g. Family Road Trips"
+      placeholder="Example: Summer Road Trips"
     >
 
     <div class="modal-actions">
 
-      <button
-        class="cancel"
-        id="cancelCreate"
-      >
+      <button class="cancel-btn" id="cancelCreate">
         Cancel
       </button>
 
-      <button
-        class="confirm"
-        id="confirmCreate"
-      >
-        Create List
+      <button class="primary-btn" id="confirmCreate">
+        Create list
       </button>
 
     </div>
@@ -1297,48 +1229,34 @@ body.winter .particle{
 </div>
 
 
-<!-- PASSWORD MODAL -->
+<!-- =====================================================
+     UNLOCK MODAL
+===================================================== -->
 
-<div
-  class="modal-bg"
-  id="passwordModal"
->
+<div class="modal-backdrop" id="unlockModal">
 
   <div class="modal">
 
-    <h2 id="passwordTitle">
-      🔒 Private List
-    </h2>
+    <h2>Unlock a private list</h2>
 
-    <p id="passwordDescription">
-      Enter the password to unlock this list.
+    <p>
+      Private lists do not appear in the normal list menu.
+      Ask the owner for the list ID.
     </p>
 
     <input
-      id="listPassword"
-      type="password"
-      maxlength="100"
-      placeholder="Password"
+      id="unlockListId"
+      type="number"
+      placeholder="List ID"
     >
-
-    <div
-      class="auth-message"
-      id="passwordMessage"
-    ></div>
 
     <div class="modal-actions">
 
-      <button
-        class="cancel"
-        id="cancelPassword"
-      >
+      <button class="cancel-btn" id="cancelUnlock">
         Cancel
       </button>
 
-      <button
-        class="confirm"
-        id="confirmPassword"
-      >
+      <button class="primary-btn" id="confirmUnlock">
         Unlock
       </button>
 
@@ -1349,97 +1267,99 @@ body.winter .particle{
 </div>
 
 
-<!-- SETTINGS MODAL -->
+<!-- =====================================================
+     SETTINGS MODAL
+===================================================== -->
 
-<div
-  class="modal-bg"
-  id="settingsModal"
->
+<div class="modal-backdrop" id="settingsModal">
 
   <div class="modal">
 
-    <h2>
-      ⚙️ Settings
-    </h2>
+    <h2>Settings</h2>
 
-    <div class="settings-row">
+    <div class="settings-section">
 
-      <span>
-        Current version
-      </span>
+      <h3>Website theme</h3>
 
-      <span class="version">
-        v1.0.0
-      </span>
+      <div class="theme-grid">
+
+        <button class="theme-option" data-theme-setting="light">
+          ☀️ Light
+        </button>
+
+        <button class="theme-option" data-theme-setting="dark">
+          🌙 Dark
+        </button>
+
+        <button class="theme-option" data-theme-setting="summer">
+          ☀️ Summer
+        </button>
+
+        <button class="theme-option" data-theme-setting="spring">
+          🌷 Spring
+        </button>
+
+        <button class="theme-option" data-theme-setting="winter">
+          ❄️ Winter
+        </button>
+
+        <button class="theme-option" data-theme-setting="fall">
+          🍂 Fall
+        </button>
+
+      </div>
 
     </div>
 
-    <h3>
-      Update Log
-    </h3>
 
-    <div class="update">
+    <div class="settings-section">
 
-      <div class="update-version">
-        v1.0.0 — First Update
+      <h3>Update Log</h3>
+
+      <div class="update">
+
+        <div class="update-version">
+          Version 1.0.0
+        </div>
+
+        <div class="update-date">
+          First major update
+        </div>
+
+        <ul>
+          <li>Added custom family lists.</li>
+          <li>Added public and private list modes.</li>
+          <li>Added owner controls.</li>
+          <li>Added list deletion.</li>
+          <li>Added six website themes.</li>
+          <li>Added Settings and Update Log.</li>
+          <li><strong>Removed the password system for private lists.</strong></li>
+          <li>Private lists are now hidden from everyone except their owner.</li>
+        </ul>
+
       </div>
-
-      <div class="update-date">
-        September 17, 2026
-      </div>
-
-      <ul>
-
-        <li>
-          Added custom family lists
-        </li>
-
-        <li>
-          Added list owners
-        </li>
-
-        <li>
-          Added owner-only list deletion
-        </li>
-
-        <li>
-          Added private lists with passwords
-        </li>
-
-        <li>
-          Added six website themes
-        </li>
-
-        <li>
-          Added Settings
-        </li>
-
-        <li>
-          Added Update Log
-        </li>
-
-        <li>
-          Kept GitHub sign-in
-        </li>
-
-        <li>
-          Kept shared Supabase activities
-        </li>
-
-        <li>
-          Restored the original seasonal design
-        </li>
-
-      </ul>
 
     </div>
+
+
+    <div class="settings-section">
+
+      <h3>Account</h3>
+
+      <p id="settingsUser">
+        Signed in with GitHub.
+      </p>
+
+      <button class="danger-btn" id="signOutBtn">
+        Sign out
+      </button>
+
+    </div>
+
 
     <div class="modal-actions">
 
-      <button
-        class="cancel"
-        id="closeSettings"
-      >
+      <button class="cancel-btn" id="closeSettings">
         Close
       </button>
 
@@ -1454,7 +1374,7 @@ body.winter .particle{
 
 /* =====================================================
    SUPABASE
-   ===================================================== */
+===================================================== */
 
 const SUPABASE_URL =
   "https://elprfpqivxmdrtvdtojh.supabase.co";
@@ -1462,199 +1382,353 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
   "sb_publishable_bgSXEqqOpsyKA9wdgeVkKA_B_WoD23b";
 
-const db =
-  supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 
 /* =====================================================
    STATE
-   ===================================================== */
+===================================================== */
 
 let currentUser = null;
 
-let currentSeason =
-  localStorage.getItem("bucketSeason") || "fall";
+let currentMode = "season";
 
-let currentListId = null;
+let currentSeason = "fall";
 
 let currentList = null;
+
+let activities = [];
 
 let currentFilter = "all";
 
 let customLists = [];
 
+let unlockedPrivateLists = [];
+
+let theme =
+  localStorage.getItem("familyBucketTheme") || "light";
+
 
 /* =====================================================
-   SEASON DATA
-   ===================================================== */
+   SEASONS
+===================================================== */
 
-const seasonData = {
+const seasons = {
 
   spring:{
+    title:"Spring",
+    subtitle:"Fresh air, new adventures, and things to grow together.",
     icon:"🌷",
-    title:"Spring Bucket List",
-    subtitle:
-      "Fresh air, blooming flowers, sunny days, and new adventures."
+    items:[
+      "Have a picnic outside",
+      "Plant flowers together",
+      "Go on a spring walk",
+      "Visit a farmers market",
+      "Fly a kite",
+      "Take family photos outside",
+      "Have a backyard breakfast"
+    ]
   },
 
   summer:{
+    title:"Summer",
+    subtitle:"Sunny days, long nights, and family adventures.",
     icon:"☀️",
-    title:"Summer Bucket List",
-    subtitle:
-      "Long days, warm nights, adventures, and making summer memories."
+    items:[
+      "Have a water balloon fight",
+      "Go swimming",
+      "Have a family BBQ",
+      "Watch the sunset",
+      "Have a backyard movie night",
+      "Go on a day trip",
+      "Make homemade ice cream"
+    ]
   },
 
   fall:{
+    title:"Fall",
+    subtitle:"Cozy things to do together.",
     icon:"🍂",
-    title:"Fall Bucket List",
-    subtitle:
-      "Cozy days, crisp air, colorful leaves, and everything that makes autumn special."
+    items:[
+      "Visit a pumpkin patch",
+      "Go apple picking",
+      "Have a fall movie night",
+      "Make pumpkin desserts",
+      "Take a scenic drive",
+      "Go on a nature walk",
+      "Drink apple cider"
+    ]
   },
 
   winter:{
+    title:"Winter",
+    subtitle:"Cold weather, cozy memories, and holiday fun.",
     icon:"❄️",
-    title:"Winter Bucket List",
-    subtitle:
-      "Snowy days, warm drinks, holiday lights, and cozy winter adventures."
+    items:[
+      "Build a snowman",
+      "Have hot chocolate",
+      "Make holiday cookies",
+      "Have a family game night",
+      "Watch winter movies",
+      "Decorate the house",
+      "Go ice skating"
+    ]
   }
 
 };
 
 
 /* =====================================================
-   ELEMENTS
-   ===================================================== */
+   DOM
+===================================================== */
+
+const authGate =
+  document.getElementById("authGate");
+
+const authError =
+  document.getElementById("authError");
+
+const githubBtn =
+  document.getElementById("githubBtn");
+
+const menuBtn =
+  document.getElementById("menuBtn");
+
+const closeDrawer =
+  document.getElementById("closeDrawer");
 
 const drawer =
   document.getElementById("drawer");
 
-const overlay =
-  document.getElementById("overlay");
+const drawerOverlay =
+  document.getElementById("drawerOverlay");
 
-const list =
-  document.getElementById("list");
+const seasonNav =
+  document.getElementById("seasonNav");
 
-const empty =
-  document.getElementById("empty");
+const customNav =
+  document.getElementById("customNav");
 
-const customListsNav =
-  document.getElementById("customListsNav");
+const userName =
+  document.getElementById("userName");
 
-const listInfo =
-  document.getElementById("listInfo");
+const heroEyebrow =
+  document.getElementById("heroEyebrow");
+
+const heroTitle =
+  document.getElementById("heroTitle");
+
+const heroSubtitle =
+  document.getElementById("heroSubtitle");
+
+const listMeta =
+  document.getElementById("listMeta");
+
+const activityInput =
+  document.getElementById("activityInput");
+
+const addBtn =
+  document.getElementById("addBtn");
+
+const activityList =
+  document.getElementById("activityList");
+
+const totalCount =
+  document.getElementById("totalCount");
+
+const doneCount =
+  document.getElementById("doneCount");
+
+const percentCount =
+  document.getElementById("percentCount");
+
+const progressPercent =
+  document.getElementById("progressPercent");
+
+const progressBar =
+  document.getElementById("progressBar");
+
+const completeBanner =
+  document.getElementById("completeBanner");
+
+const themeFab =
+  document.getElementById("themeFab");
+
+const themeMenu =
+  document.getElementById("themeMenu");
+
+const createModal =
+  document.getElementById("createModal");
+
+const unlockModal =
+  document.getElementById("unlockModal");
+
+const settingsModal =
+  document.getElementById("settingsModal");
 
 
 /* =====================================================
-   USERNAME
-   ===================================================== */
+   HELPERS
+===================================================== */
+
+function escapeHTML(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
 
 function getUsername(user){
 
+  const metadata =
+    user?.user_metadata || {};
+
   return (
-    user.user_metadata?.user_name ||
-    user.user_metadata?.preferred_username ||
-    user.user_metadata?.name ||
+    metadata.user_name ||
+    metadata.preferred_username ||
+    metadata.full_name ||
+    metadata.name ||
+    user?.email?.split("@")[0] ||
     "Family Member"
   );
 
 }
 
 
-/* =====================================================
-   GITHUB
-   ===================================================== */
+function formatDate(date){
 
-async function loginWithGitHub(){
+  if(!date) return "";
 
-  const {
-    error
-  } =
-    await db.auth.signInWithOAuth({
-
-      provider:"github",
-
-      options:{
-        redirectTo:
-          "https://jaydenrrivera2011.github.io/family-bucket-list/"
-      }
-
-    });
-
-
-  if(error){
-
-    document.getElementById(
-      "authMessage"
-    ).textContent =
-      error.message;
-
-  }
+  return new Date(date).toLocaleDateString(
+    undefined,
+    {
+      month:"short",
+      day:"numeric",
+      year:"numeric"
+    }
+  );
 
 }
 
 
 /* =====================================================
+   THEME
+===================================================== */
+
+function applyTheme(){
+
+  document.body.className =
+    `theme-${theme}`;
+
+  localStorage.setItem(
+    "familyBucketTheme",
+    theme
+  );
+
+  document
+    .querySelectorAll(".theme-choice")
+    .forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.theme === theme
+      );
+
+    });
+
+  document
+    .querySelectorAll(".theme-option")
+    .forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.themeSetting === theme
+      );
+
+    });
+
+}
+
+applyTheme();
+
+
+/* =====================================================
+   DRAWER
+===================================================== */
+
+function openDrawer(){
+
+  drawer.classList.add("open");
+
+  drawerOverlay.classList.add("show");
+
+}
+
+
+function closeDrawerMenu(){
+
+  drawer.classList.remove("open");
+
+  drawerOverlay.classList.remove("show");
+
+}
+
+
+menuBtn.addEventListener(
+  "click",
+  openDrawer
+);
+
+closeDrawer.addEventListener(
+  "click",
+  closeDrawerMenu
+);
+
+drawerOverlay.addEventListener(
+  "click",
+  closeDrawerMenu
+);
+
+
+/* =====================================================
    AUTH
-   ===================================================== */
+===================================================== */
 
-db.auth.onAuthStateChange(
-  async (event,session) => {
+githubBtn.addEventListener(
+  "click",
+  async () => {
 
-    if(session?.user){
+    authError.textContent = "";
 
-      currentUser =
-        session.user;
+    const redirectTo =
+      window.location.origin +
+      window.location.pathname;
 
-      document
-        .getElementById("loginPanel")
-        .classList.add("hidden");
+    const {
+      error
+    } =
+      await db.auth.signInWithOAuth({
 
-      document
-        .getElementById("appPanel")
-        .classList.remove("hidden");
+        provider:"github",
 
-      document
-        .getElementById("logoutBtn")
-        .classList.remove("hidden");
+        options:{
+          redirectTo
+        }
 
-      document
-        .getElementById("headerUser")
-        .classList.remove("hidden");
+      });
 
-      document
-        .getElementById("headerUser")
-        .textContent =
-        getUsername(currentUser);
+    if(error){
 
-
-      await loadCustomLists();
-
-      renderSeason();
-
-      await loadCurrentList();
-
-    }else{
-
-      currentUser = null;
-
-      document
-        .getElementById("loginPanel")
-        .classList.remove("hidden");
-
-      document
-        .getElementById("appPanel")
-        .classList.add("hidden");
-
-      document
-        .getElementById("logoutBtn")
-        .classList.add("hidden");
-
-      document
-        .getElementById("headerUser")
-        .classList.add("hidden");
+      authError.textContent =
+        error.message;
 
     }
 
@@ -1663,90 +1737,129 @@ db.auth.onAuthStateChange(
 
 
 /* =====================================================
-   LOGOUT
-   ===================================================== */
+   AUTH STATE
+===================================================== */
 
-async function logout(){
+db.auth.onAuthStateChange(
+  async (event, session) => {
 
-  await db.auth.signOut();
+    currentUser =
+      session?.user || null;
 
-}
+    if(currentUser){
+
+      authGate.style.display =
+        "none";
+
+      userName.textContent =
+        getUsername(currentUser);
+
+      await loadLists();
+
+      renderSeasonNav();
+
+      await selectSeason(
+        localStorage.getItem("familyBucketSeason") ||
+        "fall"
+      );
+
+    }else{
+
+      authGate.style.display =
+        "flex";
+
+      userName.textContent = "";
+
+      activities = [];
+
+      customLists = [];
+
+      unlockedPrivateLists = [];
+
+    }
+
+  }
+);
 
 
 /* =====================================================
-   SEASON RENDER
-   ===================================================== */
+   INITIAL SESSION
+===================================================== */
 
-function renderSeason(){
+async function init(){
 
-  if(!seasonData[currentSeason])
-    currentSeason = "fall";
+  const {
+    data
+  } =
+    await db.auth.getSession();
 
+  currentUser =
+    data.session?.user || null;
 
-  const data =
-    seasonData[currentSeason];
+  if(currentUser){
 
+    authGate.style.display =
+      "none";
 
-  document.body.classList.remove(
-    "spring",
-    "summer",
-    "fall",
-    "winter"
-  );
+    userName.textContent =
+      getUsername(currentUser);
 
-  document.body.classList.add(
-    currentSeason
-  );
+    await loadLists();
 
+    renderSeasonNav();
 
-  document.body.classList.remove(
-    "theme-light",
-    "theme-dark",
-    "theme-spring",
-    "theme-summer",
-    "theme-fall",
-    "theme-winter"
-  );
+    await selectSeason(
+      localStorage.getItem("familyBucketSeason") ||
+      "fall"
+    );
 
-  const savedTheme =
-    localStorage.getItem(
-      "bucketTheme"
-    ) || "fall";
+  }
+
+}
+
+init();
 
 
-  document.body.classList.add(
-    "theme-" + savedTheme
-  );
+/* =====================================================
+   SEASON NAV
+===================================================== */
 
+function renderSeasonNav(){
 
-  document.getElementById(
-    "icon"
-  ).textContent =
-    data.icon;
+  seasonNav.innerHTML = Object
+    .entries(seasons)
+    .map(([key,season]) => `
 
-  document.getElementById(
-    "title"
-  ).textContent =
-    data.title;
+      <button
+        class="season-btn ${currentMode === "season" && currentSeason === key ? "active" : ""}"
+        data-season="${key}"
+      >
 
-  document.getElementById(
-    "subtitle"
-  ).textContent =
-    data.subtitle;
+        <span>${season.icon}</span>
 
+        <span>${season.title}</span>
 
-  document
-    .querySelectorAll(".nav button")
+      </button>
+
+    `)
+    .join("");
+
+  seasonNav
+    .querySelectorAll(".season-btn")
     .forEach(button => {
 
-      if(button.dataset.season){
+      button.addEventListener(
+        "click",
+        async () => {
 
-        button.classList.toggle(
-          "active",
-          button.dataset.season === currentSeason
-        );
+          await selectSeason(
+            button.dataset.season
+          );
 
-      }
+          closeDrawerMenu();
+
+        }
+      );
 
     });
 
@@ -1755,810 +1868,839 @@ function renderSeason(){
 
 /* =====================================================
    LOAD CUSTOM LISTS
-   ===================================================== */
+===================================================== */
 
-async function loadCustomLists(){
+async function loadLists(){
+
+  if(!currentUser) return;
 
   const {
     data,
     error
   } =
-    await db.rpc(
-      "get_visible_lists"
-    );
-
+    await db
+      .from("custom_lists")
+      .select(
+        "id,name,created_by,created_by_username,is_private,created_at"
+      )
+      .order(
+        "created_at",
+        {ascending:true}
+      );
 
   if(error){
 
     console.error(error);
 
-    customLists = [];
-
-    renderCustomLists();
-
     return;
 
   }
 
+  const unlockedIds =
+    new Set(unlockedPrivateLists);
 
   customLists =
-    data || [];
+    (data || [])
+      .filter(list =>
 
+        !list.is_private ||
 
-  renderCustomLists();
+        list.created_by === currentUser.id ||
+
+        unlockedIds.has(String(list.id))
+
+      );
+
+  renderCustomNav();
 
 }
 
 
 /* =====================================================
-   RENDER CUSTOM LISTS
-   ===================================================== */
+   CUSTOM NAV
+===================================================== */
 
-function renderCustomLists(){
-
-  customListsNav.innerHTML = "";
-
+function renderCustomNav(){
 
   if(customLists.length === 0){
 
-    const emptyText =
-      document.createElement("div");
-
-    emptyText.style.cssText =
-      "color:var(--muted);font-size:13px;padding:7px 10px";
-
-    emptyText.textContent =
-      "No custom lists yet.";
-
-    customListsNav.appendChild(
-      emptyText
-    );
+    customNav.innerHTML = `
+      <div class="drawer-note">
+        No custom lists yet.
+      </div>
+    `;
 
     return;
 
   }
 
+  customNav.innerHTML =
+    customLists.map(list => {
 
-  customLists.forEach(customList => {
+      const isOwner =
+        list.created_by === currentUser.id;
 
-    const button =
-      document.createElement("button");
+      const isUnlocked =
+        unlockedPrivateLists
+          .includes(String(list.id));
 
-    button.className =
-      "custom-list-button";
+      return `
+
+        <div class="custom-list-row">
+
+          <button
+            class="custom-list-btn ${
+              currentMode === "list" &&
+              currentList?.id === list.id
+                ? "active"
+                : ""
+            }"
+            data-list-id="${list.id}"
+          >
+
+            <span>
+              ${list.is_private
+                ? (isUnlocked || isOwner ? "🔓" : "🔒")
+                : "📝"}
+            </span>
+
+            <span style="min-width:0;">
+
+              <strong>
+                ${escapeHTML(list.name)}
+              </strong>
+
+              <small style="
+                display:block;
+                color:var(--muted);
+                margin-top:2px;
+              ">
+
+                Created by
+                ${escapeHTML(
+                  list.created_by_username ||
+                  "Family Member"
+                )}
+
+              </small>
+
+            </span>
+
+          </button>
+
+          ${
+            isOwner
+              ? `
+
+                <div class="list-controls">
+
+                  <button
+                    class="list-control privacy-control"
+                    data-list-id="${list.id}"
+                    title="${
+                      list.is_private
+                        ? "Make public"
+                        : "Make private"
+                    }"
+                  >
+                    ${list.is_private ? "🔒" : "🔓"}
+                  </button>
+
+                  <button
+                    class="list-control delete-list-control"
+                    data-list-id="${list.id}"
+                    title="Delete list"
+                  >
+                    🗑️
+                  </button>
+
+                </div>
+
+              `
+              : ""
+          }
+
+        </div>
+
+      `;
+
+    }).join("");
 
 
-    const icon =
-      document.createElement("span");
+  customNav
+    .querySelectorAll(".custom-list-btn")
+    .forEach(button => {
 
-    icon.textContent =
-      customList.is_private
-        ? "🔒"
-        : "📋";
+      button.addEventListener(
+        "click",
+        async () => {
 
+          const id =
+            Number(button.dataset.listId);
 
-    const name =
-      document.createElement("span");
+          const list =
+            customLists.find(
+              item => item.id === id
+            );
 
-    name.textContent =
-      customList.name;
+          if(list){
 
+            await selectCustomList(list);
 
-    button.appendChild(icon);
-    button.appendChild(name);
+            closeDrawerMenu();
 
+          }
 
-    if(customList.is_private){
-
-      const lock =
-        document.createElement("span");
-
-      lock.className =
-        "list-lock";
-
-      lock.textContent =
-        "Private";
-
-      button.appendChild(lock);
-
-    }
-
-
-    button.addEventListener(
-      "click",
-      async () => {
-
-        await openCustomList(
-          customList
-        );
-
-        closeDrawer();
-
-      }
-    );
-
-
-    customListsNav.appendChild(
-      button
-    );
-
-  });
-
-}
-
-
-/* =====================================================
-   LOAD CURRENT LIST
-   ===================================================== */
-
-async function loadCurrentList(){
-
-  if(currentListId){
-
-    const found =
-      customLists.find(
-        x => Number(x.id) === Number(currentListId)
+        }
       );
-
-    if(found){
-
-      currentList =
-        found;
-
-      await loadActivities();
-
-      return;
-
-    }
-
-  }
-
-
-  currentList = null;
-
-  currentListId = null;
-
-  renderSeason();
-
-  await loadActivities();
-
-}
-
-
-/* =====================================================
-   OPEN CUSTOM LIST
-   ===================================================== */
-
-async function openCustomList(customList){
-
-  currentList =
-    customList;
-
-  currentListId =
-    customList.id;
-
-  currentFilter =
-    "all";
-
-  updateFilterButtons();
-
-
-  if(
-    customList.is_private &&
-    customList.created_by !== currentUser.id
-  ){
-
-    showPasswordModal(
-      customList.id,
-      customList.name
-    );
-
-    return;
-
-  }
-
-
-  await loadActivities();
-
-}
-
-
-/* =====================================================
-   PASSWORD MODAL
-   ===================================================== */
-
-let passwordListId = null;
-
-
-function showPasswordModal(
-  listId,
-  listName
-){
-
-  passwordListId =
-    listId;
-
-  document.getElementById(
-    "passwordTitle"
-  ).textContent =
-    "🔒 " + listName;
-
-  document.getElementById(
-    "passwordDescription"
-  ).textContent =
-    "Enter the password to unlock this private list.";
-
-  document.getElementById(
-    "listPassword"
-  ).value = "";
-
-  document.getElementById(
-    "passwordMessage"
-  ).textContent = "";
-
-
-  document
-    .getElementById("passwordModal")
-    .classList.add("show");
-
-}
-
-
-async function unlockList(){
-
-  const password =
-    document.getElementById(
-      "listPassword"
-    ).value;
-
-
-  if(!password){
-
-    document.getElementById(
-      "passwordMessage"
-    ).textContent =
-      "Please enter the password.";
-
-    return;
-
-  }
-
-
-  const {
-    data,
-    error
-  } =
-    await db.rpc(
-      "unlock_private_list",
-      {
-        p_list_id:
-          passwordListId,
-
-        p_password:
-          password
-      }
-    );
-
-
-  if(error){
-
-    document.getElementById(
-      "passwordMessage"
-    ).textContent =
-      error.message;
-
-    return;
-
-  }
-
-
-  if(!data){
-
-    document.getElementById(
-      "passwordMessage"
-    ).textContent =
-      "Incorrect password.";
-
-    return;
-
-  }
-
-
-  document
-    .getElementById("passwordModal")
-    .classList.remove("show");
-
-
-  await loadActivities();
-
-}
-
-
-/* =====================================================
-   LOAD ACTIVITIES
-   ===================================================== */
-
-async function loadActivities(){
-
-  if(!currentUser)
-    return;
-
-
-  let query =
-    db
-      .from("activities")
-      .select("*");
-
-
-  if(currentListId){
-
-    query =
-      query.eq(
-        "list_id",
-        currentListId
-      );
-
-  }else{
-
-    query =
-      query.eq(
-        "season",
-        currentSeason
-      );
-
-  }
-
-
-  const {
-    data,
-    error
-  } =
-    await query.order(
-      "created_at",
-      {
-        ascending:true
-      }
-    );
-
-
-  if(error){
-
-    console.error(error);
-
-    list.innerHTML = "";
-
-    empty.style.display =
-      "block";
-
-    empty.innerHTML =
-      "<div>⚠️</div><b>Could not load activities.</b>";
-
-    return;
-
-  }
-
-
-  renderListInfo();
-
-  renderActivities(
-    data || []
-  );
-
-  await updateStats();
-
-}
-
-
-/* =====================================================
-   LIST INFO
-   ===================================================== */
-
-function renderListInfo(){
-
-  listInfo.innerHTML = "";
-
-
-  if(!currentListId){
-
-    return;
-
-  }
-
-
-  const owner =
-    customLists.find(
-      x =>
-        Number(x.id) ===
-        Number(currentListId)
-    );
-
-
-  if(!owner)
-    return;
-
-
-  const ownerText =
-    document.createElement("span");
-
-  ownerText.className =
-    "list-owner";
-
-  ownerText.textContent =
-    "Created by " +
-    (
-      owner.created_by === currentUser.id
-        ? getUsername(currentUser)
-        : "Family Member"
-    );
-
-
-  listInfo.appendChild(
-    ownerText
-  );
-
-
-  if(owner.is_private){
-
-    const status =
-      document.createElement("span");
-
-    status.className =
-      "lock-status";
-
-    status.textContent =
-      "🔒 Private";
-
-    listInfo.appendChild(
-      status
-    );
-
-  }else{
-
-    const status =
-      document.createElement("span");
-
-    status.className =
-      "lock-status";
-
-    status.textContent =
-      "🌎 Shared";
-
-    listInfo.appendChild(
-      status
-    );
-
-  }
-
-
-  if(
-    owner.created_by ===
-    currentUser.id
-  ){
-
-    const tools =
-      document.createElement("div");
-
-    tools.className =
-      "owner-tools";
-
-
-    const lockButton =
-      document.createElement("button");
-
-    lockButton.className =
-      "small-btn";
-
-    lockButton.textContent =
-      owner.is_private
-        ? "🔓 Make Public"
-        : "🔒 Make Private";
-
-
-    lockButton.onclick =
-      () => togglePrivacy(owner);
-
-
-    const deleteButton =
-      document.createElement("button");
-
-    deleteButton.className =
-      "small-btn danger";
-
-    deleteButton.textContent =
-      "Delete List";
-
-    deleteButton.onclick =
-      () => deleteList(owner.id);
-
-
-    tools.appendChild(
-      lockButton
-    );
-
-    tools.appendChild(
-      deleteButton
-    );
-
-    listInfo.appendChild(
-      tools
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   RENDER ACTIVITIES
-   ===================================================== */
-
-function renderActivities(
-  activities
-){
-
-  list.innerHTML = "";
-
-
-  const shown =
-    activities.filter(activity => {
-
-      if(
-        currentFilter === "done"
-      )
-        return activity.done;
-
-      if(
-        currentFilter === "active"
-      )
-        return !activity.done;
-
-      return true;
 
     });
 
 
-  empty.style.display =
-    shown.length
-      ? "none"
-      : "block";
+  customNav
+    .querySelectorAll(".privacy-control")
+    .forEach(button => {
 
+      button.addEventListener(
+        "click",
+        async event => {
 
-  shown.forEach(activity => {
+          event.stopPropagation();
 
-    const item =
-      document.createElement("div");
+          const id =
+            Number(button.dataset.listId);
 
-    item.className =
-      "item" +
-      (
-        activity.done
-          ? " done"
-          : ""
+          await togglePrivacy(id);
+
+        }
       );
 
-
-    const checkbox =
-      document.createElement("input");
-
-    checkbox.type =
-      "checkbox";
-
-    checkbox.className =
-      "check";
-
-    checkbox.checked =
-      activity.done;
+    });
 
 
-    checkbox.addEventListener(
-      "change",
-      () =>
-        toggleActivity(activity)
-    );
+  customNav
+    .querySelectorAll(".delete-list-control")
+    .forEach(button => {
 
+      button.addEventListener(
+        "click",
+        async event => {
 
-    const text =
-      document.createElement("div");
+          event.stopPropagation();
 
-    text.className =
-      "text";
+          const id =
+            Number(button.dataset.listId);
 
+          await deleteCustomList(id);
 
-    const bold =
-      document.createElement("b");
+        }
+      );
 
-    bold.textContent =
-      activity.text;
-
-
-    const small =
-      document.createElement("small");
-
-
-    if(activity.done){
-
-      small.textContent =
-        "Completed by " +
-        (
-          activity.completed_by_username ||
-          "Family Member"
-        );
-
-    }else{
-
-      small.textContent =
-        "Added by " +
-        (
-          activity.created_by_username ||
-          "Family Member"
-        );
-
-    }
-
-
-    text.appendChild(bold);
-    text.appendChild(small);
-
-
-    const deleteButton =
-      document.createElement("button");
-
-    deleteButton.className =
-      "delete";
-
-    deleteButton.textContent =
-      "✕";
-
-
-    deleteButton.onclick =
-      () =>
-        deleteActivity(
-          activity.id
-        );
-
-
-    item.appendChild(
-      checkbox
-    );
-
-    item.appendChild(
-      text
-    );
-
-    item.appendChild(
-      deleteButton
-    );
-
-
-    list.appendChild(
-      item
-    );
-
-  });
+    });
 
 }
 
 
 /* =====================================================
-   STATS
-   ===================================================== */
+   SELECT SEASON
+===================================================== */
 
-async function updateStats(){
+async function selectSeason(seasonKey){
 
-  let query =
-    db
-      .from("activities")
-      .select("done");
+  if(!seasons[seasonKey]) return;
+
+  currentMode = "season";
+
+  currentSeason = seasonKey;
+
+  currentList = null;
+
+  localStorage.setItem(
+    "familyBucketSeason",
+    seasonKey
+  );
+
+  const season =
+    seasons[seasonKey];
+
+  heroEyebrow.textContent =
+    `${season.icon} Family season`;
+
+  heroTitle.textContent =
+    season.title;
+
+  heroSubtitle.textContent =
+    season.subtitle;
+
+  listMeta.innerHTML = "";
+
+  renderSeasonNav();
+
+  renderCustomNav();
+
+  await loadSeasonActivities();
+
+  createParticles();
+
+}
 
 
-  if(currentListId){
+/* =====================================================
+   LOAD SEASON ACTIVITIES
+===================================================== */
 
-    query =
-      query.eq(
-        "list_id",
-        currentListId
-      );
-
-  }else{
-
-    query =
-      query.eq(
-        "season",
-        currentSeason
-      );
-
-  }
-
+async function loadSeasonActivities(){
 
   const {
     data,
     error
   } =
-    await query;
+    await db
+      .from("activities")
+      .select(
+        "id,season,text,done,created_by,created_by_username,created_at,completed_at,completed_by,completed_by_username,list_id"
+      )
+      .eq(
+        "season",
+        currentSeason
+      )
+      .is(
+        "list_id",
+        null
+      )
+      .order(
+        "created_at",
+        {ascending:true}
+      );
 
+  if(error){
 
-  if(error)
+    console.error(error);
+
     return;
 
+  }
 
-  const activities =
+  activities =
     data || [];
 
+  /*
+    Seed default activities only if the season has
+    never had any activities.
+  */
 
-  const totalCount =
-    activities.length;
+  if(activities.length === 0){
 
+    const defaults =
+      seasons[currentSeason].items;
 
-  const completedCount =
-    activities.filter(
-      x => x.done
-    ).length;
+    const rows =
+      defaults.map(text => ({
 
+        season:currentSeason,
 
-  const progress =
-    totalCount
-      ? Math.round(
-          completedCount /
-          totalCount *
-          100
-        )
-      : 0;
+        text,
 
+        done:false,
 
-  total.textContent =
-    totalCount;
+        created_by:currentUser.id,
 
-  completed.textContent =
-    completedCount;
+        created_by_username:
+          getUsername(currentUser),
 
-  percent.textContent =
-    progress + "%";
+        list_id:null
 
-  bar.style.width =
-    progress + "%";
+      }));
 
+    const {
+      data:inserted,
+      error:insertError
+    } =
+      await db
+        .from("activities")
+        .insert(rows)
+        .select(
+          "id,season,text,done,created_by,created_by_username,created_at,completed_at,completed_by,completed_by_username,list_id"
+        );
 
-  completeMessage.style.display =
-    totalCount > 0 &&
-    progress === 100
-      ? "block"
-      : "none";
+    if(!insertError){
+
+      activities =
+        inserted || [];
+
+    }
+
+  }
+
+  render();
 
 }
 
 
 /* =====================================================
-   ADD ACTIVITY
-   ===================================================== */
+   SELECT CUSTOM LIST
+===================================================== */
 
-async function addActivity(){
+async function selectCustomList(list){
 
-  if(!currentUser)
+  currentMode = "list";
+
+  currentList = list;
+
+  heroEyebrow.textContent =
+    list.is_private
+      ? "🔒 Private family list"
+      : "📝 Family list";
+
+  heroTitle.textContent =
+    list.name;
+
+  heroSubtitle.textContent =
+    "A custom list for the family.";
+
+  listMeta.innerHTML = `
+
+    <span class="meta-pill">
+      👤 Created by
+      ${escapeHTML(
+        list.created_by_username ||
+        "Family Member"
+      )}
+    </span>
+
+    <span class="meta-pill">
+      ${list.is_private
+        ? "🔒 Private"
+        : "🌎 Public"}
+    </span>
+
+    <span class="meta-pill meta-id">
+      List #${list.id}
+    </span>
+
+  `;
+
+  renderSeasonNav();
+
+  renderCustomNav();
+
+  await loadCustomActivities();
+
+  createParticles();
+
+}
+
+
+/* =====================================================
+   LOAD CUSTOM ACTIVITIES
+===================================================== */
+
+async function loadCustomActivities(){
+
+  if(!currentList) return;
+
+  const {
+    data,
+    error
+  } =
+    await db
+      .from("activities")
+      .select(
+        "id,season,text,done,created_by,created_by_username,created_at,completed_at,completed_by,completed_by_username,list_id"
+      )
+      .eq(
+        "list_id",
+        currentList.id
+      )
+      .order(
+        "created_at",
+        {ascending:true}
+      );
+
+  if(error){
+
+    /*
+      If RLS blocks the request, the list is no longer
+      available to this user.
+    */
+
+    console.error(error);
+
+    activities = [];
+
+    render();
+
     return;
 
+  }
+
+  activities =
+    data || [];
+
+  render();
+
+}
+
+
+/* =====================================================
+   CREATE LIST
+===================================================== */
+
+document
+  .getElementById("createListBtn")
+  .addEventListener(
+    "click",
+    () => {
+
+      document
+        .getElementById("newListName")
+        .value = "";
+
+      createModal.classList.add("show");
+
+    }
+  );
+
+
+document
+  .getElementById("cancelCreate")
+  .addEventListener(
+    "click",
+    () => {
+
+      createModal.classList.remove("show");
+
+    }
+  );
+
+
+document
+  .getElementById("confirmCreate")
+  .addEventListener(
+    "click",
+    async () => {
+
+      const name =
+        document
+          .getElementById("newListName")
+          .value
+          .trim();
+
+      if(!name){
+
+        alert("Please enter a list name.");
+
+        return;
+
+      }
+
+      const {
+        data,
+        error
+      } =
+        await db
+          .from("custom_lists")
+          .insert({
+
+            name,
+
+            created_by:
+              currentUser.id,
+
+            created_by_username:
+              getUsername(currentUser),
+
+            is_private:false
+
+          })
+          .select(
+            "id,name,created_by,created_by_username,is_private,created_at"
+          )
+          .single();
+
+      if(error){
+
+        alert(error.message);
+
+        return;
+
+      }
+
+      createModal.classList.remove("show");
+
+      await loadLists();
+
+      await selectCustomList(data);
+
+      closeDrawerMenu();
+
+    }
+  );
+
+
+/* =====================================================
+   TOGGLE PRIVATE / PUBLIC
+===================================================== */
+
+async function togglePrivacy(id){
+
+  const list =
+    customLists.find(
+      item => item.id === id
+    );
+
+  if(!list) return;
+
+  if(list.created_by !== currentUser.id){
+
+    return;
+
+  }
+
+
+  const newPrivate =
+    !list.is_private;
+
+
+  const message =
+    newPrivate
+
+      ? "Make this list private? It will disappear from everyone else's Lists menu."
+
+      : "Make this list public? Everyone in the family will be able to see and edit it.";
+
+  if(!confirm(message)){
+
+    return;
+
+  }
+
+
+  const {
+    error
+  } =
+    await db
+      .from("custom_lists")
+      .update({
+        is_private:newPrivate
+      })
+      .eq(
+        "id",
+        id
+      )
+      .eq(
+        "created_by",
+        currentUser.id
+      );
+
+
+  if(error){
+
+    alert(error.message);
+
+    return;
+
+  }
+
+
+  await loadLists();
+
+
+  if(
+    currentMode === "list" &&
+    currentList?.id === id
+  ){
+
+    const updated =
+      customLists.find(
+        item => item.id === id
+      );
+
+    if(updated){
+
+      currentList =
+        updated;
+
+      await selectCustomList(
+        updated
+      );
+
+    }else{
+
+      await selectSeason(
+        "fall"
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =====================================================
+   DELETE CUSTOM LIST
+===================================================== */
+
+async function deleteCustomList(id){
+
+  const list =
+    customLists.find(
+      item => item.id === id
+    );
+
+  if(!list) return;
+
+  if(list.created_by !== currentUser.id){
+
+    return;
+
+  }
+
+
+  const confirmed =
+    confirm(
+      `Delete "${list.name}"?\n\nAll activities inside this list will also be deleted.`
+    );
+
+  if(!confirmed){
+
+    return;
+
+  }
+
+
+  const {
+    error
+  } =
+    await db
+      .from("custom_lists")
+      .delete()
+      .eq(
+        "id",
+        id
+      )
+      .eq(
+        "created_by",
+        currentUser.id
+      );
+
+
+  if(error){
+
+    alert(error.message);
+
+    return;
+
+  }
+
+
+  if(
+    currentList?.id === id
+  ){
+
+    currentList = null;
+
+    await selectSeason(
+      "fall"
+    );
+
+  }
+
+
+  unlockedPrivateLists =
+    unlockedPrivateLists.filter(
+      item => item !== String(id)
+    );
+
+  await loadLists();
+
+}
+
+
+/* =====================================================
+   UNLOCK PRIVATE LIST
+===================================================== */
+
+document
+  .getElementById("unlockListBtn")
+  .addEventListener(
+    "click",
+    () => {
+
+      document
+        .getElementById("unlockListId")
+        .value = "";
+
+      unlockModal.classList.add("show");
+
+    }
+  );
+
+
+document
+  .getElementById("cancelUnlock")
+  .addEventListener(
+    "click",
+    () => {
+
+      unlockModal.classList.remove("show");
+
+    }
+  );
+
+
+document
+  .getElementById("confirmUnlock")
+  .addEventListener(
+    "click",
+    async () => {
+
+      const id =
+        Number(
+          document
+            .getElementById("unlockListId")
+            .value
+        );
+
+      if(!id){
+
+        alert("Enter a valid list ID.");
+
+        return;
+
+      }
+
+      /*
+        There is NO password anymore.
+
+        Instead, private lists are owner-only.
+        This button therefore explains that a private
+        list cannot be unlocked by another user.
+      */
+
+      alert(
+        "Private lists are owner-only now. The owner can make the list public using the lock button."
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   ADD ACTIVITY
+===================================================== */
+
+async function addActivity(){
 
   const text =
     activityInput.value.trim();
 
+  if(!text) return;
 
-  if(!text)
-    return;
+  const row = {
 
-
-  const username =
-    getUsername(
-      currentUser
-    );
-
-
-  const insertData = {
-
-    season:
-      currentListId
-        ? null
-        : currentSeason,
-
-    text:text,
+    text,
 
     done:false,
 
@@ -2566,126 +2708,166 @@ async function addActivity(){
       currentUser.id,
 
     created_by_username:
-      username,
+      getUsername(currentUser),
 
     list_id:
-      currentListId || null
+      currentMode === "list"
+        ? currentList.id
+        : null,
+
+    season:
+      currentMode === "season"
+        ? currentSeason
+        : null
 
   };
 
 
   const {
+    data,
     error
   } =
     await db
       .from("activities")
-      .insert(
-        insertData
-      );
+      .insert(row)
+      .select(
+        "id,season,text,done,created_by,created_by_username,created_at,completed_at,completed_by,completed_by_username,list_id"
+      )
+      .single();
 
 
   if(error){
 
-    alert(
-      error.message
-    );
+    alert(error.message);
 
     return;
 
   }
 
 
+  activities.push(data);
+
   activityInput.value = "";
 
-  await loadActivities();
+  render();
 
 }
 
 
-/* =====================================================
-   TOGGLE
-   ===================================================== */
-
-async function toggleActivity(
-  activity
-){
-
-  const username =
-    getUsername(
-      currentUser
-    );
+addBtn.addEventListener(
+  "click",
+  addActivity
+);
 
 
-  let updateData;
+activityInput.addEventListener(
+  "keydown",
+  event => {
 
+    if(event.key === "Enter"){
 
-  if(!activity.done){
+      addActivity();
 
-    updateData = {
-
-      done:true,
-
-      completed_at:
-        new Date().toISOString(),
-
-      completed_by:
-        currentUser.id,
-
-      completed_by_username:
-        username
-
-    };
-
-  }else{
-
-    updateData = {
-
-      done:false,
-
-      completed_at:null,
-
-      completed_by:null,
-
-      completed_by_username:null
-
-    };
+    }
 
   }
+);
+
+
+/* =====================================================
+   TOGGLE ACTIVITY
+===================================================== */
+
+async function toggleActivity(id){
+
+  const item =
+    activities.find(
+      activity =>
+        String(activity.id) === String(id)
+    );
+
+  if(!item) return;
+
+
+  const newDone =
+    !item.done;
+
+
+  const update = {
+
+    done:newDone,
+
+    completed_at:
+      newDone
+        ? new Date().toISOString()
+        : null,
+
+    completed_by:
+      newDone
+        ? currentUser.id
+        : null,
+
+    completed_by_username:
+      newDone
+        ? getUsername(currentUser)
+        : null
+
+  };
 
 
   const {
+    data,
     error
   } =
     await db
       .from("activities")
-      .update(updateData)
+      .update(update)
       .eq(
         "id",
-        activity.id
-      );
+        item.id
+      )
+      .select(
+        "id,season,text,done,created_by,created_by_username,created_at,completed_at,completed_by,completed_by_username,list_id"
+      )
+      .single();
 
 
   if(error){
 
-    alert(
-      error.message
-    );
+    alert(error.message);
 
     return;
 
   }
 
 
-  await loadActivities();
+  activities =
+    activities.map(
+      activity =>
+        String(activity.id) === String(id)
+          ? data
+          : activity
+    );
+
+
+  render();
 
 }
 
 
 /* =====================================================
    DELETE ACTIVITY
-   ===================================================== */
+===================================================== */
 
 async function deleteActivity(id){
+
+  const confirmed =
+    confirm(
+      "Delete this activity?"
+    );
+
+  if(!confirmed) return;
+
 
   const {
     error
@@ -2701,325 +2883,254 @@ async function deleteActivity(id){
 
   if(error){
 
-    alert(
-      error.message
-    );
+    alert(error.message);
 
     return;
 
   }
 
 
-  await loadActivities();
+  activities =
+    activities.filter(
+      activity =>
+        String(activity.id) !== String(id)
+    );
+
+
+  render();
 
 }
 
 
 /* =====================================================
-   CLEAR COMPLETED
-   ===================================================== */
+   FILTER
+===================================================== */
 
-async function clearCompleted(){
+document
+  .querySelectorAll(".filter-btn")
+  .forEach(button => {
 
-  let query =
-    db
-      .from("activities")
-      .delete()
-      .eq(
-        "done",
-        true
-      );
+    button.addEventListener(
+      "click",
+      () => {
+
+        currentFilter =
+          button.dataset.filter;
+
+        document
+          .querySelectorAll(".filter-btn")
+          .forEach(item =>
+            item.classList.toggle(
+              "active",
+              item === button
+            )
+          );
+
+        render();
+
+      }
+    );
+
+  });
 
 
-  if(currentListId){
+/* =====================================================
+   RENDER
+===================================================== */
 
-    query =
-      query.eq(
-        "list_id",
-        currentListId
-      );
+function render(){
 
-  }else{
+  const total =
+    activities.length;
 
-    query =
-      query
-        .eq(
-          "season",
-          currentSeason
-        )
-        .is(
-          "list_id",
-          null
+  const completed =
+    activities.filter(
+      item => item.done
+    ).length;
+
+  const percent =
+    total === 0
+      ? 0
+      : Math.round(
+          completed / total * 100
         );
 
-  }
 
+  totalCount.textContent =
+    total;
 
-  const {
-    error
-  } =
-    await query;
+  doneCount.textContent =
+    completed;
 
+  percentCount.textContent =
+    `${percent}%`;
 
-  if(error){
+  progressPercent.textContent =
+    `${percent}%`;
 
-    alert(
-      error.message
-    );
+  progressBar.style.width =
+    `${percent}%`;
 
-    return;
-
-  }
-
-
-  await loadActivities();
-
-}
-
-
-/* =====================================================
-   CREATE LIST
-   ===================================================== */
-
-async function createList(){
-
-  const name =
-    document.getElementById(
-      "newListName"
-    ).value.trim();
-
-
-  if(!name)
-    return;
-
-
-  const {
-    data,
-    error
-  } =
-    await db
-      .from("custom_lists")
-      .insert({
-
-        name:name,
-
-        created_by:
-          currentUser.id,
-
-        is_private:false
-
-      })
-      .select()
-      .single();
-
-
-  if(error){
-
-    alert(
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  document
-    .getElementById("createModal")
-    .classList.remove("show");
-
-
-  document.getElementById(
-    "newListName"
-  ).value = "";
-
-
-  await loadCustomLists();
-
-
-  currentList =
-    data;
-
-  currentListId =
-    data.id;
-
-
-  await loadActivities();
-
-}
-
-
-/* =====================================================
-   DELETE LIST
-   ===================================================== */
-
-async function deleteList(
-  listId
-){
 
   if(
-    !confirm(
-      "Delete this list and all of its activities?"
-    )
-  )
-    return;
+    percent === 100 &&
+    total > 0
+  ){
 
-
-  const {
-    error
-  } =
-    await db
-      .from("custom_lists")
-      .delete()
-      .eq(
-        "id",
-        listId
-      );
-
-
-  if(error){
-
-    alert(
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  currentList =
-    null;
-
-  currentListId =
-    null;
-
-
-  await loadCustomLists();
-
-  renderSeason();
-
-  await loadActivities();
-
-}
-
-
-/* =====================================================
-   TOGGLE PRIVACY
-   ===================================================== */
-
-async function togglePrivacy(
-  customList
-){
-
-  if(customList.is_private){
-
-    const {
-      error
-    } =
-      await db
-        .from("custom_lists")
-        .update({
-          is_private:false,
-          password_hash:null
-        })
-        .eq(
-          "id",
-          customList.id
-        );
-
-
-    if(error){
-
-      alert(
-        error.message
-      );
-
-      return;
-
-    }
+    completeBanner.innerHTML = `
+      <div class="complete-banner">
+        🎉 100% complete! You did everything!
+      </div>
+    `;
 
   }else{
 
-    const password =
-      prompt(
-        "Create a password for this private list:"
-      );
-
-
-    if(!password)
-      return;
-
-
-    if(password.length < 4){
-
-      alert(
-        "Please use at least 4 characters."
-      );
-
-      return;
-
-    }
-
-
-    const {
-      error
-    } =
-      await db.rpc(
-        "set_list_password",
-        {
-          p_list_id:
-            customList.id,
-
-          p_password:
-            password
-        }
-      );
-
-
-    if(error){
-
-      alert(
-        error.message
-      );
-
-      return;
-
-    }
+    completeBanner.innerHTML = "";
 
   }
 
 
-  await loadCustomLists();
+  let visible =
+    [...activities];
 
 
-  currentList =
-    customLists.find(
-      x =>
-        Number(x.id) ===
-        Number(customList.id)
-    );
+  if(currentFilter === "todo"){
+
+    visible =
+      visible.filter(
+        item => !item.done
+      );
+
+  }
 
 
-  await loadActivities();
+  if(currentFilter === "done"){
 
-}
+    visible =
+      visible.filter(
+        item => item.done
+      );
+
+  }
 
 
-/* =====================================================
-   FILTERS
-   ===================================================== */
+  if(visible.length === 0){
 
-function updateFilterButtons(){
+    activityList.innerHTML = `
+      <div class="empty">
+        ${
+          activities.length === 0
+            ? "Nothing here yet. Add your first activity!"
+            : "Nothing matches this filter."
+        }
+      </div>
+    `;
 
-  document
-    .querySelectorAll(".filter")
+    return;
+
+  }
+
+
+  activityList.innerHTML =
+    visible.map(item => {
+
+      const addedBy =
+        item.created_by_username ||
+        "Family Member";
+
+
+      const completedInfo =
+        item.done
+
+          ? ` · Completed by ${
+              escapeHTML(
+                item.completed_by_username ||
+                "Family Member"
+              )
+            }${
+              item.completed_at
+                ? ` on ${formatDate(item.completed_at)}`
+                : ""
+            }`
+
+          : "";
+
+
+      return `
+
+        <article
+          class="activity ${item.done ? "done" : ""}"
+          data-id="${item.id}"
+        >
+
+          <button
+            class="check"
+            data-action="toggle"
+            data-id="${item.id}"
+            aria-label="Toggle activity"
+          >
+            ${item.done ? "✓" : ""}
+          </button>
+
+          <div class="activity-main">
+
+            <div class="activity-text">
+              ${escapeHTML(item.text)}
+            </div>
+
+            <div class="activity-info">
+              Added by ${escapeHTML(addedBy)}
+              ${completedInfo}
+            </div>
+
+          </div>
+
+          <button
+            class="delete-activity"
+            data-action="delete"
+            data-id="${item.id}"
+            aria-label="Delete activity"
+          >
+            ×
+          </button>
+
+        </article>
+
+      `;
+
+    }).join("");
+
+
+  activityList
+    .querySelectorAll("[data-action]")
     .forEach(button => {
 
-      button.classList.toggle(
-        "active",
-        button.dataset.filter ===
-          currentFilter
+      button.addEventListener(
+        "click",
+        async () => {
+
+          const id =
+            button.dataset.id;
+
+          if(
+            button.dataset.action ===
+            "toggle"
+          ){
+
+            await toggleActivity(id);
+
+          }
+
+          if(
+            button.dataset.action ===
+            "delete"
+          ){
+
+            await deleteActivity(id);
+
+          }
+
+        }
       );
 
     });
@@ -3027,282 +3138,39 @@ function updateFilterButtons(){
 }
 
 
-document
-  .querySelectorAll(".filter")
-  .forEach(button => {
-
-    button.addEventListener(
-      "click",
-      async () => {
-
-        currentFilter =
-          button.dataset.filter;
-
-        updateFilterButtons();
-
-        await loadActivities();
-
-      }
-    );
-
-  });
-
-
 /* =====================================================
-   SEASONS
-   ===================================================== */
-
-document
-  .querySelectorAll(
-    ".nav button[data-season]"
-  )
-  .forEach(button => {
-
-    button.addEventListener(
-      "click",
-      async () => {
-
-        currentSeason =
-          button.dataset.season;
-
-        currentListId =
-          null;
-
-        currentList =
-          null;
-
-        currentFilter =
-          "all";
-
-        localStorage.setItem(
-          "bucketSeason",
-          currentSeason
-        );
-
-        updateFilterButtons();
-
-        renderSeason();
-
-        closeDrawer();
-
-        await loadActivities();
-
-      }
-    );
-
-  });
-
-
-/* =====================================================
-   DRAWER
-   ===================================================== */
-
-function openDrawer(){
-
-  drawer.classList.add(
-    "open"
-  );
-
-  overlay.classList.add(
-    "show"
-  );
-
-}
-
-function closeDrawer(){
-
-  drawer.classList.remove(
-    "open"
-  );
-
-  overlay.classList.remove(
-    "show"
-  );
-
-}
-
-document
-  .getElementById("menuBtn")
-  .onclick =
-  openDrawer;
-
-document
-  .getElementById("close")
-  .onclick =
-  closeDrawer;
-
-overlay.onclick =
-  closeDrawer;
-
-
-/* =====================================================
-   CREATE MODAL
-   ===================================================== */
-
-document
-  .getElementById("createListButton")
-  .onclick =
-  () => {
-
-    document
-      .getElementById("createModal")
-      .classList.add("show");
-
-  };
-
-
-document
-  .getElementById("cancelCreate")
-  .onclick =
-  () => {
-
-    document
-      .getElementById("createModal")
-      .classList.remove("show");
-
-  };
-
-
-document
-  .getElementById("confirmCreate")
-  .onclick =
-  createList;
-
-
-/* =====================================================
-   PASSWORD
-   ===================================================== */
-
-document
-  .getElementById("cancelPassword")
-  .onclick =
-  () => {
-
-    document
-      .getElementById("passwordModal")
-      .classList.remove("show");
-
-    currentListId =
-      null;
-
-    currentList =
-      null;
-
-  };
-
-
-document
-  .getElementById("confirmPassword")
-  .onclick =
-  unlockList;
-
-
-document
-  .getElementById("listPassword")
-  .addEventListener(
-    "keydown",
-    event => {
-
-      if(event.key === "Enter"){
-
-        unlockList();
-
-      }
-
-    }
-  );
-
-
-/* =====================================================
-   SETTINGS
-   ===================================================== */
-
-document
-  .getElementById("settingsButton")
-  .onclick =
-  () => {
-
-    document
-      .getElementById("settingsModal")
-      .classList.add("show");
-
-    closeDrawer();
-
-  };
-
-
-document
-  .getElementById("closeSettings")
-  .onclick =
-  () => {
-
-    document
-      .getElementById("settingsModal")
-      .classList.remove("show");
-
-  };
-
-
-/* =====================================================
-   THEMES
-   ===================================================== */
-
-const themeButton =
-  document.getElementById(
-    "themeButton"
-  );
-
-const themeMenu =
-  document.getElementById(
-    "themeMenu"
-  );
-
-
-themeButton.onclick =
+   THEME MENU
+===================================================== */
+
+themeFab.addEventListener(
+  "click",
   event => {
 
     event.stopPropagation();
 
     themeMenu.classList.toggle(
-      "open"
+      "show"
     );
 
-  };
+  }
+);
 
 
 document
-  .querySelectorAll(
-    ".theme-menu button"
-  )
+  .querySelectorAll(".theme-choice")
   .forEach(button => {
 
     button.addEventListener(
       "click",
       () => {
 
-        const theme =
+        theme =
           button.dataset.theme;
 
-        document.body.classList.remove(
-          "theme-light",
-          "theme-dark",
-          "theme-spring",
-          "theme-summer",
-          "theme-fall",
-          "theme-winter"
-        );
-
-        document.body.classList.add(
-          "theme-" + theme
-        );
-
-        localStorage.setItem(
-          "bucketTheme",
-          theme
-        );
+        applyTheme();
 
         themeMenu.classList.remove(
-          "open"
+          "show"
         );
 
       }
@@ -3313,29 +3181,103 @@ document
 
 document.addEventListener(
   "click",
-  () => {
+  event => {
 
-    themeMenu.classList.remove(
-      "open"
-    );
+    if(
+      !themeMenu.contains(event.target) &&
+      event.target !== themeFab
+    ){
+
+      themeMenu.classList.remove(
+        "show"
+      );
+
+    }
 
   }
 );
 
 
 /* =====================================================
-   ENTER KEY
-   ===================================================== */
+   SETTINGS
+===================================================== */
 
 document
-  .getElementById("activity")
+  .getElementById("settingsBtn")
   .addEventListener(
-    "keydown",
-    event => {
+    "click",
+    () => {
 
-      if(event.key === "Enter"){
+      document
+        .getElementById("settingsUser")
+        .textContent =
+          `Signed in as ${getUsername(currentUser)} with GitHub.`;
 
-        addActivity();
+      settingsModal.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+
+document
+  .getElementById("closeSettings")
+  .addEventListener(
+    "click",
+    () => {
+
+      settingsModal.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+
+document
+  .querySelectorAll("[data-theme-setting]")
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        theme =
+          button.dataset.themeSetting;
+
+        applyTheme();
+
+      }
+    );
+
+  });
+
+
+/* =====================================================
+   SIGN OUT
+===================================================== */
+
+document
+  .getElementById("signOutBtn")
+  .addEventListener(
+    "click",
+    async () => {
+
+      const {
+        error
+      } =
+        await db.auth.signOut();
+
+      if(error){
+
+        alert(error.message);
+
+      }else{
+
+        settingsModal.classList.remove(
+          "show"
+        );
 
       }
 
@@ -3344,19 +3286,83 @@ document
 
 
 /* =====================================================
-   START
-   ===================================================== */
+   PARTICLES
+===================================================== */
 
-const savedTheme =
-  localStorage.getItem(
-    "bucketTheme"
-  ) || "fall";
+function createParticles(){
 
-document.body.classList.add(
-  "theme-" + savedTheme
-);
+  document
+    .querySelectorAll(".particle")
+    .forEach(
+      element => element.remove()
+    );
 
-renderSeason();
+
+  const season =
+    currentMode === "season"
+      ? currentSeason
+      : "fall";
+
+
+  const symbols = {
+
+    spring:["🌸","🌿","🌷"],
+
+    summer:["✦","☀","·"],
+
+    fall:["🍂","🍁","·"],
+
+    winter:["❄","✦","·"]
+
+  };
+
+
+  const choices =
+    symbols[season] ||
+    symbols.fall;
+
+
+  for(
+    let i=0;
+    i<14;
+    i++
+  ){
+
+    const particle =
+      document.createElement(
+        "div"
+      );
+
+    particle.className =
+      "particle";
+
+    particle.textContent =
+      choices[
+        Math.floor(
+          Math.random() *
+          choices.length
+        )
+      ];
+
+    particle.style.left =
+      `${Math.random()*100}%`;
+
+    particle.style.fontSize =
+      `${10 + Math.random()*14}px`;
+
+    particle.style.animationDuration =
+      `${7 + Math.random()*8}s`;
+
+    particle.style.animationDelay =
+      `${Math.random()*4}s`;
+
+    document.body.appendChild(
+      particle
+    );
+
+  }
+
+}
 
 </script>
 
