@@ -1,2211 +1,2208 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Family Seasonal Bucket List</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-:root{
-  --bg:#fff9f2;
-  --ink:#35251d;
-  --muted:#806d61;
-  --card:#fffdf9;
-  --line:#eadbcf;
-  --accent:#d66a35;
-  --accent2:#e4a13e;
-  --shadow:0 18px 45px #4d2d1a14;
-}
-
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--ink);
-  font-family:system-ui,-apple-system,Segoe UI,sans-serif;
-  transition:background .3s ease;
-}
-
-button,input{
-  font:inherit;
-}
-
-header{
-  height:72px;
-  border-bottom:1px solid var(--line);
-  background:#ffffffd9;
-  backdrop-filter:blur(12px);
-  display:flex;
-  align-items:center;
-  padding:0 18px;
-  position:sticky;
-  top:0;
-  z-index:5;
-}
-
-.menu-btn{
-  width:46px;
-  height:46px;
-  border:0;
-  background:transparent;
-  border-radius:12px;
-  cursor:pointer;
-  display:grid;
-  place-items:center;
-}
-
-.menu-btn:hover{
-  background:#f4e9de;
-}
-
-.hamb{
-  width:22px;
-}
-
-.hamb i{
-  display:block;
-  height:2px;
-  background:var(--ink);
-  margin:5px 0;
-  border-radius:2px;
-}
-
-.brand{
-  font-family:Georgia,serif;
-  font-size:23px;
-  font-weight:700;
-  margin-left:8px;
-}
-
-.user-area{
-  margin-left:auto;
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.user-email{
-  font-size:13px;
-  color:var(--muted);
-  max-width:180px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-
-.logout{
-  border:0;
-  background:#f1e5d9;
-  color:var(--ink);
-  padding:9px 12px;
-  border-radius:10px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.logout:hover{
-  background:#ead9ca;
-}
-
-.drawer{
-  position:fixed;
-  top:0;
-  left:-310px;
-  width:290px;
-  height:100vh;
-  background:#fffdf9;
-  box-shadow:10px 0 35px #0002;
-  z-index:20;
-  padding:22px;
-  transition:left .25s ease;
-}
-
-.drawer.open{
-  left:0;
-}
-
-.drawer h2{
-  font-family:Georgia,serif;
-  margin:8px 0 24px;
-  font-size:27px;
-}
-
-.close{
-  float:right;
-  border:0;
-  background:#f1e5d9;
-  border-radius:10px;
-  width:38px;
-  height:38px;
-  font-size:20px;
-  cursor:pointer;
-}
-
-.nav{
-  display:grid;
-  gap:9px;
-}
-
-.nav button{
-  border:0;
-  background:transparent;
-  text-align:left;
-  padding:15px;
-  border-radius:14px;
-  font-weight:800;
-  font-size:16px;
-  color:var(--ink);
-  cursor:pointer;
-}
-
-.nav button:hover,
-.nav button.active{
-  background:#f5e5d6;
-}
-
-.overlay{
-  position:fixed;
-  inset:0;
-  background:#24170e55;
-  z-index:10;
-  display:none;
-}
-
-.overlay.show{
-  display:block;
-}
-
-main{
-  max-width:1050px;
-  margin:auto;
-  padding:48px 20px 70px;
-}
-
-.hero{
-  text-align:center;
-  margin-bottom:30px;
-}
-
-.season-icon{
-  font-size:58px;
-}
-
-.hero h1{
-  font-family:Georgia,serif;
-  font-size:clamp(42px,8vw,72px);
-  margin:8px 0;
-}
-
-.hero p{
-  color:var(--muted);
-  max-width:650px;
-  margin:auto;
-  font-size:17px;
-}
-
-.panel{
-  background:#ffffffb8;
-  border:1px solid var(--line);
-  border-radius:26px;
-  padding:20px;
-  box-shadow:var(--shadow);
-}
-
-.toolbar{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-input,select{
-  border:1px solid var(--line);
-  border-radius:13px;
-  padding:12px 14px;
-  background:white;
-  color:var(--ink);
-  outline:0;
-}
-
-input:focus{
-  border-color:var(--accent);
-  box-shadow:0 0 0 3px #d66a3520;
-}
-
-#activity{
-  flex:1;
-  min-width:220px;
-}
-
-.add{
-  background:var(--accent);
-  color:white;
-  border:0;
-  border-radius:13px;
-  padding:12px 18px;
-  font-weight:800;
-  cursor:pointer;
-  transition:.2s;
-}
-
-.add:hover{
-  transform:translateY(-1px);
-  filter:brightness(.97);
-}
-
-.add:disabled{
-  opacity:.6;
-  cursor:not-allowed;
-}
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-  margin:18px 0;
-}
-
-.stat{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:17px;
-  padding:15px;
-}
-
-.stat strong{
-  display:block;
-  font-size:27px;
-}
-
-.stat span{
-  font-size:11px;
-  color:var(--muted);
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-}
-
-.progress{
-  height:10px;
-  background:#eadfd5;
-  border-radius:99px;
-  overflow:hidden;
-  margin-top:9px;
-}
-
-.bar{
-  height:100%;
-  width:0;
-  background:linear-gradient(
-    90deg,
-    var(--accent),
-    var(--accent2)
-  );
-  transition:.4s ease;
-}
-
-.completion{
-  display:none;
-  margin-top:12px;
-  padding:10px;
-  border-radius:12px;
-  background:#fff3dc;
-  color:var(--accent);
-  font-weight:800;
-  text-align:center;
-}
-
-.list{
-  display:grid;
-  gap:10px;
-  margin-top:18px;
-}
-
-.item{
-  display:flex;
-  align-items:center;
-  gap:13px;
-  padding:14px;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:17px;
-  transition:.2s;
-}
-
-.item:hover{
-  transform:translateY(-1px);
-  box-shadow:0 8px 22px #4d2d1a0b;
-}
-
-.check{
-  width:24px;
-  height:24px;
-  accent-color:var(--accent);
-  cursor:pointer;
-}
-
-.text{
-  flex:1;
-}
-
-.text b{
-  display:block;
-}
-
-.text small{
-  color:var(--muted);
-}
-
-.item.done .text b{
-  text-decoration:line-through;
-  opacity:.45;
-}
-
-.delete{
-  border:0;
-  background:transparent;
-  color:#a88978;
-  font-weight:800;
-  cursor:pointer;
-  padding:8px;
-  border-radius:8px;
-}
-
-.delete:hover{
-  background:#f5e5d6;
-  color:#8b4d31;
-}
-
-.filters{
-  display:flex;
-  gap:8px;
-  margin-top:20px;
-  flex-wrap:wrap;
-}
-
-.filter{
-  border:1px solid var(--line);
-  background:white;
-  border-radius:99px;
-  padding:8px 13px;
-  cursor:pointer;
-  color:var(--muted);
-  font-weight:700;
-}
-
-.filter.active{
-  background:var(--ink);
-  color:white;
-}
-
-.empty{
-  text-align:center;
-  color:var(--muted);
-  padding:45px 10px;
-}
-
-.empty div{
-  font-size:45px;
-}
-
-.actions{
-  display:flex;
-  justify-content:flex-end;
-  margin-top:18px;
-}
-
-.clear{
-  border:0;
-  background:#f1e5d9;
-  padding:10px 14px;
-  border-radius:12px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.clear:hover{
-  background:#ead9ca;
-}
-
-.status{
-  text-align:center;
-  margin:15px 0;
-  color:var(--muted);
-  font-size:13px;
-}
-
-/* =========================================================
-   EMAIL LOGIN
-   ========================================================= */
-
-.auth-screen{
-  position:fixed;
-  inset:0;
-  background:var(--bg);
-  z-index:100;
-  display:grid;
-  place-items:center;
-  padding:20px;
-  overflow:auto;
-}
-
-.auth-box{
-  width:min(430px,100%);
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:26px;
-  padding:34px;
-  box-shadow:var(--shadow);
-  text-align:center;
-}
-
-.auth-box h1{
-  font-family:Georgia,serif;
-  margin:0 0 8px;
-}
-
-.auth-box p{
-  color:var(--muted);
-  margin:0 0 25px;
-}
-
-.auth-form{
-  display:grid;
-  gap:12px;
-}
-
-.auth-form input{
-  width:100%;
-  padding:14px;
-}
-
-.auth-btn{
-  width:100%;
-  border:0;
-  background:var(--accent);
-  color:white;
-  padding:14px;
-  border-radius:13px;
-  font-weight:800;
-  cursor:pointer;
-  transition:.2s;
-}
-
-.auth-btn:hover{
-  transform:translateY(-1px);
-  filter:brightness(.97);
-}
-
-.auth-btn:disabled{
-  opacity:.6;
-  cursor:not-allowed;
-}
-
-.switch-btn{
-  margin-top:14px;
-  border:0;
-  background:transparent;
-  color:var(--accent);
-  font-weight:800;
-  cursor:pointer;
-}
-
-.auth-message{
-  min-height:20px;
-  margin-top:14px;
-  color:#a05232;
-  font-size:13px;
-  line-height:1.4;
-}
-
-.hidden{
-  display:none!important;
-}
-
-/* =========================================================
-   SEASON PARTICLES
-   ========================================================= */
-
-.season-bg{
-  position:fixed;
-  inset:0;
-  overflow:hidden;
-  pointer-events:none;
-  z-index:-1;
-}
-
-.particle{
-  position:absolute;
-  top:-12vh;
-  left:var(--x);
-  width:var(--size);
-  height:var(--size);
-  opacity:.75;
-  animation:seasonFall var(--duration) linear infinite;
-  animation-delay:var(--delay);
-}
-
-@keyframes seasonFall{
-  0%{
-    transform:translate3d(0,-15vh,0) rotate(0deg);
-    opacity:0;
-  }
-
-  10%{
-    opacity:.8;
-  }
-
-  50%{
-    transform:translate3d(var(--drift),55vh,0) rotate(180deg);
-  }
-
-  90%{
-    opacity:.7;
-  }
-
-  100%{
-    transform:translate3d(
-      calc(var(--drift) * -1),
-      115vh,
-      0
-    ) rotate(360deg);
-    opacity:0;
-  }
-}
-
-body:has(.drawer.open) .season-bg{
-  opacity:.35;
-}
-
-body.spring{
-  --bg:#fff8fc;
-  --line:#ead9e4;
-  --accent:#cc7191;
-}
-
-.spring .particle{
-  background:#e99ab9;
-  border-radius:50% 0 50% 0;
-}
-
-body.summer{
-  --bg:#fffaf0;
-  --line:#eddfc2;
-  --accent:#e39a25;
-}
-
-.summer .particle{
-  background:#f4c64e;
-  border-radius:50%;
-  box-shadow:0 0 10px #f4c64e66;
-}
-
-body.fall{
-  --bg:#fff9f2;
-  --line:#eadbcf;
-  --accent:#d66a35;
-}
-
-.fall .particle{
-  background:#c96a32;
-  border-radius:50% 0 50% 50%;
-  transform:rotate(25deg);
-}
-
-body.winter{
-  --bg:#f5fbff;
-  --line:#d8e7ee;
-  --accent:#5793b5;
-}
-
-.winter .particle{
-  background:white;
-  border-radius:50%;
-  box-shadow:0 0 5px #8eb8ca88;
-}
-
-.p1{--x:4%;--size:13px;--duration:8s;--delay:-2s;--drift:45px}
-.p2{--x:12%;--size:9px;--duration:11s;--delay:-7s;--drift:-30px}
-.p3{--x:21%;--size:15px;--duration:9s;--delay:-4s;--drift:55px}
-.p4{--x:31%;--size:8px;--duration:13s;--delay:-9s;--drift:-45px}
-.p5{--x:42%;--size:12px;--duration:10s;--delay:-1s;--drift:35px}
-.p6{--x:53%;--size:7px;--duration:12s;--delay:-6s;--drift:-60px}
-.p7{--x:63%;--size:14px;--duration:9s;--delay:-3s;--drift:40px}
-.p8{--x:72%;--size:9px;--duration:14s;--delay:-11s;--drift:-35px}
-.p9{--x:81%;--size:13px;--duration:10s;--delay:-5s;--drift:60px}
-.p10{--x:89%;--size:8px;--duration:12s;--delay:-8s;--drift:-50px}
-.p11{--x:95%;--size:11px;--duration:9s;--delay:-1s;--drift:30px}
-.p12{--x:26%;--size:6px;--duration:15s;--delay:-12s;--drift:-25px}
-
-@media(prefers-reduced-motion:reduce){
-
-  .particle{
-    animation:none;
-    display:none;
-  }
-
-  *{
-    scroll-behavior:auto!important;
-  }
-}
-
-@media(max-width:600px){
-
-  header{
-    height:64px;
-    padding:0 10px;
-  }
-
-  .brand{
-    font-size:20px;
-  }
-
-  .menu-btn{
-    width:42px;
-    height:42px;
-  }
-
-  main{
-    padding:30px 12px 50px;
-  }
-
-  .hero{
-    margin-bottom:22px;
-  }
-
-  .hero h1{
-    font-size:clamp(38px,12vw,58px);
-  }
-
-  .hero p{
-    font-size:15px;
-    padding:0 8px;
-  }
-
-  .panel{
-    padding:14px;
-    border-radius:20px;
-  }
-
-  .toolbar{
-    display:grid;
-    grid-template-columns:1fr;
-  }
-
-  #activity{
-    width:100%;
-    min-width:0;
-  }
-
-  .add{
-    width:100%;
-    min-height:46px;
-  }
-
-  .stats{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .stats .stat:last-child{
-    grid-column:1/-1;
-  }
-
-  .item{
-    padding:12px;
-    gap:10px;
-  }
-
-  .text b{
-    font-size:15px;
-  }
-
-  .drawer{
-    width:min(290px,88vw);
-  }
-
-  .user-email{
-    display:none;
-  }
-
-  .logout{
-    padding:8px 10px;
-    font-size:13px;
-  }
-
-  .auth-box{
-    padding:26px 20px;
-  }
-}
-</style>
-</head>
-
-<body class="fall">
-
-<!-- =========================================================
-     EMAIL LOGIN / CREATE ACCOUNT
-     ========================================================= -->
-
-<div class="auth-screen" id="authScreen">
-
-  <div class="auth-box">
-
-    <h1>Family Bucket List</h1>
-
-    <p id="authSubtitle">
-      Log in to access your family's shared bucket list.
-    </p>
-
-    <form class="auth-form" id="authForm">
-
-      <input
-        id="email"
-        type="email"
-        placeholder="Email address"
-        autocomplete="email"
-        required
-      >
-
-      <input
-        id="password"
-        type="password"
-        placeholder="Password"
-        autocomplete="current-password"
-        minlength="6"
-        required
-      >
-
-      <button
-        class="auth-btn"
-        id="authBtn"
-        type="submit"
-      >
-        Log In
-      </button>
-
-    </form>
-
-    <button
-      class="switch-btn"
-      id="switchAuth"
-      type="button"
-    >
-      Need an account? Create one
-    </button>
-
-    <div
-      class="auth-message"
-      id="authMessage"
-    ></div>
-
-  </div>
-
-</div>
-
-
-<!-- =========================================================
-     FALLING SEASON PARTICLES
-     ========================================================= -->
-
-<div
-  class="season-bg"
-  id="seasonBg"
-  aria-hidden="true"
->
-
-  <div class="particle p1"></div>
-  <div class="particle p2"></div>
-  <div class="particle p3"></div>
-  <div class="particle p4"></div>
-  <div class="particle p5"></div>
-  <div class="particle p6"></div>
-  <div class="particle p7"></div>
-  <div class="particle p8"></div>
-  <div class="particle p9"></div>
-  <div class="particle p10"></div>
-  <div class="particle p11"></div>
-  <div class="particle p12"></div>
-
-</div>
-
-
-<header>
-
-  <button
-    class="menu-btn"
-    id="menuBtn"
-    aria-label="Open menu"
-  >
-
-    <span class="hamb">
-      <i></i>
-      <i></i>
-      <i></i>
-    </span>
-
-  </button>
-
-  <div class="brand">
-    Bucket List
-  </div>
-
-  <div class="user-area">
-
-    <span
-      class="user-email"
-      id="userEmail"
-    ></span>
-
-    <button
-      class="logout"
-      id="logout"
-    >
-      Log Out
-    </button>
-
-  </div>
-
-</header>
-
-
-<div
-  class="overlay"
-  id="overlay"
-></div>
-
-
-<aside
-  class="drawer"
-  id="drawer"
->
-
-  <button
-    class="close"
-    id="close"
-    aria-label="Close menu"
-  >
-    ×
-  </button>
-
-  <h2>Seasons</h2>
-
-  <nav class="nav">
-
-    <button data-season="spring">
-      🌷 Spring
-    </button>
-
-    <button data-season="summer">
-      ☀️ Summer
-    </button>
-
-    <button
-      data-season="fall"
-      class="active"
-    >
-      🍂 Fall
-    </button>
-
-    <button data-season="winter">
-      ❄️ Winter
-    </button>
-
-  </nav>
-
-</aside>
-
-
-<main>
-
-  <section class="hero">
-
-    <div
-      class="season-icon"
-      id="icon"
-    >
-      🍂
-    </div>
-
-    <h1 id="title">
-      Fall Bucket List
-    </h1>
-
-    <p id="subtitle">
-      Cozy days, crisp air, colorful leaves, and everything that makes autumn special.
-    </p>
-
-  </section>
-
-
-  <section class="panel">
-
-    <div class="toolbar">
-
-      <input
-        id="activity"
-        maxlength="100"
-        placeholder="Add something to your bucket list..."
-      >
-
-      <button
-        class="add"
-        id="add"
-      >
-        Add Activity
-      </button>
-
-    </div>
-
-
-    <div
-      class="status"
-      id="status"
-    >
-      Connecting...
-    </div>
-
-
-    <div class="stats">
-
-      <div class="stat">
-
-        <strong id="total">
-          0
-        </strong>
-
-        <span>Total</span>
-
-      </div>
-
-
-      <div class="stat">
-
-        <strong id="completed">
-          0
-        </strong>
-
-        <span>Completed</span>
-
-      </div>
-
-
-      <div class="stat">
-
-        <strong id="percent">
-          0%
-        </strong>
-
-        <span>Progress</span>
-
-        <div class="progress">
-
-          <div
-            class="bar"
-            id="bar"
-          ></div>
-
-        </div>
-
-        <div
-          class="completion"
-          id="completionMessage"
-        >
-          🎉 Congratulations! You completed everything!
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <div class="filters">
-
-      <button
-        class="filter active"
-        data-filter="all"
-      >
-        All
-      </button>
-
-      <button
-        class="filter"
-        data-filter="active"
-      >
-        To Do
-      </button>
-
-      <button
-        class="filter"
-        data-filter="done"
-      >
-        Completed
-      </button>
-
-    </div>
-
-
-    <div
-      class="list"
-      id="list"
-    ></div>
-
-
-    <div
-      class="empty"
-      id="empty"
-    >
-
-      <div>✨</div>
-
-      <b>Your list is empty.</b>
-
-      <br>
-
-      Add your first activity!
-
-    </div>
-
-
-    <div class="actions">
-
-      <button
-        class="clear"
-        id="clear"
-      >
-        Clear Completed
-      </button>
-
-    </div>
-
-  </section>
-
-</main>
-
-
-<script>
-
-/* =========================================================
-   SUPABASE SETUP
-   ========================================================= */
-
-const SUPABASE_URL =
-  "https://elprfpqivxmdrtvdtojh.supabase.co";
-
-const SUPABASE_KEY =
-  "sb_publishable_bgSXEqqOpsyKA9wdgeVkKA_B_WoD23b";
-
-const {
-  createClient
-} = supabase;
-
-const db =
-  createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-
-/* =========================================================
-   BUCKET LIST DATA
-   ========================================================= */
-
-const data = {
-
-  spring:{
-    icon:"🌷",
-    title:"Spring Bucket List",
-    subtitle:"Fresh air, blooming flowers, sunny days, and new adventures.",
-    items:[
-      "See the cherry blossoms",
-      "Have a picnic",
-      "Plant some flowers",
-      "Go on a nature walk",
-      "Fly a kite",
-      "Have a spring cleaning day",
-      "Visit a farmers market",
-      "Take photos of flowers"
-    ]
-  },
-
-  summer:{
-    icon:"☀️",
-    title:"Summer Bucket List",
-    subtitle:"Long days, warm nights, adventures, and making summer memories.",
-    items:[
-      "Go to the beach",
-      "Watch a sunset",
-      "Have a BBQ",
-      "Go swimming",
-      "Have a water balloon fight",
-      "Go camping",
-      "Get ice cream",
-      "Have a late-night hangout"
-    ]
-  },
-
-  fall:{
-    icon:"🍂",
-    title:"Fall Bucket List",
-    subtitle:"Cozy days, crisp air, colorful leaves, and everything that makes autumn special.",
-    items:[
-      "Go apple picking",
-      "Visit a pumpkin patch",
-      "Take a fall foliage walk",
-      "Have a bonfire",
-      "Bake pumpkin bread",
-      "Have a Halloween movie marathon",
-      "Drink apple cider",
-      "Take autumn photos"
-    ]
-  },
-
-  winter:{
-    icon:"❄️",
-    title:"Winter Bucket List",
-    subtitle:"Snowy days, warm drinks, holiday lights, and cozy winter adventures.",
-    items:[
-      "Build a snowman",
-      "Go sledding",
-      "Drink hot chocolate",
-      "See holiday lights",
-      "Have a cozy movie night",
-      "Bake holiday cookies",
-      "Go ice skating",
-      "Have a snowball fight"
-    ]
-  }
-
-};
-
-
-/* =========================================================
-   APP STATE
-   ========================================================= */
-
-let season =
-  localStorage.getItem("bucketSeason") || "fall";
-
-let filter =
-  "all";
-
-let items = [];
-
-let authMode =
-  "login";
-
-
-/* =========================================================
-   ELEMENTS
-   ========================================================= */
-
-const authScreen =
-  document.getElementById("authScreen");
-
-const authForm =
-  document.getElementById("authForm");
-
-const authSubtitle =
-  document.getElementById("authSubtitle");
-
-const authBtn =
-  document.getElementById("authBtn");
-
-const switchAuth =
-  document.getElementById("switchAuth");
-
-const authMessage =
-  document.getElementById("authMessage");
-
-const emailInput =
-  document.getElementById("email");
-
-const passwordInput =
-  document.getElementById("password");
-
-const userEmail =
-  document.getElementById("userEmail");
-
-const logout =
-  document.getElementById("logout");
-
-const menuBtn =
-  document.getElementById("menuBtn");
-
-const drawer =
-  document.getElementById("drawer");
-
-const overlay =
-  document.getElementById("overlay");
-
-const close =
-  document.getElementById("close");
-
-const activity =
-  document.getElementById("activity");
-
-const add =
-  document.getElementById("add");
-
-const list =
-  document.getElementById("list");
-
-const empty =
-  document.getElementById("empty");
-
-const total =
-  document.getElementById("total");
-
-const completed =
-  document.getElementById("completed");
-
-const percent =
-  document.getElementById("percent");
-
-const bar =
-  document.getElementById("bar");
-
-const completionMessage =
-  document.getElementById("completionMessage");
-
-const status =
-  document.getElementById("status");
-
-const icon =
-  document.getElementById("icon");
-
-const title =
-  document.getElementById("title");
-
-const subtitle =
-  document.getElementById("subtitle");
-
-
-/* =========================================================
-   AUTH MODE
-   ========================================================= */
-
-switchAuth.addEventListener(
-  "click",
-  function(){
-
-    authMessage.textContent = "";
-
-    emailInput.value = "";
-    passwordInput.value = "";
-
-    if(authMode === "login"){
-
-      authMode = "signup";
-
-      authSubtitle.textContent =
-        "Create an account to join your family's shared bucket list.";
-
-      authBtn.textContent =
-        "Create Account";
-
-      switchAuth.textContent =
-        "Already have an account? Log in";
-
-    }else{
-
-      authMode = "login";
-
-      authSubtitle.textContent =
-        "Log in to access your family's shared bucket list.";
-
-      authBtn.textContent =
-        "Log In";
-
-      switchAuth.textContent =
-        "Need an account? Create one";
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Family Bucket List</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --cream: #f8f2e8;
+      --paper: #fffaf2;
+      --brown: #5d4635;
+      --brown-dark: #3d2d21;
+      --green: #738b5c;
+      --green-dark: #536a42;
+      --orange: #d88950;
+      --pink: #d88989;
+      --blue: #7897a8;
+      --shadow: 0 10px 30px rgba(72, 49, 30, .12);
+      --radius: 22px;
     }
 
-  }
-);
-
-
-/* =========================================================
-   EMAIL LOGIN / SIGNUP
-   ========================================================= */
-
-authForm.addEventListener(
-  "submit",
-  async function(e){
-
-    e.preventDefault();
-
-    const email =
-      emailInput.value.trim();
-
-    const password =
-      passwordInput.value;
-
-
-    if(!email || !password){
-
-      authMessage.textContent =
-        "Please enter your email and password.";
-
-      return;
-
+    * {
+      box-sizing: border-box;
     }
 
-
-    authBtn.disabled =
-      true;
-
-    authMessage.textContent =
-      authMode === "login"
-        ? "Logging in..."
-        : "Creating your account...";
-
-
-    try{
-
-      if(authMode === "login"){
-
-        const {
-          error
-        } =
-          await db.auth.signInWithPassword({
-
-            email:email,
-
-            password:password
-
-          });
-
-
-        if(error)
-          throw error;
-
-
-        authMessage.textContent =
-          "";
-
-      }else{
-
-        const {
-  data,
-  error
-} =
-  await db.auth.signUp({
-
-    email:email,
-
-    password:password,
-
-    options:{
-      emailRedirectTo:
-        "https://jaydenrrivera2011.github.io/family-bucket-list/"
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(216,137,80,.10), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(115,139,92,.10), transparent 30%),
+        var(--cream);
+      color: var(--brown);
+      font-family: Arial, sans-serif;
     }
 
-  });
+    button,
+    input {
+      font: inherit;
+    }
 
+    button {
+      cursor: pointer;
+    }
 
-        if(error)
-          throw error;
+    /* =========================
+       AUTH
+    ========================= */
 
+    #authScreen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
 
-        /*
-          If email confirmation is enabled,
-          Supabase may return a user without
-          an active session.
-        */
+    .auth-card {
+      width: 100%;
+      max-width: 460px;
+      background: var(--paper);
+      padding: 38px;
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
 
-        if(data.user && !data.session){
+    .auth-card h1 {
+      margin: 0 0 10px;
+      font-family: Georgia, serif;
+      font-size: 42px;
+      color: var(--brown-dark);
+    }
 
-          authMessage.textContent =
-            "Account created! Check your email for the confirmation link.";
+    .auth-card p {
+      line-height: 1.6;
+      opacity: .8;
+    }
 
-        }else{
+    .auth-form {
+      margin-top: 25px;
+    }
 
-          authMessage.textContent =
-            "Account created!";
+    .auth-form input {
+      width: 100%;
+      padding: 15px 17px;
+      margin-bottom: 12px;
+      border: 1px solid #dfd2c0;
+      border-radius: 14px;
+      background: white;
+      color: var(--brown);
+      outline: none;
+    }
 
-        }
+    .auth-form input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(115,139,92,.12);
+    }
 
+    .primary-btn {
+      width: 100%;
+      border: none;
+      padding: 15px;
+      border-radius: 14px;
+      background: var(--green);
+      color: white;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    .primary-btn:hover {
+      background: var(--green-dark);
+    }
+
+    .secondary-btn {
+      border: none;
+      background: transparent;
+      color: var(--green-dark);
+      font-weight: bold;
+      margin-top: 18px;
+    }
+
+    #authMessage {
+      min-height: 22px;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    /* =========================
+       APP
+    ========================= */
+
+    #app {
+      display: none;
+      min-height: 100vh;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      height: 76px;
+      background: rgba(255,250,242,.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(93,70,53,.08);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .header-inner {
+      width: 100%;
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .menu-btn {
+      width: 46px;
+      height: 46px;
+      border: none;
+      border-radius: 14px;
+      background: #eee3d5;
+      color: var(--brown);
+      font-size: 25px;
+    }
+
+    .logo {
+      font-family: Georgia, serif;
+      font-size: 25px;
+      font-weight: bold;
+      color: var(--brown-dark);
+    }
+
+    .user-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .username-badge {
+      background: #eee3d5;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .logout-btn {
+      border: none;
+      background: transparent;
+      color: var(--brown);
+      font-weight: bold;
+    }
+
+    /* =========================
+       DRAWER
+    ========================= */
+
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(38,29,20,.35);
+      z-index: 100;
+      display: none;
+    }
+
+    .drawer-overlay.open {
+      display: block;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: min(370px, 90vw);
+      background: var(--paper);
+      z-index: 101;
+      transform: translateX(-100%);
+      transition: transform .25s ease;
+      overflow-y: auto;
+      padding: 25px;
+      box-shadow: 10px 0 35px rgba(0,0,0,.12);
+    }
+
+    .drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .drawer h2 {
+      margin: 0;
+      font-family: Georgia, serif;
+      color: var(--brown-dark);
+    }
+
+    .close-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 12px;
+      background: #eee3d5;
+      font-size: 20px;
+    }
+
+    .drawer-section {
+      margin-bottom: 28px;
+    }
+
+    .drawer-section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      opacity: .55;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .nav-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: none;
+      background: transparent;
+      padding: 13px 14px;
+      border-radius: 13px;
+      color: var(--brown);
+      text-align: left;
+      margin-bottom: 4px;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: #eee3d5;
+    }
+
+    .nav-icon {
+      width: 28px;
+      text-align: center;
+      font-size: 20px;
+    }
+
+    .custom-list-create {
+      display: flex;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .custom-list-create input {
+      flex: 1;
+      min-width: 0;
+      padding: 11px;
+      border: 1px solid #dfd2c0;
+      border-radius: 11px;
+      background: white;
+    }
+
+    .add-list-btn {
+      border: none;
+      width: 45px;
+      border-radius: 11px;
+      background: var(--green);
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .delete-list {
+      margin-left: auto;
+      border: none;
+      background: transparent;
+      opacity: .5;
+      font-size: 15px;
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    main {
+      width: 100%;
+      max-width: 1100px;
+      margin: auto;
+      padding: 45px 20px 80px;
+    }
+
+    .hero {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.55), rgba(255,255,255,.05)),
+        #e9ddca;
+      border-radius: 30px;
+      padding: 45px;
+      box-shadow: var(--shadow);
+      margin-bottom: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "✦";
+      position: absolute;
+      right: 45px;
+      top: 30px;
+      font-size: 100px;
+      opacity: .08;
+    }
+
+    .hero-label {
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 12px;
+      font-weight: bold;
+      opacity: .55;
+    }
+
+    .hero h1 {
+      font-family: Georgia, serif;
+      font-size: clamp(42px, 7vw, 72px);
+      line-height: .98;
+      margin: 13px 0;
+      color: var(--brown-dark);
+      max-width: 700px;
+    }
+
+    .hero p {
+      max-width: 650px;
+      line-height: 1.7;
+      font-size: 17px;
+      opacity: .78;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .stat {
+      background: var(--paper);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-number {
+      font-family: Georgia, serif;
+      font-size: 34px;
+      color: var(--brown-dark);
+      font-weight: bold;
+    }
+
+    .stat-label {
+      margin-top: 5px;
+      opacity: .6;
+      font-size: 13px;
+    }
+
+    .progress-card {
+      background: var(--paper);
+      padding: 22px;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 30px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .progress-track {
+      height: 13px;
+      background: #e8ded0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--green);
+      border-radius: 999px;
+      transition: width .4s ease;
+    }
+
+    #congratulations {
+      display: none;
+      margin-top: 15px;
+      padding: 14px;
+      border-radius: 14px;
+      background: #e6efd9;
+      color: var(--green-dark);
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .list-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      gap: 15px;
+    }
+
+    .list-heading h2 {
+      font-family: Georgia, serif;
+      color: var(--brown-dark);
+      margin: 0;
+      font-size: 34px;
+    }
+
+    .list-heading p {
+      margin: 5px 0 0;
+      opacity: .6;
+      font-size: 14px;
+    }
+
+    .new-item {
+      background: var(--paper);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .new-item input {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid #dfd2c0;
+      border-radius: 13px;
+      padding: 14px;
+      background: white;
+      color: var(--brown);
+    }
+
+    .new-item button {
+      border: none;
+      border-radius: 13px;
+      padding: 0 20px;
+      background: var(--green);
+      color: white;
+      font-weight: bold;
+    }
+
+    .activities {
+      display: grid;
+      gap: 14px;
+    }
+
+    .activity {
+      background: var(--paper);
+      border-radius: 20px;
+      padding: 19px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      transition: .2s ease;
+    }
+
+    .activity:hover {
+      transform: translateY(-2px);
+    }
+
+    .activity.done {
+      opacity: .72;
+    }
+
+    .checkbox {
+      width: 27px;
+      height: 27px;
+      flex: 0 0 27px;
+      border: 2px solid #cbbca9;
+      border-radius: 9px;
+      background: transparent;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    .activity.done .checkbox {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .activity-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .activity-title {
+      font-size: 17px;
+      line-height: 1.4;
+      color: var(--brown-dark);
+      font-weight: bold;
+    }
+
+    .activity.done .activity-title {
+      text-decoration: line-through;
+    }
+
+    .activity-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin-top: 8px;
+      font-size: 12px;
+      opacity: .58;
+      line-height: 1.5;
+    }
+
+    .activity-meta span {
+      display: inline-block;
+    }
+
+    .delete-btn {
+      border: none;
+      background: transparent;
+      opacity: .45;
+      font-size: 17px;
+      padding: 4px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 50px 20px;
+      background: rgba(255,250,242,.55);
+      border: 2px dashed #dbcdbb;
+      border-radius: 20px;
+      opacity: .65;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 35px;
+      opacity: .6;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 700px) {
+      header {
+        padding: 0 12px;
       }
 
-    }catch(error){
+      .logo {
+        font-size: 20px;
+      }
 
-      console.error(error);
+      .username-badge {
+        display: none;
+      }
 
-      authMessage.textContent =
-        error.message ||
-        "Something went wrong.";
+      main {
+        padding: 25px 13px 60px;
+      }
 
+      .hero {
+        padding: 30px 25px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .new-item {
+        flex-direction: column;
+      }
+
+      .new-item button {
+        padding: 13px;
+      }
+
+      .list-heading {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .activity {
+        padding: 15px;
+      }
+
+      .activity-meta {
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .auth-card {
+        padding: 28px 20px;
+      }
     }
+  </style>
+</head>
 
+<body>
 
-    authBtn.disabled =
-      false;
+  <!-- =========================
+       LOGIN / SIGNUP
+  ========================= -->
 
-  }
-);
+  <section id="authScreen">
 
+    <div class="auth-card">
 
-/* =========================================================
-   AUTHENTICATION
-   ========================================================= */
+      <div style="font-size:55px;">🌿</div>
 
-async function checkLogin(){
+      <h1>Family Bucket List</h1>
 
-  const {
-    data:{
-      session
-    }
-  } =
-    await db.auth.getSession();
+      <p id="authDescription">
+        Sign in with your family username and password.
+      </p>
 
+      <div class="auth-form">
 
-  if(session){
+        <input
+          id="usernameInput"
+          type="text"
+          placeholder="Username"
+          autocomplete="username"
+          maxlength="24"
+        >
 
-    showApp(session);
+        <input
+          id="passwordInput"
+          type="password"
+          placeholder="Password"
+          autocomplete="current-password"
+        >
 
-  }else{
+        <button
+          class="primary-btn"
+          id="authButton"
+          onclick="handleAuth()"
+        >
+          Sign In
+        </button>
 
-    showLogin();
+        <button
+          class="secondary-btn"
+          id="switchAuth"
+          onclick="switchAuthMode()"
+        >
+          Create an account
+        </button>
 
-  }
+      </div>
 
-}
+      <div id="authMessage"></div>
 
+    </div>
 
-function showLogin(){
+  </section>
 
-  authScreen.classList.remove(
-    "hidden"
-  );
 
-  status.textContent =
-    "Please sign in.";
+  <!-- =========================
+       APP
+  ========================= -->
 
-}
+  <div id="app">
 
+    <header>
 
-function showApp(session){
+      <div class="header-inner">
 
-  authScreen.classList.add(
-    "hidden"
-  );
+        <button
+          class="menu-btn"
+          onclick="openDrawer()"
+          aria-label="Open menu"
+        >
+          ☰
+        </button>
 
-  const email =
-    session.user.email || "";
+        <div class="logo">
+          Family Bucket List
+        </div>
 
-  userEmail.textContent =
-    email;
+        <div class="user-area">
 
-  loadActivities();
-
-}
-
-
-logout.addEventListener(
-  "click",
-  async function(){
-
-    await db.auth.signOut();
-
-    items = [];
-
-    list.innerHTML = "";
-
-    showLogin();
-
-  }
-);
-
-
-/* =========================================================
-   AUTH STATE
-   ========================================================= */
-
-db.auth.onAuthStateChange(
-  function(event,session){
-
-    if(session){
-
-      showApp(session);
-
-    }else{
-
-      showLogin();
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   LOAD ACTIVITIES
-   ========================================================= */
-
-async function loadActivities(){
-
-  status.textContent =
-    "Loading shared family list...";
-
-
-  const {
-    data,
-    error
-  } =
-    await db
-      .from("activities")
-      .select("*")
-      .order(
-        "created_at",
-        {
-          ascending:false
-        }
-      );
-
-
-  if(error){
-
-    console.error(error);
-
-    status.textContent =
-      "Could not load the list.";
-
-    return;
-
-  }
-
-
-  items =
-    data || [];
-
-  status.textContent =
-    "Shared with your family ✓";
-
-  render();
-
-}
-
-
-/* =========================================================
-   RENDER
-   ========================================================= */
-
-function render(){
-
-  const d =
-    data[season];
-
-  document.body.className =
-    season;
-
-  icon.textContent =
-    d.icon;
-
-  title.textContent =
-    d.title;
-
-  subtitle.textContent =
-    d.subtitle;
-
-
-  document
-    .querySelectorAll(".nav button")
-    .forEach(function(button){
-
-      button.classList.toggle(
-        "active",
-        button.dataset.season === season
-      );
-
-    });
-
-
-  const seasonItems =
-    items.filter(function(item){
-
-      return item.season === season;
-
-    });
-
-
-  const shown =
-    seasonItems.filter(function(item){
-
-      if(filter === "all")
-        return true;
-
-      if(filter === "done")
-        return item.done;
-
-      if(filter === "active")
-        return !item.done;
-
-      return true;
-
-    });
-
-
-  list.innerHTML =
-    shown.map(function(item){
-
-      return `
-
-        <div class="item ${item.done ? "done" : ""}">
-
-          <input
-            class="check"
-            type="checkbox"
-            ${item.done ? "checked" : ""}
-            onchange="toggleItem(${item.id},${item.done})"
-          >
-
-          <div class="text">
-
-            <b>${esc(item.text)}</b>
-
-            <small>
-              ${item.done
-                ? "Completed ✓"
-                : "Not completed"}
-            </small>
-
-          </div>
+          <div
+            class="username-badge"
+            id="headerUsername"
+          ></div>
 
           <button
-            class="delete"
-            onclick="removeItem(${item.id})"
-            aria-label="Delete activity"
+            class="logout-btn"
+            onclick="logout()"
           >
-            ✕
+            Log out
           </button>
 
         </div>
 
-      `;
+      </div>
 
-    }).join("");
-
-
-  empty.style.display =
-    shown.length
-      ? "none"
-      : "block";
+    </header>
 
 
-  const completedCount =
-    seasonItems.filter(function(item){
+    <!-- =========================
+         DRAWER
+    ========================= -->
 
-      return item.done;
+    <div
+      class="drawer-overlay"
+      id="drawerOverlay"
+      onclick="closeDrawer()"
+    ></div>
 
-    }).length;
+    <aside
+      class="drawer"
+      id="drawer"
+    >
 
+      <div class="drawer-top">
 
-  const progress =
-    seasonItems.length
-      ? Math.round(
-          completedCount /
-          seasonItems.length *
-          100
-        )
-      : 0;
+        <h2>Our Lists</h2>
 
+        <button
+          class="close-btn"
+          onclick="closeDrawer()"
+        >
+          ×
+        </button>
 
-  total.textContent =
-    seasonItems.length;
-
-  completed.textContent =
-    completedCount;
-
-  percent.textContent =
-    progress + "%";
-
-  bar.style.width =
-    progress + "%";
+      </div>
 
 
-  if(
-    seasonItems.length > 0 &&
-    progress === 100
-  ){
+      <!-- SEASONS -->
 
-    completionMessage.style.display =
-      "block";
+      <div class="drawer-section">
 
-  }else{
+        <div class="drawer-section-title">
+          Seasons
+        </div>
 
-    completionMessage.style.display =
-      "none";
+        <button
+          class="nav-item active"
+          data-season="spring"
+          onclick="selectSeason('spring')"
+        >
+          <span class="nav-icon">🌸</span>
+          <span>Spring</span>
+        </button>
 
-  }
+        <button
+          class="nav-item"
+          data-season="summer"
+          onclick="selectSeason('summer')"
+        >
+          <span class="nav-icon">☀️</span>
+          <span>Summer</span>
+        </button>
 
-}
+        <button
+          class="nav-item"
+          data-season="fall"
+          onclick="selectSeason('fall')"
+        >
+          <span class="nav-icon">🍂</span>
+          <span>Fall</span>
+        </button>
+
+        <button
+          class="nav-item"
+          data-season="winter"
+          onclick="selectSeason('winter')"
+        >
+          <span class="nav-icon">❄️</span>
+          <span>Winter</span>
+        </button>
+
+      </div>
 
 
-/* =========================================================
-   ESCAPE HTML
-   ========================================================= */
+      <!-- CUSTOM LISTS -->
 
-function esc(s){
+      <div class="drawer-section">
 
-  return String(s).replace(
-    /[&<>"']/g,
-    function(c){
+        <div class="drawer-section-title">
+          Custom Lists
+        </div>
 
-      return {
+        <div id="customListsContainer">
+          <div style="opacity:.5;font-size:14px;">
+            No custom lists yet.
+          </div>
+        </div>
 
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        '"':"&quot;",
-        "'":"&#39;"
 
-      }[c];
+        <div class="custom-list-create">
+
+          <input
+            id="customListName"
+            type="text"
+            placeholder="New list name..."
+            maxlength="40"
+          >
+
+          <button
+            class="add-list-btn"
+            onclick="createCustomList()"
+          >
+            +
+          </button>
+
+        </div>
+
+      </div>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN
+    ========================= -->
+
+    <main>
+
+      <section class="hero">
+
+        <div class="hero-label">
+          Making memories together
+        </div>
+
+        <h1 id="heroTitle">
+          Spring Adventures
+        </h1>
+
+        <p id="heroDescription">
+          Little things, big memories, and everything we want to experience together.
+        </p>
+
+      </section>
+
+
+      <!-- STATS -->
+
+      <section class="stats">
+
+        <div class="stat">
+
+          <div
+            class="stat-number"
+            id="totalCount"
+          >
+            0
+          </div>
+
+          <div class="stat-label">
+            Things on this list
+          </div>
+
+        </div>
+
+
+        <div class="stat">
+
+          <div
+            class="stat-number"
+            id="completedCount"
+          >
+            0
+          </div>
+
+          <div class="stat-label">
+            Completed
+          </div>
+
+        </div>
+
+
+        <div class="stat">
+
+          <div
+            class="stat-number"
+            id="percentage"
+          >
+            0%
+          </div>
+
+          <div class="stat-label">
+            Progress
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- PROGRESS -->
+
+      <section class="progress-card">
+
+        <div class="progress-header">
+
+          <span>
+            Our progress
+          </span>
+
+          <span id="progressPercent">
+            0%
+          </span>
+
+        </div>
+
+        <div class="progress-track">
+
+          <div
+            class="progress-fill"
+            id="progressFill"
+          ></div>
+
+        </div>
+
+        <div id="congratulations">
+          🎉 We completed everything on this list! 🎉
+        </div>
+
+      </section>
+
+
+      <!-- LIST -->
+
+      <div class="list-heading">
+
+        <div>
+
+          <h2 id="listTitle">
+            Spring Bucket List
+          </h2>
+
+          <p id="listSubtitle">
+            Add something fun for everyone.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- ADD ITEM -->
+
+      <div class="new-item">
+
+        <input
+          id="newItemInput"
+          type="text"
+          placeholder="Add something to the list..."
+          maxlength="150"
+          onkeydown="handleNewItemKey(event)"
+        >
+
+        <button onclick="addItem()">
+          Add
+        </button>
+
+      </div>
+
+
+      <!-- ACTIVITIES -->
+
+      <section
+        class="activities"
+        id="activities"
+      >
+
+        <div class="loading">
+          Loading...
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <script>
+
+    /* =====================================================
+       SUPABASE
+    ===================================================== */
+
+    const SUPABASE_URL =
+      "https://elprfpqivxmdrtvdtojh.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_bgSXEqqOpsyKA9wdgeVkKA_B_WoD23b";
+
+    const db = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+
+    /* =====================================================
+       STATE
+    ===================================================== */
+
+    let currentUser = null;
+
+    let currentUsername = "";
+
+    let authMode = "login";
+
+    let currentSeason = "spring";
+
+    let currentCustomList = null;
+
+
+    const seasons = {
+
+      spring: {
+        title: "Spring Adventures",
+        listTitle: "Spring Bucket List",
+        description:
+          "Fresh air, new adventures, and making the most of spring.",
+        icon: "🌸"
+      },
+
+      summer: {
+        title: "Summer Adventures",
+        listTitle: "Summer Bucket List",
+        description:
+          "Long days, sunshine, adventures, and memories together.",
+        icon: "☀️"
+      },
+
+      fall: {
+        title: "Fall Adventures",
+        listTitle: "Fall Bucket List",
+        description:
+          "Cozy days, changing leaves, and all our favorite fall traditions.",
+        icon: "🍂"
+      },
+
+      winter: {
+        title: "Winter Adventures",
+        listTitle: "Winter Bucket List",
+        description:
+          "Snowy days, cozy nights, holidays, and winter memories.",
+        icon: "❄️"
+      }
+
+    };
+
+
+    /* =====================================================
+       AUTH
+    ===================================================== */
+
+    function cleanUsername(value) {
+
+      return value
+        .trim()
+        .toLowerCase();
 
     }
-  );
-
-}
 
 
-/* =========================================================
-   ADD ACTIVITY
-   ========================================================= */
+    function validUsername(username) {
 
-async function addActivity(){
-
-  const text =
-    activity.value.trim();
-
-  if(!text)
-    return;
-
-
-  const {
-    data:{
-      user
-    }
-  } =
-    await db.auth.getUser();
-
-
-  if(!user){
-
-    alert(
-      "Please sign in first."
-    );
-
-    return;
-
-  }
-
-
-  add.disabled =
-    true;
-
-  add.textContent =
-    "Adding...";
-
-
-  const {
-    data:newItem,
-    error
-  } =
-    await db
-      .from("activities")
-      .insert({
-
-        season:season,
-
-        text:text,
-
-        done:false,
-
-        created_by:user.id
-
-      })
-      .select()
-      .single();
-
-
-  if(error){
-
-    console.error(error);
-
-    alert(
-      error.message ||
-      "Could not add the activity."
-    );
-
-  }else{
-
-    items.unshift(
-      newItem
-    );
-
-    activity.value =
-      "";
-
-    render();
-
-  }
-
-
-  add.disabled =
-    false;
-
-  add.textContent =
-    "Add Activity";
-
-}
-
-
-add.onclick =
-  addActivity;
-
-
-activity.addEventListener(
-  "keydown",
-  function(e){
-
-    if(e.key === "Enter"){
-
-      e.preventDefault();
-
-      addActivity();
+      return /^[a-z0-9_-]{3,24}$/.test(username);
 
     }
 
-  }
-);
+
+    /*
+      Supabase Auth itself uses an email/phone identity.
+
+      The UI only asks the family member for a username.
+      We turn the username into an internal placeholder
+      email that is never displayed or used for email.
+
+      Example:
+
+      mom
+      becomes
+      mom@familybucket.example
+    */
+
+    function internalEmail(username) {
+
+      return `${username}@familybucket.example`;
+
+    }
 
 
-/* =========================================================
-   TOGGLE ACTIVITY
-   ========================================================= */
+    function switchAuthMode() {
 
-async function toggleItem(
-  id,
-  currentState
-){
+      authMode =
+        authMode === "login"
+          ? "signup"
+          : "login";
 
-  const {
-    error
-  } =
-    await db
-      .from("activities")
-      .update({
+      const button =
+        document.getElementById("authButton");
 
-        done:
-          !currentState
+      const switchButton =
+        document.getElementById("switchAuth");
 
-      })
-      .eq(
-        "id",
-        id
-      );
+      const description =
+        document.getElementById("authDescription");
 
+      const password =
+        document.getElementById("passwordInput");
 
-  if(error){
+      document.getElementById("authMessage").textContent = "";
 
-    console.error(error);
+      if (authMode === "signup") {
 
-    alert(
-      "Could not update the activity."
-    );
+        button.textContent = "Create Account";
 
-    render();
+        switchButton.textContent =
+          "Already have an account? Sign in";
 
-    return;
+        description.textContent =
+          "Create a username and password for your family account.";
 
-  }
+        password.autocomplete = "new-password";
 
+      } else {
 
-  const item =
-    items.find(function(x){
+        button.textContent = "Sign In";
 
-      return x.id === id;
+        switchButton.textContent =
+          "Create an account";
 
-    });
+        description.textContent =
+          "Sign in with your family username and password.";
 
+        password.autocomplete = "current-password";
 
-  if(item){
+      }
 
-    item.done =
-      !currentState;
-
-  }
+    }
 
 
-  render();
+    async function handleAuth() {
 
-}
+      const username =
+        cleanUsername(
+          document.getElementById("usernameInput").value
+        );
 
+      const password =
+        document.getElementById("passwordInput").value;
 
-/* =========================================================
-   DELETE ACTIVITY
-   ========================================================= */
+      const message =
+        document.getElementById("authMessage");
 
-async function removeItem(id){
+      message.textContent = "";
 
-  if(
-    !confirm(
-      "Delete this activity?"
-    )
-  ){
+      if (!validUsername(username)) {
 
-    render();
+        message.textContent =
+          "Username must be 3–24 characters and only use letters, numbers, _ or -.";
 
-    return;
-
-  }
-
-
-  const {
-    error
-  } =
-    await db
-      .from("activities")
-      .delete()
-      .eq(
-        "id",
-        id
-      );
-
-
-  if(error){
-
-    console.error(error);
-
-    alert(
-      "Could not delete the activity."
-    );
-
-    return;
-
-  }
-
-
-  items =
-    items.filter(function(item){
-
-      return item.id !== id;
-
-    });
-
-
-  render();
-
-}
-
-
-/* =========================================================
-   CLEAR COMPLETED
-   ========================================================= */
-
-document
-  .getElementById("clear")
-  .addEventListener(
-    "click",
-    async function(){
-
-      const seasonItems =
-        items.filter(function(item){
-
-          return item.season === season &&
-                 item.done;
-
-        });
-
-
-      if(!seasonItems.length)
         return;
 
+      }
 
-      if(
-        !confirm(
-          "Delete all completed activities from this season?"
-        )
-      )
+      if (password.length < 8) {
+
+        message.textContent =
+          "Password must be at least 8 characters.";
+
         return;
 
+      }
 
-      const ids =
-        seasonItems.map(function(item){
+      document.getElementById("authButton").disabled = true;
 
-          return item.id;
+      try {
 
-        });
+        if (authMode === "signup") {
 
+          const {
+            data,
+            error
+          } = await db.auth.signUp({
 
-      const {
-        error
-      } =
-        await db
-          .from("activities")
-          .delete()
-          .in(
-            "id",
-            ids
-          );
+            email: internalEmail(username),
 
+            password: password,
 
-      if(error){
+            options: {
+
+              data: {
+                username: username
+              }
+
+            }
+
+          });
+
+          if (error) {
+            throw error;
+          }
+
+          /*
+            If email confirmation is disabled in Supabase,
+            this should immediately create a session.
+          */
+
+          if (data.session) {
+
+            message.textContent =
+              "Account created!";
+
+          } else {
+
+            message.textContent =
+              "Account created. If you cannot enter the app, check that Confirm Email is turned OFF in Supabase.";
+
+          }
+
+        } else {
+
+          const {
+            data,
+            error
+          } = await db.auth.signInWithPassword({
+
+            email: internalEmail(username),
+
+            password: password
+
+          });
+
+          if (error) {
+            throw error;
+          }
+
+          currentUser = data.user;
+
+        }
+
+      } catch (error) {
 
         console.error(error);
 
+        message.textContent =
+          error.message || "Something went wrong.";
+
+      } finally {
+
+        document.getElementById("authButton").disabled = false;
+
+      }
+
+    }
+
+
+    async function logout() {
+
+      await db.auth.signOut();
+
+    }
+
+
+    /* =====================================================
+       USERNAME
+    ===================================================== */
+
+    function getUsernameFromUser(user) {
+
+      return (
+        user?.user_metadata?.username ||
+        user?.email?.split("@")[0] ||
+        "Family Member"
+      );
+
+    }
+
+
+    /* =====================================================
+       AUTH STATE
+    ===================================================== */
+
+    db.auth.onAuthStateChange(
+      async (event, session) => {
+
+        if (session?.user) {
+
+          currentUser = session.user;
+
+          currentUsername =
+            getUsernameFromUser(session.user);
+
+          document.getElementById(
+            "headerUsername"
+          ).textContent =
+            "👋 " + currentUsername;
+
+          document.getElementById(
+            "authScreen"
+          ).style.display = "none";
+
+          document.getElementById(
+            "app"
+          ).style.display = "block";
+
+          await loadCustomLists();
+
+          await loadActivities();
+
+        } else {
+
+          currentUser = null;
+
+          currentUsername = "";
+
+          document.getElementById(
+            "authScreen"
+          ).style.display = "flex";
+
+          document.getElementById(
+            "app"
+          ).style.display = "none";
+
+        }
+
+      }
+    );
+
+
+    /* =====================================================
+       DRAWER
+    ===================================================== */
+
+    function openDrawer() {
+
+      document
+        .getElementById("drawer")
+        .classList.add("open");
+
+      document
+        .getElementById("drawerOverlay")
+        .classList.add("open");
+
+    }
+
+
+    function closeDrawer() {
+
+      document
+        .getElementById("drawer")
+        .classList.remove("open");
+
+      document
+        .getElementById("drawerOverlay")
+        .classList.remove("open");
+
+    }
+
+
+    /* =====================================================
+       SEASONS
+    ===================================================== */
+
+    function selectSeason(season) {
+
+      currentSeason = season;
+
+      currentCustomList = null;
+
+      document
+        .querySelectorAll(".nav-item")
+        .forEach(button => {
+
+          button.classList.remove("active");
+
+        });
+
+      const active =
+        document.querySelector(
+          `[data-season="${season}"]`
+        );
+
+      if (active) {
+        active.classList.add("active");
+      }
+
+      const info = seasons[season];
+
+      document.getElementById(
+        "heroTitle"
+      ).textContent =
+        info.icon + " " + info.title;
+
+      document.getElementById(
+        "heroDescription"
+      ).textContent =
+        info.description;
+
+      document.getElementById(
+        "listTitle"
+      ).textContent =
+        info.listTitle;
+
+      document.getElementById(
+        "listSubtitle"
+      ).textContent =
+        "Add something fun for everyone.";
+
+      closeDrawer();
+
+      loadActivities();
+
+    }
+
+
+    /* =====================================================
+       CUSTOM LISTS
+    ===================================================== */
+
+    async function loadCustomLists() {
+
+      const container =
+        document.getElementById(
+          "customListsContainer"
+        );
+
+      const {
+        data,
+        error
+      } = await db
+        .from("custom_lists")
+        .select("*")
+        .order("created_at", {
+          ascending: true
+        });
+
+      if (error) {
+
+        console.error(error);
+
+        container.innerHTML =
+          `<div style="opacity:.5;font-size:14px;">
+            Could not load custom lists.
+          </div>`;
+
+        return;
+
+      }
+
+      if (!data || data.length === 0) {
+
+        container.innerHTML =
+          `<div style="opacity:.5;font-size:14px;">
+            No custom lists yet.
+          </div>`;
+
+        return;
+
+      }
+
+      container.innerHTML = "";
+
+      data.forEach(list => {
+
+        const button =
+          document.createElement("button");
+
+        button.className = "nav-item";
+
+        button.innerHTML = `
+          <span class="nav-icon">📋</span>
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;">
+            ${escapeHtml(list.name)}
+          </span>
+          <span
+            class="delete-list"
+            title="Delete list"
+            onclick="deleteCustomList(event, ${list.id})"
+          >
+            🗑
+          </span>
+        `;
+
+        button.onclick = function(event) {
+
+          if (
+            event.target.classList.contains(
+              "delete-list"
+            )
+          ) {
+            return;
+          }
+
+          selectCustomList(list);
+
+        };
+
+        container.appendChild(button);
+
+      });
+
+    }
+
+
+    async function createCustomList() {
+
+      const input =
+        document.getElementById(
+          "customListName"
+        );
+
+      const name =
+        input.value.trim();
+
+      if (!name) {
+        return;
+      }
+
+      if (!currentUser) {
+        return;
+      }
+
+      const {
+        data,
+        error
+      } = await db
+        .from("custom_lists")
+        .insert({
+
+          name: name,
+
+          created_by:
+            currentUser.id
+
+        })
+        .select()
+        .single();
+
+      if (error) {
+
         alert(
-          "Could not clear completed activities."
+          "Could not create list: " +
+          error.message
         );
 
         return;
 
       }
 
+      input.value = "";
 
-      items =
-        items.filter(function(item){
+      await loadCustomLists();
 
-          return !ids.includes(
-            item.id
-          );
+      selectCustomList(data);
+
+    }
+
+
+    async function deleteCustomList(event, id) {
+
+      event.stopPropagation();
+
+      const confirmed =
+        confirm(
+          "Delete this custom list and all of its items?"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      const {
+        error
+      } = await db
+        .from("custom_lists")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+
+        alert(
+          "Could not delete list: " +
+          error.message
+        );
+
+        return;
+
+      }
+
+      currentCustomList = null;
+
+      await loadCustomLists();
+
+      selectSeason("spring");
+
+    }
+
+
+    function selectCustomList(list) {
+
+      currentCustomList = list;
+
+      currentSeason = null;
+
+      document
+        .querySelectorAll(".nav-item")
+        .forEach(button => {
+
+          button.classList.remove("active");
 
         });
 
+      document.getElementById(
+        "heroTitle"
+      ).textContent =
+        "📋 " + list.name;
 
-      render();
+      document.getElementById(
+        "heroDescription"
+      ).textContent =
+        "A custom family list made for whatever adventure comes next.";
+
+      document.getElementById(
+        "listTitle"
+      ).textContent =
+        list.name;
+
+      document.getElementById(
+        "listSubtitle"
+      ).textContent =
+        "Your family's custom bucket list.";
+
+      closeDrawer();
+
+      loadActivities();
 
     }
-  );
 
 
-/* =========================================================
-   MENU
-   ========================================================= */
+    /* =====================================================
+       ACTIVITIES
+    ===================================================== */
 
-menuBtn.onclick =
-  function(){
+    async function loadActivities() {
 
-    drawer.classList.add(
-      "open"
-    );
+      const container =
+        document.getElementById(
+          "activities"
+        );
 
-    overlay.classList.add(
-      "show"
-    );
+      container.innerHTML =
+        `<div class="loading">Loading...</div>`;
 
-  };
-
-
-close.onclick =
-overlay.onclick =
-  function(){
-
-    drawer.classList.remove(
-      "open"
-    );
-
-    overlay.classList.remove(
-      "show"
-    );
-
-  };
-
-
-/* =========================================================
-   SEASON SWITCHING
-   ========================================================= */
-
-document
-  .querySelectorAll(".nav button")
-  .forEach(function(button){
-
-    button.onclick =
-      function(){
-
-        season =
-          button.dataset.season;
-
-        filter =
-          "all";
-
-
-        document
-          .querySelectorAll(".filter")
-          .forEach(function(x){
-
-            x.classList.toggle(
-              "active",
-              x.dataset.filter === "all"
-            );
-
+      let query =
+        db
+          .from("activities")
+          .select("*")
+          .order("created_at", {
+            ascending: false
           });
 
+      if (currentCustomList) {
 
-        localStorage.setItem(
-          "bucketSeason",
-          season
+        query =
+          query.eq(
+            "list_id",
+            currentCustomList.id
+          );
+
+      } else {
+
+        query =
+          query
+            .eq("season", currentSeason)
+            .is("list_id", null);
+
+      }
+
+      const {
+        data,
+        error
+      } = await query;
+
+      if (error) {
+
+        console.error(error);
+
+        container.innerHTML =
+          `<div class="empty">
+            Could not load the bucket list.
+          </div>`;
+
+        return;
+
+      }
+
+      renderActivities(data || []);
+
+    }
+
+
+    function renderActivities(items) {
+
+      const container =
+        document.getElementById(
+          "activities"
         );
 
+      container.innerHTML = "";
 
-        render();
+      if (items.length === 0) {
+
+        container.innerHTML =
+          `<div class="empty">
+            <div style="font-size:40px;margin-bottom:10px;">
+              ✨
+            </div>
+            <div>
+              Nothing here yet. Add the first adventure!
+            </div>
+          </div>`;
+
+        updateStats([]);
+
+        return;
+
+      }
+
+      items.forEach(item => {
+
+        const card =
+          document.createElement("div");
+
+        card.className =
+          "activity" +
+          (item.done ? " done" : "");
+
+        const createdDate =
+          formatDate(item.created_at);
+
+        let completionHTML = "";
+
+        if (item.done) {
+
+          completionHTML = `
+            <span>
+              ✅ Completed by
+              <strong>
+                ${escapeHtml(
+                  item.completed_by_username ||
+                  "Family Member"
+                )}
+              </strong>
+            </span>
+
+            <span>
+              🕒 ${escapeHtml(
+                formatDate(item.completed_at)
+              )}
+            </span>
+          `;
+
+        }
+
+        card.innerHTML = `
+
+          <button
+            class="checkbox"
+            onclick="toggleItem(${item.id}, ${item.done})"
+            aria-label="Complete item"
+          >
+            ${item.done ? "✓" : ""}
+          </button>
+
+          <div class="activity-content">
+
+            <div class="activity-title">
+              ${escapeHtml(item.text)}
+            </div>
+
+            <div class="activity-meta">
+
+              <span>
+                👤 Created by
+                <strong>
+                  ${escapeHtml(
+                    item.created_by_username ||
+                    "Family Member"
+                  )}
+                </strong>
+              </span>
+
+              <span>
+                📅 Created
+                ${escapeHtml(createdDate)}
+              </span>
+
+              ${completionHTML}
+
+            </div>
+
+          </div>
+
+          <button
+            class="delete-btn"
+            onclick="deleteItem(${item.id})"
+            aria-label="Delete item"
+          >
+            🗑
+          </button>
+
+        `;
+
+        container.appendChild(card);
+
+      });
+
+      updateStats(items);
+
+    }
 
 
-        drawer.classList.remove(
-          "open"
+    /* =====================================================
+       ADD ITEM
+    ===================================================== */
+
+    function handleNewItemKey(event) {
+
+      if (event.key === "Enter") {
+
+        addItem();
+
+      }
+
+    }
+
+
+    async function addItem() {
+
+      const input =
+        document.getElementById(
+          "newItemInput"
         );
 
-        overlay.classList.remove(
-          "show"
-        );
+      const text =
+        input.value.trim();
+
+      if (!text) {
+        return;
+      }
+
+      if (!currentUser) {
+        return;
+      }
+
+      const row = {
+
+        season:
+          currentCustomList
+            ? "custom"
+            : currentSeason,
+
+        text: text,
+
+        done: false,
+
+        created_by:
+          currentUser.id,
+
+        created_by_username:
+          currentUsername,
+
+        list_id:
+          currentCustomList
+            ? currentCustomList.id
+            : null
 
       };
 
-  });
+      const {
+        error
+      } = await db
+        .from("activities")
+        .insert(row);
+
+      if (error) {
+
+        console.error(error);
+
+        alert(
+          "Could not add item: " +
+          error.message
+        );
+
+        return;
+
+      }
+
+      input.value = "";
+
+      await loadActivities();
+
+    }
 
 
-/* =========================================================
-   FILTERS
-   ========================================================= */
+    /* =====================================================
+       COMPLETE / UNCOMPLETE
+    ===================================================== */
 
-document
-  .querySelectorAll(".filter")
-  .forEach(function(button){
+    async function toggleItem(id, currentlyDone) {
 
-    button.onclick =
-      function(){
+      if (!currentUser) {
+        return;
+      }
 
-        filter =
-          button.dataset.filter;
+      let updateData;
+
+      if (!currentlyDone) {
+
+        updateData = {
+
+          done: true,
+
+          completed_at:
+            new Date().toISOString(),
+
+          completed_by:
+            currentUser.id,
+
+          completed_by_username:
+            currentUsername
+
+        };
+
+      } else {
+
+        updateData = {
+
+          done: false,
+
+          completed_at: null,
+
+          completed_by: null,
+
+          completed_by_username: null
+
+        };
+
+      }
+
+      const {
+        error
+      } = await db
+        .from("activities")
+        .update(updateData)
+        .eq("id", id);
+
+      if (error) {
+
+        console.error(error);
+
+        alert(
+          "Could not update item: " +
+          error.message
+        );
+
+        return;
+
+      }
+
+      await loadActivities();
+
+    }
 
 
-        document
-          .querySelectorAll(".filter")
-          .forEach(function(x){
+    /* =====================================================
+       DELETE ITEM
+    ===================================================== */
 
-            x.classList.toggle(
-              "active",
-              x === button
+    async function deleteItem(id) {
+
+      const confirmed =
+        confirm(
+          "Remove this item from the bucket list?"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      const {
+        error
+      } = await db
+        .from("activities")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+
+        console.error(error);
+
+        alert(
+          "Could not delete item: " +
+          error.message
+        );
+
+        return;
+
+      }
+
+      await loadActivities();
+
+    }
+
+
+    /* =====================================================
+       STATS
+    ===================================================== */
+
+    function updateStats(items) {
+
+      const total =
+        items.length;
+
+      const completed =
+        items.filter(
+          item => item.done
+        ).length;
+
+      const percentage =
+        total === 0
+          ? 0
+          : Math.round(
+              (completed / total) * 100
             );
 
-          });
+      document.getElementById(
+        "totalCount"
+      ).textContent =
+        total;
+
+      document.getElementById(
+        "completedCount"
+      ).textContent =
+        completed;
+
+      document.getElementById(
+        "percentage"
+      ).textContent =
+        percentage + "%";
+
+      document.getElementById(
+        "progressPercent"
+      ).textContent =
+        percentage + "%";
+
+      document.getElementById(
+        "progressFill"
+      ).style.width =
+        percentage + "%";
+
+      const congratulations =
+        document.getElementById(
+          "congratulations"
+        );
+
+      if (total > 0 && percentage === 100) {
+
+        congratulations.style.display =
+          "block";
+
+      } else {
+
+        congratulations.style.display =
+          "none";
+
+      }
+
+    }
 
 
-        render();
+    /* =====================================================
+       DATE FORMATTING
+    ===================================================== */
 
-      };
+    function formatDate(value) {
 
-  });
+      if (!value) {
+        return "Unknown";
+      }
+
+      const date =
+        new Date(value);
+
+      return date.toLocaleString(
+        undefined,
+        {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit"
+        }
+      );
+
+    }
 
 
-/* =========================================================
-   START
-   ========================================================= */
+    /* =====================================================
+       HTML ESCAPING
+    ===================================================== */
 
-checkLogin();
+    function escapeHtml(value) {
 
-</script>
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+    }
+
+
+    /* =====================================================
+       ENTER KEY FOR CUSTOM LIST
+    ===================================================== */
+
+    document
+      .getElementById("customListName")
+      .addEventListener(
+        "keydown",
+        function(event) {
+
+          if (event.key === "Enter") {
+
+            createCustomList();
+
+          }
+
+        }
+      );
+
+  </script>
 
 </body>
 </html>
