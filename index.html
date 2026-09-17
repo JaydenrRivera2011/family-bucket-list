@@ -29,6 +29,10 @@ body{
   transition:background .3s ease;
 }
 
+button,input{
+  font:inherit;
+}
+
 header{
   height:72px;
   border-bottom:1px solid var(--line);
@@ -100,6 +104,10 @@ header{
   border-radius:10px;
   font-weight:800;
   cursor:pointer;
+}
+
+.logout:hover{
+  background:#ead9ca;
 }
 
 .drawer{
@@ -210,10 +218,6 @@ main{
   display:flex;
   gap:10px;
   flex-wrap:wrap;
-}
-
-input,select,button{
-  font:inherit;
 }
 
 input,select{
@@ -433,7 +437,7 @@ input:focus{
 }
 
 /* =========================================================
-   GOOGLE LOGIN
+   EMAIL LOGIN
    ========================================================= */
 
 .auth-screen{
@@ -444,6 +448,7 @@ input:focus{
   display:grid;
   place-items:center;
   padding:20px;
+  overflow:auto;
 }
 
 .auth-box{
@@ -466,32 +471,45 @@ input:focus{
   margin:0 0 25px;
 }
 
-.google-btn{
+.auth-form{
+  display:grid;
+  gap:12px;
+}
+
+.auth-form input{
   width:100%;
-  border:1px solid #d9d9d9;
-  background:white;
-  color:#333;
+  padding:14px;
+}
+
+.auth-btn{
+  width:100%;
+  border:0;
+  background:var(--accent);
+  color:white;
   padding:14px;
   border-radius:13px;
   font-weight:800;
   cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
   transition:.2s;
 }
 
-.google-btn:hover{
-  background:#fafafa;
-  box-shadow:0 4px 14px #00000012;
+.auth-btn:hover{
   transform:translateY(-1px);
+  filter:brightness(.97);
 }
 
-.google-icon{
-  width:20px;
-  height:20px;
-  flex:none;
+.auth-btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.switch-btn{
+  margin-top:14px;
+  border:0;
+  background:transparent;
+  color:var(--accent);
+  font-weight:800;
+  cursor:pointer;
 }
 
 .auth-message{
@@ -499,6 +517,7 @@ input:focus{
   margin-top:14px;
   color:#a05232;
   font-size:13px;
+  line-height:1.4;
 }
 
 .hidden{
@@ -621,6 +640,7 @@ body.winter{
 .p12{--x:26%;--size:6px;--duration:15s;--delay:-12s;--drift:-25px}
 
 @media(prefers-reduced-motion:reduce){
+
   .particle{
     animation:none;
     display:none;
@@ -713,6 +733,10 @@ body.winter{
     padding:8px 10px;
     font-size:13px;
   }
+
+  .auth-box{
+    padding:26px 20px;
+  }
 }
 </style>
 </head>
@@ -720,7 +744,7 @@ body.winter{
 <body class="fall">
 
 <!-- =========================================================
-     GOOGLE LOGIN SCREEN
+     EMAIL LOGIN / CREATE ACCOUNT
      ========================================================= -->
 
 <div class="auth-screen" id="authScreen">
@@ -729,50 +753,60 @@ body.winter{
 
     <h1>Family Bucket List</h1>
 
-    <p>
-      Sign in with Google to access your family's shared bucket list.
+    <p id="authSubtitle">
+      Log in to access your family's shared bucket list.
     </p>
 
+    <form class="auth-form" id="authForm">
+
+      <input
+        id="email"
+        type="email"
+        placeholder="Email address"
+        autocomplete="email"
+        required
+      >
+
+      <input
+        id="password"
+        type="password"
+        placeholder="Password"
+        autocomplete="current-password"
+        minlength="6"
+        required
+      >
+
+      <button
+        class="auth-btn"
+        id="authBtn"
+        type="submit"
+      >
+        Log In
+      </button>
+
+    </form>
+
     <button
-      class="google-btn"
-      id="googleBtn"
+      class="switch-btn"
+      id="switchAuth"
       type="button"
     >
-
-      <svg
-        class="google-icon"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
-        <path
-          fill="#4285F4"
-          d="M21.35 12.23c0-.79-.07-1.55-.23-2.27H12v4.3h5.24a4.48 4.48 0 0 1-1.94 2.94v2.45h3.14c1.84-1.69 2.91-4.18 2.91-7.42z"
-        />
-        <path
-          fill="#34A853"
-          d="M12 21.6c2.63 0 4.84-.87 6.45-2.35l-3.14-2.45c-.87.58-1.98.92-3.31.92-2.55 0-4.71-1.72-5.49-4.04H3.26v2.53A9.75 9.75 0 0 0 12 21.6z"
-        />
-        <path
-          fill="#FBBC05"
-          d="M6.51 13.68A5.86 5.86 0 0 1 6.2 12c0-.58.11-1.14.31-1.68V7.79H3.26A9.74 9.74 0 0 0 2.2 12c0 1.57.38 3.05 1.06 4.21l3.25-2.53z"
-        />
-        <path
-          fill="#EA4335"
-          d="M12 6.28c1.43 0 2.72.49 3.73 1.46l2.8-2.8C16.84 3.37 14.63 2.4 12 2.4a9.75 9.75 0 0 0-8.74 5.39l3.25 2.53C7.29 8 9.45 6.28 12 6.28z"
-        />
-      </svg>
-
-      Continue with Google
-
+      Need an account? Create one
     </button>
 
-    <div class="auth-message" id="authMessage"></div>
+    <div
+      class="auth-message"
+      id="authMessage"
+    ></div>
 
   </div>
 
 </div>
 
-<!-- FALLING SEASON PARTICLES -->
+
+<!-- =========================================================
+     FALLING SEASON PARTICLES
+     ========================================================= -->
 
 <div
   class="season-bg"
@@ -794,6 +828,7 @@ body.winter{
   <div class="particle p12"></div>
 
 </div>
+
 
 <header>
 
@@ -833,10 +868,12 @@ body.winter{
 
 </header>
 
+
 <div
   class="overlay"
   id="overlay"
 ></div>
+
 
 <aside
   class="drawer"
@@ -846,6 +883,7 @@ body.winter{
   <button
     class="close"
     id="close"
+    aria-label="Close menu"
   >
     ×
   </button>
@@ -877,6 +915,7 @@ body.winter{
 
 </aside>
 
+
 <main>
 
   <section class="hero">
@@ -898,6 +937,7 @@ body.winter{
 
   </section>
 
+
   <section class="panel">
 
     <div class="toolbar">
@@ -917,12 +957,14 @@ body.winter{
 
     </div>
 
+
     <div
       class="status"
       id="status"
     >
       Connecting...
     </div>
+
 
     <div class="stats">
 
@@ -936,6 +978,7 @@ body.winter{
 
       </div>
 
+
       <div class="stat">
 
         <strong id="completed">
@@ -945,6 +988,7 @@ body.winter{
         <span>Completed</span>
 
       </div>
+
 
       <div class="stat">
 
@@ -974,6 +1018,7 @@ body.winter{
 
     </div>
 
+
     <div class="filters">
 
       <button
@@ -999,10 +1044,12 @@ body.winter{
 
     </div>
 
+
     <div
       class="list"
       id="list"
     ></div>
+
 
     <div
       class="empty"
@@ -1019,6 +1066,7 @@ body.winter{
 
     </div>
 
+
     <div class="actions">
 
       <button
@@ -1033,6 +1081,7 @@ body.winter{
   </section>
 
 </main>
+
 
 <script>
 
@@ -1142,6 +1191,9 @@ let filter =
 
 let items = [];
 
+let authMode =
+  "login";
+
 
 /* =========================================================
    ELEMENTS
@@ -1150,11 +1202,26 @@ let items = [];
 const authScreen =
   document.getElementById("authScreen");
 
+const authForm =
+  document.getElementById("authForm");
+
+const authSubtitle =
+  document.getElementById("authSubtitle");
+
+const authBtn =
+  document.getElementById("authBtn");
+
+const switchAuth =
+  document.getElementById("switchAuth");
+
 const authMessage =
   document.getElementById("authMessage");
 
-const googleBtn =
-  document.getElementById("googleBtn");
+const emailInput =
+  document.getElementById("email");
+
+const passwordInput =
+  document.getElementById("password");
 
 const userEmail =
   document.getElementById("userEmail");
@@ -1215,52 +1282,163 @@ const subtitle =
 
 
 /* =========================================================
-   GOOGLE SIGN IN
+   AUTH MODE
    ========================================================= */
 
-async function signInWithGoogle(){
+switchAuth.addEventListener(
+  "click",
+  function(){
 
-  authMessage.textContent =
-    "Opening Google...";
+    authMessage.textContent = "";
 
-  googleBtn.disabled =
-    true;
+    emailInput.value = "";
+    passwordInput.value = "";
 
-  const {
-    error
-  } =
-    await db.auth.signInWithOAuth({
+    if(authMode === "login"){
 
-      provider:"google",
+      authMode = "signup";
 
-      options:{
+      authSubtitle.textContent =
+        "Create an account to join your family's shared bucket list.";
 
-        redirectTo:
-          window.location.origin
+      authBtn.textContent =
+        "Create Account";
+
+      switchAuth.textContent =
+        "Already have an account? Log in";
+
+    }else{
+
+      authMode = "login";
+
+      authSubtitle.textContent =
+        "Log in to access your family's shared bucket list.";
+
+      authBtn.textContent =
+        "Log In";
+
+      switchAuth.textContent =
+        "Need an account? Create one";
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   EMAIL LOGIN / SIGNUP
+   ========================================================= */
+
+authForm.addEventListener(
+  "submit",
+  async function(e){
+
+    e.preventDefault();
+
+    const email =
+      emailInput.value.trim();
+
+    const password =
+      passwordInput.value;
+
+
+    if(!email || !password){
+
+      authMessage.textContent =
+        "Please enter your email and password.";
+
+      return;
+
+    }
+
+
+    authBtn.disabled =
+      true;
+
+    authMessage.textContent =
+      authMode === "login"
+        ? "Logging in..."
+        : "Creating your account...";
+
+
+    try{
+
+      if(authMode === "login"){
+
+        const {
+          error
+        } =
+          await db.auth.signInWithPassword({
+
+            email:email,
+
+            password:password
+
+          });
+
+
+        if(error)
+          throw error;
+
+
+        authMessage.textContent =
+          "";
+
+      }else{
+
+        const {
+          data,
+          error
+        } =
+          await db.auth.signUp({
+
+            email:email,
+
+            password:password
+
+          });
+
+
+        if(error)
+          throw error;
+
+
+        /*
+          If email confirmation is enabled,
+          Supabase may return a user without
+          an active session.
+        */
+
+        if(data.user && !data.session){
+
+          authMessage.textContent =
+            "Account created! Check your email for the confirmation link.";
+
+        }else{
+
+          authMessage.textContent =
+            "Account created!";
+
+        }
 
       }
 
-    });
+    }catch(error){
+
+      console.error(error);
+
+      authMessage.textContent =
+        error.message ||
+        "Something went wrong.";
+
+    }
 
 
-  if(error){
-
-    console.error(error);
-
-    authMessage.textContent =
-      error.message;
-
-    googleBtn.disabled =
+    authBtn.disabled =
       false;
 
   }
-
-}
-
-
-googleBtn.addEventListener(
-  "click",
-  signInWithGoogle
 );
 
 
@@ -1459,6 +1637,8 @@ function render(){
       if(filter === "active")
         return !item.done;
 
+      return true;
+
     });
 
 
@@ -1564,7 +1744,7 @@ function render(){
 
 function esc(s){
 
-  return s.replace(
+  return String(s).replace(
     /[&<>"']/g,
     function(c){
 
