@@ -1,845 +1,2023 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Seasonal Bucket List</title>
 
-  <title>Family Bucket List</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#fff9f2;
+  --ink:#35251d;
+  --muted:#806d61;
+  --card:#fffdf9;
+  --line:#eadbcf;
+  --accent:#d66a35;
+  --accent2:#e4a13e;
+  --shadow:0 18px 45px #4d2d1a14
+}
 
-  <style>
-    :root {
-      --bg: #f8f1e7;
-      --card: #fffaf3;
-      --text: #40352c;
-      --muted: #806f61;
-      --accent: #b56b45;
-      --accent-dark: #8e4e30;
-      --border: #e4d7c8;
-      --green: #5f805d;
-      --shadow: 0 10px 30px rgba(72, 51, 35, .10);
-    }
+*{box-sizing:border-box}
 
-    * {
-      box-sizing: border-box;
-    }
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:system-ui,-apple-system,Segoe UI,sans-serif;
+  transition:background .3s ease
+}
 
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: Arial, sans-serif;
-    }
+header{
+  height:72px;
+  border-bottom:1px solid var(--line);
+  background:#ffffffd9;
+  backdrop-filter:blur(12px);
+  display:flex;
+  align-items:center;
+  padding:0 18px;
+  position:sticky;
+  top:0;
+  z-index:5
+}
 
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: rgba(255,250,243,.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
-    }
+.menu-btn{
+  width:46px;
+  height:46px;
+  border:0;
+  background:transparent;
+  border-radius:12px;
+  cursor:pointer;
+  display:grid;
+  place-items:center
+}
 
-    .nav {
-      max-width: 1100px;
-      margin: auto;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+.menu-btn:hover{
+  background:#f4e9de
+}
 
-    .logo {
-      font-family: Georgia, serif;
-      font-size: 24px;
-      font-weight: bold;
-    }
+.hamb{
+  width:22px
+}
 
-    button {
-      border: none;
-      cursor: pointer;
-      border-radius: 12px;
-      padding: 11px 16px;
-      font-weight: bold;
-      font-size: 14px;
-    }
+.hamb i{
+  display:block;
+  height:2px;
+  background:var(--ink);
+  margin:5px 0;
+  border-radius:2px
+}
 
-    .menu-button {
-      background: transparent;
-      font-size: 25px;
-    }
+.brand{
+  font-family:Georgia,serif;
+  font-size:23px;
+  font-weight:700;
+  margin-left:8px
+}
 
-    .github-button {
-      background: #24292f;
-      color: white;
-    }
+/* TOP RIGHT AUTH */
+.header-right{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:10px
+}
 
-    .logout-button {
-      background: #eadfd3;
-      color: var(--text);
-    }
+.user-name{
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700
+}
 
-    .drawer {
-      position: fixed;
-      top: 0;
-      left: -280px;
-      width: 280px;
-      height: 100%;
-      background: var(--card);
-      z-index: 20;
-      padding: 25px;
-      box-shadow: var(--shadow);
-      transition: .25s;
-    }
+.logout{
+  border:0;
+  background:#f1e5d9;
+  color:var(--ink);
+  border-radius:12px;
+  padding:9px 13px;
+  font-weight:800;
+  cursor:pointer
+}
 
-    .drawer.open {
-      left: 0;
-    }
+.logout:hover{
+  background:#ead8c8
+}
 
-    .drawer h2 {
-      font-family: Georgia, serif;
-    }
+/* DRAWER */
 
-    .drawer button {
-      display: block;
-      width: 100%;
-      margin: 10px 0;
-      text-align: left;
-      background: #f1e7da;
-    }
+.drawer{
+  position:fixed;
+  top:0;
+  left:-310px;
+  width:290px;
+  height:100vh;
+  background:#fffdf9;
+  box-shadow:10px 0 35px #0002;
+  z-index:20;
+  padding:22px;
+  transition:left .25s ease
+}
 
-    main {
-      max-width: 1100px;
-      margin: auto;
-      padding: 45px 20px 80px;
-    }
+.drawer.open{
+  left:0
+}
 
-    .hero {
-      text-align: center;
-      padding: 35px 10px;
-    }
+.drawer h2{
+  font-family:Georgia,serif;
+  margin:8px 0 24px;
+  font-size:27px
+}
 
-    .hero h1 {
-      font-family: Georgia, serif;
-      font-size: clamp(40px, 8vw, 72px);
-      margin: 10px 0;
-    }
+.close{
+  float:right;
+  border:0;
+  background:#f1e5d9;
+  border-radius:10px;
+  width:38px;
+  height:38px;
+  font-size:20px;
+  cursor:pointer
+}
 
-    .hero p {
-      color: var(--muted);
-      font-size: 18px;
-    }
+.nav{
+  display:grid;
+  gap:9px
+}
 
-    .auth-card {
-      max-width: 500px;
-      margin: 25px auto;
-      padding: 30px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      text-align: center;
-    }
+.nav button{
+  border:0;
+  background:transparent;
+  text-align:left;
+  padding:15px;
+  border-radius:14px;
+  font-weight:800;
+  font-size:16px;
+  color:var(--ink);
+  cursor:pointer
+}
 
-    .auth-card h2 {
-      font-family: Georgia, serif;
-    }
+.nav button:hover,
+.nav button.active{
+  background:#f5e5d6
+}
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      margin: 25px 0;
-    }
+.overlay{
+  position:fixed;
+  inset:0;
+  background:#24170e55;
+  z-index:10;
+  display:none
+}
 
-    .stat {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 20px;
-      text-align: center;
-    }
+.overlay.show{
+  display:block
+}
 
-    .stat-number {
-      display: block;
-      font-family: Georgia, serif;
-      font-size: 32px;
-      font-weight: bold;
-    }
+/* MAIN */
 
-    .progress-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 30px;
-    }
+main{
+  max-width:1050px;
+  margin:auto;
+  padding:48px 20px 70px
+}
 
-    .progress-bar {
-      height: 14px;
-      background: #eadfd3;
-      border-radius: 20px;
-      overflow: hidden;
-      margin-top: 12px;
-    }
+.hero{
+  text-align:center;
+  margin-bottom:30px
+}
 
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: var(--green);
-      transition: width .4s;
-    }
+.season-icon{
+  font-size:58px
+}
 
-    .season-title {
-      font-family: Georgia, serif;
-      font-size: 34px;
-      margin-bottom: 15px;
-    }
+.hero h1{
+  font-family:Georgia,serif;
+  font-size:clamp(42px,8vw,72px);
+  margin:8px 0
+}
 
-    .activity-list {
-      display: grid;
-      gap: 12px;
-    }
+.hero p{
+  color:var(--muted);
+  max-width:650px;
+  margin:auto;
+  font-size:17px
+}
 
-    .activity {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-    }
+/* PANELS */
 
-    .activity input {
-      width: 21px;
-      height: 21px;
-      accent-color: var(--green);
-    }
+.panel{
+  background:#ffffffb8;
+  border:1px solid var(--line);
+  border-radius:26px;
+  padding:20px;
+  box-shadow:var(--shadow)
+}
 
-    .activity-text {
-      flex: 1;
-    }
+/* LOGIN */
 
-    .activity.done .activity-text {
-      text-decoration: line-through;
-      opacity: .55;
-    }
+.login-panel{
+  max-width:500px;
+  margin:0 auto;
+  text-align:center
+}
 
-    .who {
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 5px;
-    }
+.login-panel h2{
+  font-family:Georgia,serif;
+  font-size:28px;
+  margin:8px 0
+}
 
-    .message {
-      text-align: center;
-      font-family: Georgia, serif;
-      font-size: 25px;
-      margin: 25px 0;
-    }
+.login-panel p{
+  color:var(--muted);
+  line-height:1.6
+}
 
-    .add-box {
-      display: flex;
-      gap: 10px;
-      margin: 25px 0;
-    }
+.github-btn{
+  width:100%;
+  margin-top:12px;
+  border:0;
+  background:#24292f;
+  color:white;
+  border-radius:14px;
+  padding:14px 18px;
+  font-weight:800;
+  font-size:16px;
+  cursor:pointer;
+  transition:.2s
+}
 
-    .add-box input {
-      flex: 1;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 13px;
-      font-size: 15px;
-      background: white;
-    }
+.github-btn:hover{
+  background:#17191c;
+  transform:translateY(-1px)
+}
 
-    .add-box button {
-      background: var(--accent);
-      color: white;
-    }
+.auth-message{
+  color:#a34e32;
+  font-size:13px;
+  margin-top:12px
+}
 
-    .hidden {
-      display: none !important;
-    }
+/* TOOLBAR */
 
-    .user-info {
-      text-align: center;
-      color: var(--muted);
-      margin-top: 10px;
-    }
+.toolbar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap
+}
 
-    @media (max-width: 650px) {
-      .stats {
-        grid-template-columns: 1fr;
-      }
+input,select,button{
+  font:inherit
+}
 
-      .activity {
-        align-items: flex-start;
-      }
+input,select{
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:12px 14px;
+  background:white;
+  color:var(--ink);
+  outline:0
+}
 
-      .add-box {
-        flex-direction: column;
-      }
-    }
-  </style>
+input:focus{
+  border-color:var(--accent)
+}
+
+#activity{
+  flex:1;
+  min-width:220px
+}
+
+.add{
+  background:var(--accent);
+  color:white;
+  border:0;
+  border-radius:13px;
+  padding:12px 18px;
+  font-weight:800;
+  cursor:pointer
+}
+
+.add:hover{
+  opacity:.9
+}
+
+/* STATS */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin:18px 0
+}
+
+.stat{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:17px;
+  padding:15px
+}
+
+.stat strong{
+  display:block;
+  font-size:27px
+}
+
+.stat span{
+  font-size:11px;
+  color:var(--muted);
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.08em
+}
+
+.progress{
+  height:10px;
+  background:#eadfd5;
+  border-radius:99px;
+  overflow:hidden;
+  margin-top:9px
+}
+
+.bar{
+  height:100%;
+  width:0;
+  background:linear-gradient(
+    90deg,
+    var(--accent),
+    var(--accent2)
+  );
+  transition:.3s
+}
+
+/* FILTERS */
+
+.filters{
+  display:flex;
+  gap:8px;
+  margin-top:20px
+}
+
+.filter{
+  border:1px solid var(--line);
+  background:white;
+  border-radius:99px;
+  padding:8px 13px;
+  cursor:pointer;
+  color:var(--muted);
+  font-weight:700
+}
+
+.filter.active{
+  background:var(--ink);
+  color:white
+}
+
+/* ACTIVITIES */
+
+.list{
+  display:grid;
+  gap:10px;
+  margin-top:18px
+}
+
+.item{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:14px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:17px
+}
+
+.check{
+  width:24px;
+  height:24px;
+  accent-color:var(--accent);
+  flex-shrink:0
+}
+
+.text{
+  flex:1;
+  min-width:0
+}
+
+.text b{
+  display:block;
+  word-break:break-word
+}
+
+.text small{
+  color:var(--muted)
+}
+
+.item.done .text b{
+  text-decoration:line-through;
+  opacity:.45
+}
+
+.delete{
+  border:0;
+  background:transparent;
+  color:#a88978;
+  font-weight:800;
+  cursor:pointer;
+  padding:8px
+}
+
+.delete:hover{
+  color:#8d5136
+}
+
+/* EMPTY */
+
+.empty{
+  text-align:center;
+  color:var(--muted);
+  padding:45px 10px
+}
+
+.empty div{
+  font-size:45px
+}
+
+/* COMPLETION */
+
+.complete-message{
+  display:none;
+  text-align:center;
+  background:#f5ead9;
+  border:1px solid #ead4bb;
+  border-radius:17px;
+  padding:15px;
+  margin-top:18px;
+  font-family:Georgia,serif;
+  font-size:20px;
+  font-weight:700
+}
+
+/* ACTIONS */
+
+.actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:18px
+}
+
+.clear{
+  border:0;
+  background:#f1e5d9;
+  padding:10px 14px;
+  border-radius:12px;
+  font-weight:800;
+  cursor:pointer
+}
+
+.clear:hover{
+  background:#ead8c8
+}
+
+/* HIDDEN */
+
+.hidden{
+  display:none !important
+}
+
+/* SEASON PARTICLES */
+
+.season-bg{
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:-1
+}
+
+.particle{
+  position:absolute;
+  top:-12vh;
+  left:var(--x);
+  width:var(--size);
+  height:var(--size);
+  opacity:.75;
+  animation:
+    seasonFall var(--duration)
+    linear infinite;
+  animation-delay:var(--delay)
+}
+
+@keyframes seasonFall{
+  0%{
+    transform:
+      translate3d(0,-15vh,0)
+      rotate(0deg);
+    opacity:0
+  }
+
+  10%{
+    opacity:.8
+  }
+
+  50%{
+    transform:
+      translate3d(var(--drift),55vh,0)
+      rotate(180deg)
+  }
+
+  90%{
+    opacity:.7
+  }
+
+  100%{
+    transform:
+      translate3d(calc(var(--drift) * -1),115vh,0)
+      rotate(360deg);
+    opacity:0
+  }
+}
+
+body:has(.drawer.open) .season-bg{
+  opacity:.35
+}
+
+/* SEASONS */
+
+body.spring{
+  --bg:#fff8fc;
+  --line:#ead9e4
+}
+
+.spring .particle{
+  background:#e99ab9;
+  border-radius:50% 0 50% 0
+}
+
+body.summer{
+  --bg:#fffaf0;
+  --line:#eddfc2
+}
+
+.summer .particle{
+  background:#f4c64e;
+  border-radius:50%;
+  box-shadow:0 0 10px #f4c64e66
+}
+
+body.fall{
+  --bg:#fff9f2;
+  --line:#eadbcf
+}
+
+.fall .particle{
+  background:#c96a32;
+  border-radius:50% 0 50% 50%;
+  transform:rotate(25deg)
+}
+
+body.winter{
+  --bg:#f5fbff;
+  --line:#d8e7ee
+}
+
+.winter .particle{
+  background:white;
+  border-radius:50%;
+  box-shadow:0 0 5px #8eb8ca88
+}
+
+/* PARTICLE POSITIONS */
+
+.p1{--x:4%;--size:13px;--duration:8s;--delay:-2s;--drift:45px}
+.p2{--x:12%;--size:9px;--duration:11s;--delay:-7s;--drift:-30px}
+.p3{--x:21%;--size:15px;--duration:9s;--delay:-4s;--drift:55px}
+.p4{--x:31%;--size:8px;--duration:13s;--delay:-9s;--drift:-45px}
+.p5{--x:42%;--size:12px;--duration:10s;--delay:-1s;--drift:35px}
+.p6{--x:53%;--size:7px;--duration:12s;--delay:-6s;--drift:-60px}
+.p7{--x:63%;--size:14px;--duration:9s;--delay:-3s;--drift:40px}
+.p8{--x:72%;--size:9px;--duration:14s;--delay:-11s;--drift:-35px}
+.p9{--x:81%;--size:13px;--duration:10s;--delay:-5s;--drift:60px}
+.p10{--x:89%;--size:8px;--duration:12s;--delay:-8s;--drift:-50px}
+.p11{--x:95%;--size:11px;--duration:9s;--delay:-1s;--drift:30px}
+.p12{--x:26%;--size:6px;--duration:15s;--delay:-12s;--drift:-25px}
+
+@media(prefers-reduced-motion:reduce){
+  .particle{
+    animation:none;
+    display:none
+  }
+}
+
+@media(max-width:700px){
+
+  .user-name{
+    display:none
+  }
+
+  .header-right{
+    gap:5px
+  }
+
+  .logout{
+    padding:8px 10px;
+    font-size:12px
+  }
+}
+
+@media(max-width:600px){
+
+  .stats{
+    grid-template-columns:1fr 1fr
+  }
+
+  .stats .stat:last-child{
+    grid-column:1/-1
+  }
+
+  .hero{
+    margin-bottom:22px
+  }
+
+  .toolbar{
+    flex-direction:column
+  }
+
+  #activity{
+    width:100%
+  }
+
+  .add{
+    width:100%
+  }
+
+  .item{
+    align-items:flex-start
+  }
+
+  .filters{
+    overflow-x:auto;
+    padding-bottom:3px
+  }
+}
+</style>
 </head>
 
-<body>
+<body class="fall">
 
+<!-- SEASON PARTICLES -->
+<div class="season-bg" id="seasonBg" aria-hidden="true">
+  <div class="particle p1"></div>
+  <div class="particle p2"></div>
+  <div class="particle p3"></div>
+  <div class="particle p4"></div>
+  <div class="particle p5"></div>
+  <div class="particle p6"></div>
+  <div class="particle p7"></div>
+  <div class="particle p8"></div>
+  <div class="particle p9"></div>
+  <div class="particle p10"></div>
+  <div class="particle p11"></div>
+  <div class="particle p12"></div>
+</div>
+
+<!-- HEADER -->
 <header>
-  <div class="nav">
-    <button class="menu-button" onclick="toggleDrawer()">☰</button>
 
-    <div class="logo">Family Bucket List</div>
+  <button
+    class="menu-btn"
+    id="menuBtn"
+    aria-label="Open menu"
+  >
+    <span class="hamb">
+      <i></i>
+      <i></i>
+      <i></i>
+    </span>
+  </button>
 
-    <button id="logoutBtn"
-            class="logout-button hidden"
-            onclick="logout()">
+  <div class="brand">
+    Bucket List
+  </div>
+
+  <div class="header-right">
+
+    <span
+      class="user-name hidden"
+      id="headerUser"
+    ></span>
+
+    <button
+      class="logout hidden"
+      id="logoutBtn"
+    >
       Log Out
     </button>
+
   </div>
+
 </header>
 
-<div id="drawer" class="drawer">
-  <button onclick="showSeason('spring')">🌷 Spring</button>
-  <button onclick="showSeason('summer')">☀️ Summer</button>
-  <button onclick="showSeason('fall')">🍂 Fall</button>
-  <button onclick="showSeason('winter')">❄️ Winter</button>
-</div>
+<!-- OVERLAY -->
+<div
+  class="overlay"
+  id="overlay"
+></div>
+
+<!-- DRAWER -->
+<aside
+  class="drawer"
+  id="drawer"
+>
+
+  <button
+    class="close"
+    id="close"
+  >
+    ×
+  </button>
+
+  <h2>
+    Seasons
+  </h2>
+
+  <nav class="nav">
+
+    <button
+      data-season="spring"
+    >
+      🌷 Spring
+    </button>
+
+    <button
+      data-season="summer"
+    >
+      ☀️ Summer
+    </button>
+
+    <button
+      data-season="fall"
+      class="active"
+    >
+      🍂 Fall
+    </button>
+
+    <button
+      data-season="winter"
+    >
+      ❄️ Winter
+    </button>
+
+  </nav>
+
+</aside>
 
 <main>
 
+  <!-- HERO -->
   <section class="hero">
-    <h1>Our Family Adventures</h1>
-    <p>Little moments. Big memories. One bucket list.</p>
-  </section>
 
-  <!-- LOGIN -->
-  <section id="loginSection" class="auth-card">
-    <h2>Welcome!</h2>
+    <div
+      class="season-icon"
+      id="icon"
+    >
+      🍂
+    </div>
 
-    <p>
-      Sign in with your GitHub account to access the family bucket list.
+    <h1 id="title">
+      Fall Bucket List
+    </h1>
+
+    <p id="subtitle">
+      Cozy days, crisp air, colorful leaves,
+      and everything that makes autumn special.
     </p>
 
-    <button class="github-button" onclick="loginWithGitHub()">
+  </section>
+
+
+  <!-- LOGIN -->
+  <section
+    class="panel login-panel"
+    id="loginPanel"
+  >
+
+    <h2>
+      Welcome to the Family Bucket List
+    </h2>
+
+    <p>
+      Sign in with your GitHub account to see
+      and update the family's shared bucket list.
+    </p>
+
+    <button
+      class="github-btn"
+      id="githubLogin"
+    >
       Continue with GitHub
     </button>
 
-    <p id="authMessage" class="user-info"></p>
+    <div
+      class="auth-message"
+      id="authMessage"
+    ></div>
+
   </section>
 
 
   <!-- APP -->
-  <section id="appSection" class="hidden">
+  <section
+    class="panel hidden"
+    id="appPanel"
+  >
 
-    <div id="userInfo" class="user-info"></div>
+    <!-- ADD -->
+    <div class="toolbar">
 
-    <div class="stats">
-      <div class="stat">
-        <span id="totalCount" class="stat-number">0</span>
-        Total
-      </div>
-
-      <div class="stat">
-        <span id="doneCount" class="stat-number">0</span>
-        Completed
-      </div>
-
-      <div class="stat">
-        <span id="percentCount" class="stat-number">0%</span>
-        Progress
-      </div>
-    </div>
-
-    <div class="progress-card">
-      <strong>Family Progress</strong>
-
-      <div class="progress-bar">
-        <div id="progressFill" class="progress-fill"></div>
-      </div>
-    </div>
-
-    <div id="completionMessage" class="message"></div>
-
-    <div class="add-box">
       <input
-        id="newActivity"
-        type="text"
-        placeholder="Add a new family adventure..."
+        id="activity"
+        maxlength="100"
+        placeholder="Add something to your bucket list..."
       >
 
-      <button onclick="addActivity()">
-        + Add
+      <button
+        class="add"
+        id="add"
+      >
+        Add Activity
       </button>
+
     </div>
 
-    <h2 id="seasonTitle" class="season-title">
-      🌷 Spring
-    </h2>
 
-    <div id="activityList" class="activity-list"></div>
+    <!-- STATS -->
+    <div class="stats">
+
+      <div class="stat">
+        <strong id="total">
+          0
+        </strong>
+
+        <span>
+          Total
+        </span>
+      </div>
+
+
+      <div class="stat">
+        <strong id="completed">
+          0
+        </strong>
+
+        <span>
+          Completed
+        </span>
+      </div>
+
+
+      <div class="stat">
+
+        <strong id="percent">
+          0%
+        </strong>
+
+        <span>
+          Progress
+        </span>
+
+        <div class="progress">
+          <div
+            class="bar"
+            id="bar"
+          ></div>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- COMPLETION MESSAGE -->
+    <div
+      class="complete-message"
+      id="completeMessage"
+    >
+      🎉 You did everything!
+      What an amazing family adventure!
+    </div>
+
+
+    <!-- FILTERS -->
+    <div class="filters">
+
+      <button
+        class="filter active"
+        data-filter="all"
+      >
+        All
+      </button>
+
+      <button
+        class="filter"
+        data-filter="active"
+      >
+        To Do
+      </button>
+
+      <button
+        class="filter"
+        data-filter="done"
+      >
+        Completed
+      </button>
+
+    </div>
+
+
+    <!-- LIST -->
+    <div
+      class="list"
+      id="list"
+    ></div>
+
+
+    <!-- EMPTY -->
+    <div
+      class="empty"
+      id="empty"
+    >
+      <div>
+        ✨
+      </div>
+
+      <b>
+        Your list is empty.
+      </b>
+
+      <br>
+
+      Add your first activity!
+    </div>
+
+
+    <!-- ACTIONS -->
+    <div class="actions">
+
+      <button
+        class="clear"
+        id="clear"
+      >
+        Clear Completed
+      </button>
+
+    </div>
 
   </section>
 
 </main>
 
+
 <script>
 
-  // ============================================
-  // SUPABASE
-  // ============================================
+/* =========================================================
+   SUPABASE
+   ========================================================= */
 
-  const SUPABASE_URL =
-    "https://elprfpqivxmdrtvdtojh.supabase.co";
+const SUPABASE_URL =
+  "https://elprfpqivxmdrtvdtojh.supabase.co";
 
-  const SUPABASE_KEY =
-    "sb_publishable_bgSXEqqOpsyKA9wdgeVkKA_B_WoD23b";
+const SUPABASE_KEY =
+  "sb_publishable_bgSXEqqOpsyKA9wdgeVkKA_B_WoD23b";
 
-  const db = supabase.createClient(
+const db =
+  supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
   );
 
 
-  // ============================================
-  // STATE
-  // ============================================
+/* =========================================================
+   SEASON DATA
+   ========================================================= */
 
-  let currentUser = null;
-  let currentSeason = "spring";
+const seasonData = {
 
-  const seasonNames = {
-    spring: "🌷 Spring",
-    summer: "☀️ Summer",
-    fall: "🍂 Fall",
-    winter: "❄️ Winter"
-  };
+  spring: {
+    icon:"🌷",
+    title:"Spring Bucket List",
+    subtitle:
+      "Fresh air, blooming flowers, sunny days, and new adventures."
+  },
 
+  summer: {
+    icon:"☀️",
+    title:"Summer Bucket List",
+    subtitle:
+      "Long days, warm nights, adventures, and making summer memories."
+  },
 
-  // ============================================
-  // GITHUB LOGIN
-  // ============================================
+  fall: {
+    icon:"🍂",
+    title:"Fall Bucket List",
+    subtitle:
+      "Cozy days, crisp air, colorful leaves, and everything that makes autumn special."
+  },
 
-  async function loginWithGitHub() {
-
-    const { error } =
-      await db.auth.signInWithOAuth({
-
-        provider: "github",
-
-        options: {
-          redirectTo:
-            "https://jaydenrrivera2011.github.io/family-bucket-list/"
-        }
-
-      });
-
-    if (error) {
-      document.getElementById("authMessage").textContent =
-        error.message;
-    }
+  winter: {
+    icon:"❄️",
+    title:"Winter Bucket List",
+    subtitle:
+      "Snowy days, warm drinks, holiday lights, and cozy winter adventures."
   }
 
-
-  // ============================================
-  // LOG OUT
-  // ============================================
-
-  async function logout() {
-
-    await db.auth.signOut();
-
-    currentUser = null;
-
-    document
-      .getElementById("appSection")
-      .classList.add("hidden");
-
-    document
-      .getElementById("loginSection")
-      .classList.remove("hidden");
-
-    document
-      .getElementById("logoutBtn")
-      .classList.add("hidden");
-  }
+};
 
 
-  // ============================================
-  // AUTH STATE
-  // ============================================
+/* =========================================================
+   STATE
+   ========================================================= */
 
-  db.auth.onAuthStateChange(
-    async (event, session) => {
+let season =
+  localStorage.getItem("bucketSeason") || "fall";
 
-      if (session && session.user) {
+let filter = "all";
 
-        currentUser = session.user;
+let currentUser = null;
 
-        document
-          .getElementById("loginSection")
-          .classList.add("hidden");
 
-        document
-          .getElementById("appSection")
-          .classList.remove("hidden");
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
 
-        document
-          .getElementById("logoutBtn")
-          .classList.remove("hidden");
+const menuBtn =
+  document.getElementById("menuBtn");
 
-        const username =
-          getUsername(session.user);
+const drawer =
+  document.getElementById("drawer");
 
-        document.getElementById("userInfo").textContent =
-          "Signed in as " + username;
+const overlay =
+  document.getElementById("overlay");
 
-        await loadActivities();
+const closeBtn =
+  document.getElementById("close");
 
-      } else {
+const icon =
+  document.getElementById("icon");
 
-        currentUser = null;
+const title =
+  document.getElementById("title");
 
-        document
-          .getElementById("loginSection")
-          .classList.remove("hidden");
+const subtitle =
+  document.getElementById("subtitle");
 
-        document
-          .getElementById("appSection")
-          .classList.add("hidden");
+const loginPanel =
+  document.getElementById("loginPanel");
 
-        document
-          .getElementById("logoutBtn")
-          .classList.add("hidden");
+const appPanel =
+  document.getElementById("appPanel");
+
+const githubLogin =
+  document.getElementById("githubLogin");
+
+const authMessage =
+  document.getElementById("authMessage");
+
+const logoutBtn =
+  document.getElementById("logoutBtn");
+
+const headerUser =
+  document.getElementById("headerUser");
+
+const activityInput =
+  document.getElementById("activity");
+
+const addBtn =
+  document.getElementById("add");
+
+const list =
+  document.getElementById("list");
+
+const empty =
+  document.getElementById("empty");
+
+const total =
+  document.getElementById("total");
+
+const completed =
+  document.getElementById("completed");
+
+const percent =
+  document.getElementById("percent");
+
+const bar =
+  document.getElementById("bar");
+
+const clearBtn =
+  document.getElementById("clear");
+
+const completeMessage =
+  document.getElementById("completeMessage");
+
+
+/* =========================================================
+   GITHUB LOGIN
+   ========================================================= */
+
+async function loginWithGitHub(){
+
+  authMessage.textContent = "";
+
+  const {
+    error
+  } =
+    await db.auth.signInWithOAuth({
+
+      provider:"github",
+
+      options:{
+        redirectTo:
+          "https://jaydenrrivera2011.github.io/family-bucket-list/"
       }
-    }
+
+    });
+
+  if(error){
+
+    console.error(error);
+
+    authMessage.textContent =
+      error.message;
+
+  }
+
+}
+
+
+/* =========================================================
+   GET USERNAME
+   ========================================================= */
+
+function getUsername(user){
+
+  return (
+    user.user_metadata?.user_name ||
+    user.user_metadata?.preferred_username ||
+    user.user_metadata?.name ||
+    "Family Member"
   );
 
+}
 
-  // ============================================
-  // GET GITHUB USERNAME
-  // ============================================
 
-  function getUsername(user) {
+/* =========================================================
+   LOG OUT
+   ========================================================= */
 
-    return (
-      user.user_metadata?.user_name ||
-      user.user_metadata?.preferred_username ||
-      user.user_metadata?.name ||
-      user.email?.split("@")[0] ||
-      "Family Member"
-    );
+async function logout(){
+
+  const {
+    error
+  } =
+    await db.auth.signOut();
+
+  if(error){
+
+    console.error(error);
+
+    return;
+
   }
 
+  currentUser = null;
 
-  // ============================================
-  // DRAWER
-  // ============================================
+  showLoggedOut();
 
-  function toggleDrawer() {
-
-    document
-      .getElementById("drawer")
-      .classList.toggle("open");
-  }
+}
 
 
-  function showSeason(season) {
+/* =========================================================
+   AUTH UI
+   ========================================================= */
 
-    currentSeason = season;
+function showLoggedIn(){
 
-    document
-      .getElementById("drawer")
-      .classList.remove("open");
+  loginPanel.classList.add("hidden");
 
-    document
-      .getElementById("seasonTitle")
-      .textContent = seasonNames[season];
+  appPanel.classList.remove("hidden");
 
-    loadActivities();
-  }
+  logoutBtn.classList.remove("hidden");
+
+  headerUser.classList.remove("hidden");
+
+  headerUser.textContent =
+    getUsername(currentUser);
+
+}
 
 
-  // ============================================
-  // LOAD ACTIVITIES
-  // ============================================
+function showLoggedOut(){
 
-  async function loadActivities() {
+  loginPanel.classList.remove("hidden");
 
-    if (!currentUser) return;
+  appPanel.classList.add("hidden");
 
-    const { data, error } =
-      await db
-        .from("activities")
-        .select("*")
-        .eq("season", currentSeason)
-        .order("created_at", {
-          ascending: true
-        });
+  logoutBtn.classList.add("hidden");
 
-    if (error) {
+  headerUser.classList.add("hidden");
 
-      console.error(error);
+  headerUser.textContent = "";
 
-      document.getElementById("activityList").innerHTML =
-        "<p>Could not load activities.</p>";
+}
 
-      return;
+
+/* =========================================================
+   AUTH STATE
+   ========================================================= */
+
+db.auth.onAuthStateChange(
+  async (event, session) => {
+
+    if(session && session.user){
+
+      currentUser =
+        session.user;
+
+      showLoggedIn();
+
+      await loadActivities();
+
+    }else{
+
+      currentUser = null;
+
+      showLoggedOut();
+
     }
 
-    renderActivities(data || []);
+  }
+);
 
-    updateStats(data || []);
+
+/* =========================================================
+   SEASON UI
+   ========================================================= */
+
+function renderSeason(){
+
+  const data =
+    seasonData[season];
+
+  document.body.className =
+    season;
+
+  if(season === "summer"){
+
+    document.documentElement
+      .style
+      .setProperty(
+        "--accent",
+        "#e39a25"
+      );
+
+  }
+  else if(season === "spring"){
+
+    document.documentElement
+      .style
+      .setProperty(
+        "--accent",
+        "#cc7191"
+      );
+
+  }
+  else if(season === "winter"){
+
+    document.documentElement
+      .style
+      .setProperty(
+        "--accent",
+        "#5793b5"
+      );
+
+  }
+  else{
+
+    document.documentElement
+      .style
+      .setProperty(
+        "--accent",
+        "#d66a35"
+      );
+
   }
 
+  icon.textContent =
+    data.icon;
 
-  // ============================================
-  // RENDER
-  // ============================================
+  title.textContent =
+    data.title;
 
-  function renderActivities(activities) {
+  subtitle.textContent =
+    data.subtitle;
 
-    const list =
-      document.getElementById("activityList");
+
+  document
+    .querySelectorAll(".nav button")
+    .forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.season === season
+      );
+
+    });
+
+}
+
+
+/* =========================================================
+   LOAD ACTIVITIES
+   ========================================================= */
+
+async function loadActivities(){
+
+  if(!currentUser)
+    return;
+
+
+  const {
+    data,
+    error
+  } =
+    await db
+      .from("activities")
+      .select("*")
+      .eq("season",season)
+      .order(
+        "created_at",
+        {
+          ascending:true
+        }
+      );
+
+
+  if(error){
+
+    console.error(error);
 
     list.innerHTML = "";
 
-    if (activities.length === 0) {
+    empty.style.display =
+      "block";
 
-      list.innerHTML =
-        "<p>No activities yet. Add one above!</p>";
+    empty.innerHTML =
+      "<div>⚠️</div><b>Could not load activities.</b>";
 
-      return;
-    }
+    return;
 
-    activities.forEach(activity => {
-
-      const item =
-        document.createElement("div");
-
-      item.className =
-        "activity" +
-        (activity.done ? " done" : "");
-
-      const checkbox =
-        document.createElement("input");
-
-      checkbox.type = "checkbox";
-      checkbox.checked = activity.done;
-
-      checkbox.onchange = () =>
-        toggleActivity(activity);
-
-      const text =
-        document.createElement("div");
-
-      text.className = "activity-text";
-
-      text.textContent = activity.text;
-
-      const who =
-        document.createElement("div");
-
-      who.className = "who";
-
-      if (activity.done) {
-
-        who.textContent =
-          "Completed by " +
-          (activity.completed_by_username ||
-           "Family Member");
-
-      } else {
-
-        who.textContent =
-          "Added by " +
-          (activity.created_by_username ||
-           "Family Member");
-      }
-
-      text.appendChild(who);
-
-      item.appendChild(checkbox);
-      item.appendChild(text);
-
-      list.appendChild(item);
-    });
   }
 
 
-  // ============================================
-  // ADD ACTIVITY
-  // ============================================
+  renderActivities(
+    data || []
+  );
 
-  async function addActivity() {
+  await updateStats();
 
-    const input =
-      document.getElementById("newActivity");
+}
+
+
+/* =========================================================
+   RENDER ACTIVITIES
+   ========================================================= */
+
+function renderActivities(activities){
+
+  list.innerHTML = "";
+
+
+  const shown =
+    activities.filter(activity => {
+
+      if(filter === "done")
+        return activity.done;
+
+      if(filter === "active")
+        return !activity.done;
+
+      return true;
+
+    });
+
+
+  if(shown.length === 0){
+
+    empty.style.display =
+      "block";
+
+  }else{
+
+    empty.style.display =
+      "none";
+
+  }
+
+
+  shown.forEach(activity => {
+
+    const item =
+      document.createElement("div");
+
+    item.className =
+      "item" +
+      (
+        activity.done
+          ? " done"
+          : ""
+      );
+
+
+    const checkbox =
+      document.createElement("input");
+
+    checkbox.type =
+      "checkbox";
+
+    checkbox.className =
+      "check";
+
+    checkbox.checked =
+      activity.done;
+
+    checkbox.addEventListener(
+      "change",
+      () => toggleActivity(activity)
+    );
+
 
     const text =
-      input.value.trim();
+      document.createElement("div");
 
-    if (!text || !currentUser) return;
+    text.className =
+      "text";
 
-    const username =
-      getUsername(currentUser);
 
-    const { error } =
-      await db
-        .from("activities")
-        .insert({
+    const bold =
+      document.createElement("b");
 
-          season: currentSeason,
+    bold.textContent =
+      activity.text;
 
-          text: text,
 
-          done: false,
+    const small =
+      document.createElement("small");
 
-          created_by: currentUser.id,
 
-          created_by_username: username
-        });
+    if(activity.done){
 
-    if (error) {
+      small.textContent =
+        "Completed by " +
+        (
+          activity.completed_by_username ||
+          "Family Member"
+        );
 
-      alert(error.message);
+    }else{
 
-      return;
+      small.textContent =
+        "Added by " +
+        (
+          activity.created_by_username ||
+          "Family Member"
+        );
+
     }
 
-    input.value = "";
 
-    await loadActivities();
+    text.appendChild(bold);
+
+    text.appendChild(small);
+
+
+    const deleteBtn =
+      document.createElement("button");
+
+    deleteBtn.className =
+      "delete";
+
+    deleteBtn.textContent =
+      "✕";
+
+    deleteBtn.title =
+      "Delete activity";
+
+    deleteBtn.addEventListener(
+      "click",
+      () => deleteActivity(activity.id)
+    );
+
+
+    item.appendChild(
+      checkbox
+    );
+
+    item.appendChild(
+      text
+    );
+
+    item.appendChild(
+      deleteBtn
+    );
+
+
+    list.appendChild(
+      item
+    );
+
+  });
+
+}
+
+
+/* =========================================================
+   UPDATE STATS
+   ========================================================= */
+
+async function updateStats(){
+
+  const {
+    data,
+    error
+  } =
+    await db
+      .from("activities")
+      .select("done");
+
+
+  if(error){
+
+    console.error(error);
+
+    return;
+
   }
 
 
-  // ============================================
-  // COMPLETE / UNCOMPLETE
-  // ============================================
+  const activities =
+    data || [];
 
-  async function toggleActivity(activity) {
 
-    if (!currentUser) return;
+  const totalCount =
+    activities.length;
 
-    const username =
-      getUsername(currentUser);
 
-    let updateData;
+  const completedCount =
+    activities.filter(
+      activity => activity.done
+    ).length;
 
-    if (!activity.done) {
 
-      updateData = {
+  const progress =
+    totalCount === 0
+      ? 0
+      : Math.round(
+          completedCount /
+          totalCount *
+          100
+        );
 
-        done: true,
 
-        completed_at:
-          new Date().toISOString(),
+  total.textContent =
+    totalCount;
 
-        completed_by:
+  completed.textContent =
+    completedCount;
+
+  percent.textContent =
+    progress + "%";
+
+  bar.style.width =
+    progress + "%";
+
+
+  if(
+    totalCount > 0 &&
+    progress === 100
+  ){
+
+    completeMessage.style.display =
+      "block";
+
+  }else{
+
+    completeMessage.style.display =
+      "none";
+
+  }
+
+}
+
+
+/* =========================================================
+   ADD ACTIVITY
+   ========================================================= */
+
+async function addActivity(){
+
+  if(!currentUser)
+    return;
+
+
+  const text =
+    activityInput.value.trim();
+
+
+  if(!text)
+    return;
+
+
+  const username =
+    getUsername(currentUser);
+
+
+  const {
+    error
+  } =
+    await db
+      .from("activities")
+      .insert({
+
+        season:season,
+
+        text:text,
+
+        done:false,
+
+        created_by:
           currentUser.id,
 
-        completed_by_username:
+        created_by_username:
           username
-      };
 
-    } else {
+      });
 
-      updateData = {
 
-        done: false,
+  if(error){
 
-        completed_at: null,
+    alert(
+      error.message
+    );
 
-        completed_by: null,
+    return;
 
-        completed_by_username: null
-      };
-    }
-
-    const { error } =
-      await db
-        .from("activities")
-        .update(updateData)
-        .eq("id", activity.id);
-
-    if (error) {
-
-      alert(error.message);
-
-      return;
-    }
-
-    await loadActivities();
   }
 
 
-  // ============================================
-  // STATS
-  // ============================================
+  activityInput.value = "";
 
-  async function updateStats(currentSeasonActivities) {
+  await loadActivities();
 
-    const { data: allActivities, error } =
-      await db
-        .from("activities")
-        .select("done");
+}
 
-    if (error) return;
 
-    const total =
-      allActivities.length;
+/* =========================================================
+   TOGGLE ACTIVITY
+   ========================================================= */
 
-    const completed =
-      allActivities.filter(a => a.done).length;
+async function toggleActivity(
+  activity
+){
 
-    const percent =
-      total === 0
-        ? 0
-        : Math.round((completed / total) * 100);
+  if(!currentUser)
+    return;
 
-    document.getElementById("totalCount")
-      .textContent = total;
 
-    document.getElementById("doneCount")
-      .textContent = completed;
+  const username =
+    getUsername(currentUser);
 
-    document.getElementById("percentCount")
-      .textContent = percent + "%";
 
-    document.getElementById("progressFill")
-      .style.width = percent + "%";
+  let updateData;
 
-    const message =
-      document.getElementById("completionMessage");
 
-    if (total > 0 && percent === 100) {
+  if(!activity.done){
 
-      message.textContent =
-        "🎉 We did everything! What an amazing family adventure!";
+    updateData = {
 
-    } else {
+      done:true,
 
-      message.textContent = "";
-    }
+      completed_at:
+        new Date().toISOString(),
+
+      completed_by:
+        currentUser.id,
+
+      completed_by_username:
+        username
+
+    };
+
+  }else{
+
+    updateData = {
+
+      done:false,
+
+      completed_at:null,
+
+      completed_by:null,
+
+      completed_by_username:null
+
+    };
+
   }
 
 
-  // ============================================
-  // ENTER KEY TO ADD
-  // ============================================
+  const {
+    error
+  } =
+    await db
+      .from("activities")
+      .update(updateData)
+      .eq(
+        "id",
+        activity.id
+      );
 
-  document
-    .getElementById("newActivity")
-    .addEventListener("keydown", event => {
 
-      if (event.key === "Enter") {
-        addActivity();
+  if(error){
+
+    alert(
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  await loadActivities();
+
+}
+
+
+/* =========================================================
+   DELETE ACTIVITY
+   ========================================================= */
+
+async function deleteActivity(id){
+
+  if(!currentUser)
+    return;
+
+
+  const {
+    error
+  } =
+    await db
+      .from("activities")
+      .delete()
+      .eq("id",id);
+
+
+  if(error){
+
+    alert(
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  await loadActivities();
+
+}
+
+
+/* =========================================================
+   CLEAR COMPLETED
+   ========================================================= */
+
+async function clearCompleted(){
+
+  if(!currentUser)
+    return;
+
+
+  const {
+    error
+  } =
+    await db
+      .from("activities")
+      .delete()
+      .eq(
+        "season",
+        season
+      )
+      .eq(
+        "done",
+        true
+      );
+
+
+  if(error){
+
+    alert(
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  await loadActivities();
+
+}
+
+
+/* =========================================================
+   DRAWER
+   ========================================================= */
+
+function openDrawer(){
+
+  drawer.classList.add(
+    "open"
+  );
+
+  overlay.classList.add(
+    "show"
+  );
+
+}
+
+
+function closeDrawer(){
+
+  drawer.classList.remove(
+    "open"
+  );
+
+  overlay.classList.remove(
+    "show"
+  );
+
+}
+
+
+menuBtn.addEventListener(
+  "click",
+  openDrawer
+);
+
+closeBtn.addEventListener(
+  "click",
+  closeDrawer
+);
+
+overlay.addEventListener(
+  "click",
+  closeDrawer
+);
+
+
+/* =========================================================
+   SEASON BUTTONS
+   ========================================================= */
+
+document
+  .querySelectorAll(".nav button")
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      async () => {
+
+        season =
+          button.dataset.season;
+
+        filter =
+          "all";
+
+
+        document
+          .querySelectorAll(".filter")
+          .forEach(filterButton => {
+
+            filterButton.classList.toggle(
+              "active",
+              filterButton.dataset.filter === "all"
+            );
+
+          });
+
+
+        localStorage.setItem(
+          "bucketSeason",
+          season
+        );
+
+
+        renderSeason();
+
+        closeDrawer();
+
+
+        if(currentUser){
+
+          await loadActivities();
+
+        }
+
       }
+    );
 
-    });
+  });
+
+
+/* =========================================================
+   FILTER BUTTONS
+   ========================================================= */
+
+document
+  .querySelectorAll(".filter")
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      async () => {
+
+        filter =
+          button.dataset.filter;
+
+
+        document
+          .querySelectorAll(".filter")
+          .forEach(filterButton => {
+
+            filterButton.classList.toggle(
+              "active",
+              filterButton === button
+            );
+
+          });
+
+
+        await loadActivities();
+
+      }
+    );
+
+  });
+
+
+/* =========================================================
+   BUTTON EVENTS
+   ========================================================= */
+
+githubLogin.addEventListener(
+  "click",
+  loginWithGitHub
+);
+
+logoutBtn.addEventListener(
+  "click",
+  logout
+);
+
+addBtn.addEventListener(
+  "click",
+  addActivity
+);
+
+clearBtn.addEventListener(
+  "click",
+  clearCompleted
+);
+
+
+activityInput.addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key === "Enter"){
+
+      addActivity();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+renderSeason();
 
 </script>
 
