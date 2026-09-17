@@ -10,17 +10,15 @@
 
   <style>
     :root {
-      --cream: #f8f2e8;
-      --paper: #fffaf2;
-      --brown: #5d4635;
-      --brown-dark: #3d2d21;
-      --green: #738b5c;
-      --green-dark: #536a42;
-      --orange: #d88950;
-      --pink: #d88989;
-      --blue: #7897a8;
-      --shadow: 0 10px 30px rgba(72, 49, 30, .12);
-      --radius: 22px;
+      --bg: #f8f1e7;
+      --card: #fffaf3;
+      --text: #40352c;
+      --muted: #806f61;
+      --accent: #b56b45;
+      --accent-dark: #8e4e30;
+      --border: #e4d7c8;
+      --green: #5f805d;
+      --shadow: 0 10px 30px rgba(72, 51, 35, .10);
     }
 
     * {
@@ -29,628 +27,260 @@
 
     body {
       margin: 0;
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top left, rgba(216,137,80,.10), transparent 30%),
-        radial-gradient(circle at bottom right, rgba(115,139,92,.10), transparent 30%),
-        var(--cream);
-      color: var(--brown);
+      background: var(--bg);
+      color: var(--text);
       font-family: Arial, sans-serif;
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    /* =========================
-       AUTH
-    ========================= */
-
-    #authScreen {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-
-    .auth-card {
-      width: 100%;
-      max-width: 460px;
-      background: var(--paper);
-      padding: 38px;
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-      text-align: center;
-    }
-
-    .auth-card h1 {
-      margin: 0 0 10px;
-      font-family: Georgia, serif;
-      font-size: 42px;
-      color: var(--brown-dark);
-    }
-
-    .auth-card p {
-      line-height: 1.6;
-      opacity: .8;
-    }
-
-    .auth-form {
-      margin-top: 25px;
-    }
-
-    .auth-form input {
-      width: 100%;
-      padding: 15px 17px;
-      margin-bottom: 12px;
-      border: 1px solid #dfd2c0;
-      border-radius: 14px;
-      background: white;
-      color: var(--brown);
-      outline: none;
-    }
-
-    .auth-form input:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(115,139,92,.12);
-    }
-
-    .primary-btn {
-      width: 100%;
-      border: none;
-      padding: 15px;
-      border-radius: 14px;
-      background: var(--green);
-      color: white;
-      font-weight: bold;
-      margin-top: 5px;
-    }
-
-    .primary-btn:hover {
-      background: var(--green-dark);
-    }
-
-    .secondary-btn {
-      border: none;
-      background: transparent;
-      color: var(--green-dark);
-      font-weight: bold;
-      margin-top: 18px;
-    }
-
-    #authMessage {
-      min-height: 22px;
-      margin-top: 15px;
-      font-size: 14px;
-    }
-
-    /* =========================
-       APP
-    ========================= */
-
-    #app {
-      display: none;
-      min-height: 100vh;
     }
 
     header {
       position: sticky;
       top: 0;
-      z-index: 50;
-      height: 76px;
-      background: rgba(255,250,242,.94);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(93,70,53,.08);
-      display: flex;
-      align-items: center;
-      padding: 0 20px;
+      z-index: 10;
+      background: rgba(255,250,243,.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
     }
 
-    .header-inner {
-      width: 100%;
-      max-width: 1200px;
+    .nav {
+      max-width: 1100px;
       margin: auto;
+      padding: 16px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .menu-btn {
-      width: 46px;
-      height: 46px;
-      border: none;
-      border-radius: 14px;
-      background: #eee3d5;
-      color: var(--brown);
-      font-size: 25px;
-    }
-
     .logo {
       font-family: Georgia, serif;
-      font-size: 25px;
-      font-weight: bold;
-      color: var(--brown-dark);
-    }
-
-    .user-area {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .username-badge {
-      background: #eee3d5;
-      border-radius: 999px;
-      padding: 9px 14px;
-      font-size: 14px;
+      font-size: 24px;
       font-weight: bold;
     }
 
-    .logout-btn {
+    button {
       border: none;
-      background: transparent;
-      color: var(--brown);
+      cursor: pointer;
+      border-radius: 12px;
+      padding: 11px 16px;
       font-weight: bold;
+      font-size: 14px;
     }
 
-    /* =========================
-       DRAWER
-    ========================= */
-
-    .drawer-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(38,29,20,.35);
-      z-index: 100;
-      display: none;
+    .menu-button {
+      background: transparent;
+      font-size: 25px;
     }
 
-    .drawer-overlay.open {
-      display: block;
+    .github-button {
+      background: #24292f;
+      color: white;
+    }
+
+    .logout-button {
+      background: #eadfd3;
+      color: var(--text);
     }
 
     .drawer {
       position: fixed;
       top: 0;
-      left: 0;
-      bottom: 0;
-      width: min(370px, 90vw);
-      background: var(--paper);
-      z-index: 101;
-      transform: translateX(-100%);
-      transition: transform .25s ease;
-      overflow-y: auto;
+      left: -280px;
+      width: 280px;
+      height: 100%;
+      background: var(--card);
+      z-index: 20;
       padding: 25px;
-      box-shadow: 10px 0 35px rgba(0,0,0,.12);
+      box-shadow: var(--shadow);
+      transition: .25s;
     }
 
     .drawer.open {
-      transform: translateX(0);
-    }
-
-    .drawer-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
+      left: 0;
     }
 
     .drawer h2 {
-      margin: 0;
       font-family: Georgia, serif;
-      color: var(--brown-dark);
     }
 
-    .close-btn {
-      width: 40px;
-      height: 40px;
-      border: none;
-      border-radius: 12px;
-      background: #eee3d5;
-      font-size: 20px;
-    }
-
-    .drawer-section {
-      margin-bottom: 28px;
-    }
-
-    .drawer-section-title {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      opacity: .55;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    .nav-item {
+    .drawer button {
+      display: block;
       width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border: none;
-      background: transparent;
-      padding: 13px 14px;
-      border-radius: 13px;
-      color: var(--brown);
+      margin: 10px 0;
       text-align: left;
-      margin-bottom: 4px;
+      background: #f1e7da;
     }
-
-    .nav-item:hover,
-    .nav-item.active {
-      background: #eee3d5;
-    }
-
-    .nav-icon {
-      width: 28px;
-      text-align: center;
-      font-size: 20px;
-    }
-
-    .custom-list-create {
-      display: flex;
-      gap: 7px;
-      margin-top: 12px;
-    }
-
-    .custom-list-create input {
-      flex: 1;
-      min-width: 0;
-      padding: 11px;
-      border: 1px solid #dfd2c0;
-      border-radius: 11px;
-      background: white;
-    }
-
-    .add-list-btn {
-      border: none;
-      width: 45px;
-      border-radius: 11px;
-      background: var(--green);
-      color: white;
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    .delete-list {
-      margin-left: auto;
-      border: none;
-      background: transparent;
-      opacity: .5;
-      font-size: 15px;
-    }
-
-    /* =========================
-       MAIN
-    ========================= */
 
     main {
-      width: 100%;
       max-width: 1100px;
       margin: auto;
       padding: 45px 20px 80px;
     }
 
     .hero {
-      background:
-        linear-gradient(135deg, rgba(255,255,255,.55), rgba(255,255,255,.05)),
-        #e9ddca;
-      border-radius: 30px;
-      padding: 45px;
-      box-shadow: var(--shadow);
-      margin-bottom: 30px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero::after {
-      content: "✦";
-      position: absolute;
-      right: 45px;
-      top: 30px;
-      font-size: 100px;
-      opacity: .08;
-    }
-
-    .hero-label {
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      font-size: 12px;
-      font-weight: bold;
-      opacity: .55;
+      text-align: center;
+      padding: 35px 10px;
     }
 
     .hero h1 {
       font-family: Georgia, serif;
-      font-size: clamp(42px, 7vw, 72px);
-      line-height: .98;
-      margin: 13px 0;
-      color: var(--brown-dark);
-      max-width: 700px;
+      font-size: clamp(40px, 8vw, 72px);
+      margin: 10px 0;
     }
 
     .hero p {
-      max-width: 650px;
-      line-height: 1.7;
-      font-size: 17px;
-      opacity: .78;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .auth-card {
+      max-width: 500px;
+      margin: 25px auto;
+      padding: 30px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .auth-card h2 {
+      font-family: Georgia, serif;
     }
 
     .stats {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 15px;
-      margin-bottom: 30px;
+      margin: 25px 0;
     }
 
     .stat {
-      background: var(--paper);
-      border-radius: 20px;
-      padding: 22px;
-      box-shadow: var(--shadow);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      text-align: center;
     }
 
     .stat-number {
+      display: block;
       font-family: Georgia, serif;
-      font-size: 34px;
-      color: var(--brown-dark);
+      font-size: 32px;
       font-weight: bold;
-    }
-
-    .stat-label {
-      margin-top: 5px;
-      opacity: .6;
-      font-size: 13px;
     }
 
     .progress-card {
-      background: var(--paper);
-      padding: 22px;
+      background: var(--card);
+      border: 1px solid var(--border);
       border-radius: 20px;
-      box-shadow: var(--shadow);
+      padding: 20px;
       margin-bottom: 30px;
     }
 
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
-
-    .progress-track {
-      height: 13px;
-      background: #e8ded0;
-      border-radius: 999px;
+    .progress-bar {
+      height: 14px;
+      background: #eadfd3;
+      border-radius: 20px;
       overflow: hidden;
+      margin-top: 12px;
     }
 
     .progress-fill {
       height: 100%;
       width: 0%;
       background: var(--green);
-      border-radius: 999px;
-      transition: width .4s ease;
+      transition: width .4s;
     }
 
-    #congratulations {
-      display: none;
-      margin-top: 15px;
-      padding: 14px;
-      border-radius: 14px;
-      background: #e6efd9;
-      color: var(--green-dark);
-      text-align: center;
-      font-weight: bold;
-    }
-
-    .list-heading {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-      gap: 15px;
-    }
-
-    .list-heading h2 {
+    .season-title {
       font-family: Georgia, serif;
-      color: var(--brown-dark);
-      margin: 0;
       font-size: 34px;
+      margin-bottom: 15px;
     }
 
-    .list-heading p {
-      margin: 5px 0 0;
-      opacity: .6;
-      font-size: 14px;
-    }
-
-    .new-item {
-      background: var(--paper);
-      border-radius: 20px;
-      padding: 16px;
-      box-shadow: var(--shadow);
-      display: flex;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .new-item input {
-      flex: 1;
-      min-width: 0;
-      border: 1px solid #dfd2c0;
-      border-radius: 13px;
-      padding: 14px;
-      background: white;
-      color: var(--brown);
-    }
-
-    .new-item button {
-      border: none;
-      border-radius: 13px;
-      padding: 0 20px;
-      background: var(--green);
-      color: white;
-      font-weight: bold;
-    }
-
-    .activities {
+    .activity-list {
       display: grid;
-      gap: 14px;
+      gap: 12px;
     }
 
     .activity {
-      background: var(--paper);
-      border-radius: 20px;
-      padding: 19px;
-      box-shadow: var(--shadow);
-      display: flex;
-      align-items: flex-start;
-      gap: 15px;
-      transition: .2s ease;
-    }
-
-    .activity:hover {
-      transform: translateY(-2px);
-    }
-
-    .activity.done {
-      opacity: .72;
-    }
-
-    .checkbox {
-      width: 27px;
-      height: 27px;
-      flex: 0 0 27px;
-      border: 2px solid #cbbca9;
-      border-radius: 9px;
-      background: transparent;
-      margin-top: 2px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
+      gap: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
     }
 
-    .activity.done .checkbox {
-      background: var(--green);
-      border-color: var(--green);
+    .activity input {
+      width: 21px;
+      height: 21px;
+      accent-color: var(--green);
     }
 
-    .activity-content {
+    .activity-text {
       flex: 1;
-      min-width: 0;
     }
 
-    .activity-title {
-      font-size: 17px;
-      line-height: 1.4;
-      color: var(--brown-dark);
-      font-weight: bold;
-    }
-
-    .activity.done .activity-title {
+    .activity.done .activity-text {
       text-decoration: line-through;
+      opacity: .55;
     }
 
-    .activity-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px 14px;
-      margin-top: 8px;
+    .who {
+      color: var(--muted);
       font-size: 12px;
-      opacity: .58;
-      line-height: 1.5;
+      margin-top: 5px;
     }
 
-    .activity-meta span {
-      display: inline-block;
-    }
-
-    .delete-btn {
-      border: none;
-      background: transparent;
-      opacity: .45;
-      font-size: 17px;
-      padding: 4px;
-    }
-
-    .empty {
+    .message {
       text-align: center;
-      padding: 50px 20px;
-      background: rgba(255,250,242,.55);
-      border: 2px dashed #dbcdbb;
-      border-radius: 20px;
-      opacity: .65;
+      font-family: Georgia, serif;
+      font-size: 25px;
+      margin: 25px 0;
     }
 
-    .loading {
+    .add-box {
+      display: flex;
+      gap: 10px;
+      margin: 25px 0;
+    }
+
+    .add-box input {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px;
+      font-size: 15px;
+      background: white;
+    }
+
+    .add-box button {
+      background: var(--accent);
+      color: white;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .user-info {
       text-align: center;
-      padding: 35px;
-      opacity: .6;
+      color: var(--muted);
+      margin-top: 10px;
     }
 
-    /* =========================
-       RESPONSIVE
-    ========================= */
-
-    @media (max-width: 700px) {
-      header {
-        padding: 0 12px;
-      }
-
-      .logo {
-        font-size: 20px;
-      }
-
-      .username-badge {
-        display: none;
-      }
-
-      main {
-        padding: 25px 13px 60px;
-      }
-
-      .hero {
-        padding: 30px 25px;
-      }
-
+    @media (max-width: 650px) {
       .stats {
         grid-template-columns: 1fr;
       }
 
-      .new-item {
-        flex-direction: column;
-      }
-
-      .new-item button {
-        padding: 13px;
-      }
-
-      .list-heading {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
       .activity {
-        padding: 15px;
+        align-items: flex-start;
       }
 
-      .activity-meta {
+      .add-box {
         flex-direction: column;
-        gap: 3px;
-      }
-
-      .auth-card {
-        padding: 28px 20px;
       }
     }
   </style>
@@ -658,1551 +288,560 @@
 
 <body>
 
-  <!-- =========================
-       LOGIN / SIGNUP
-  ========================= -->
+<header>
+  <div class="nav">
+    <button class="menu-button" onclick="toggleDrawer()">☰</button>
 
-  <section id="authScreen">
+    <div class="logo">Family Bucket List</div>
 
-    <div class="auth-card">
+    <button id="logoutBtn"
+            class="logout-button hidden"
+            onclick="logout()">
+      Log Out
+    </button>
+  </div>
+</header>
 
-      <div style="font-size:55px;">🌿</div>
+<div id="drawer" class="drawer">
+  <button onclick="showSeason('spring')">🌷 Spring</button>
+  <button onclick="showSeason('summer')">☀️ Summer</button>
+  <button onclick="showSeason('fall')">🍂 Fall</button>
+  <button onclick="showSeason('winter')">❄️ Winter</button>
+</div>
 
-      <h1>Family Bucket List</h1>
+<main>
 
-      <p id="authDescription">
-        Sign in with your family username and password.
-      </p>
+  <section class="hero">
+    <h1>Our Family Adventures</h1>
+    <p>Little moments. Big memories. One bucket list.</p>
+  </section>
 
-      <div class="auth-form">
+  <!-- LOGIN -->
+  <section id="loginSection" class="auth-card">
+    <h2>Welcome!</h2>
 
-        <input
-          id="usernameInput"
-          type="text"
-          placeholder="Username"
-          autocomplete="username"
-          maxlength="24"
-        >
+    <p>
+      Sign in with your GitHub account to access the family bucket list.
+    </p>
 
-        <input
-          id="passwordInput"
-          type="password"
-          placeholder="Password"
-          autocomplete="current-password"
-        >
+    <button class="github-button" onclick="loginWithGitHub()">
+      Continue with GitHub
+    </button>
 
-        <button
-          class="primary-btn"
-          id="authButton"
-          onclick="handleAuth()"
-        >
-          Sign In
-        </button>
-
-        <button
-          class="secondary-btn"
-          id="switchAuth"
-          onclick="switchAuthMode()"
-        >
-          Create an account
-        </button>
-
-      </div>
-
-      <div id="authMessage"></div>
-
-    </div>
-
+    <p id="authMessage" class="user-info"></p>
   </section>
 
 
-  <!-- =========================
-       APP
-  ========================= -->
+  <!-- APP -->
+  <section id="appSection" class="hidden">
 
-  <div id="app">
+    <div id="userInfo" class="user-info"></div>
 
-    <header>
-
-      <div class="header-inner">
-
-        <button
-          class="menu-btn"
-          onclick="openDrawer()"
-          aria-label="Open menu"
-        >
-          ☰
-        </button>
-
-        <div class="logo">
-          Family Bucket List
-        </div>
-
-        <div class="user-area">
-
-          <div
-            class="username-badge"
-            id="headerUsername"
-          ></div>
-
-          <button
-            class="logout-btn"
-            onclick="logout()"
-          >
-            Log out
-          </button>
-
-        </div>
-
+    <div class="stats">
+      <div class="stat">
+        <span id="totalCount" class="stat-number">0</span>
+        Total
       </div>
 
-    </header>
-
-
-    <!-- =========================
-         DRAWER
-    ========================= -->
-
-    <div
-      class="drawer-overlay"
-      id="drawerOverlay"
-      onclick="closeDrawer()"
-    ></div>
-
-    <aside
-      class="drawer"
-      id="drawer"
-    >
-
-      <div class="drawer-top">
-
-        <h2>Our Lists</h2>
-
-        <button
-          class="close-btn"
-          onclick="closeDrawer()"
-        >
-          ×
-        </button>
-
+      <div class="stat">
+        <span id="doneCount" class="stat-number">0</span>
+        Completed
       </div>
 
-
-      <!-- SEASONS -->
-
-      <div class="drawer-section">
-
-        <div class="drawer-section-title">
-          Seasons
-        </div>
-
-        <button
-          class="nav-item active"
-          data-season="spring"
-          onclick="selectSeason('spring')"
-        >
-          <span class="nav-icon">🌸</span>
-          <span>Spring</span>
-        </button>
-
-        <button
-          class="nav-item"
-          data-season="summer"
-          onclick="selectSeason('summer')"
-        >
-          <span class="nav-icon">☀️</span>
-          <span>Summer</span>
-        </button>
-
-        <button
-          class="nav-item"
-          data-season="fall"
-          onclick="selectSeason('fall')"
-        >
-          <span class="nav-icon">🍂</span>
-          <span>Fall</span>
-        </button>
-
-        <button
-          class="nav-item"
-          data-season="winter"
-          onclick="selectSeason('winter')"
-        >
-          <span class="nav-icon">❄️</span>
-          <span>Winter</span>
-        </button>
-
+      <div class="stat">
+        <span id="percentCount" class="stat-number">0%</span>
+        Progress
       </div>
+    </div>
 
+    <div class="progress-card">
+      <strong>Family Progress</strong>
 
-      <!-- CUSTOM LISTS -->
-
-      <div class="drawer-section">
-
-        <div class="drawer-section-title">
-          Custom Lists
-        </div>
-
-        <div id="customListsContainer">
-          <div style="opacity:.5;font-size:14px;">
-            No custom lists yet.
-          </div>
-        </div>
-
-
-        <div class="custom-list-create">
-
-          <input
-            id="customListName"
-            type="text"
-            placeholder="New list name..."
-            maxlength="40"
-          >
-
-          <button
-            class="add-list-btn"
-            onclick="createCustomList()"
-          >
-            +
-          </button>
-
-        </div>
-
+      <div class="progress-bar">
+        <div id="progressFill" class="progress-fill"></div>
       </div>
+    </div>
 
-    </aside>
+    <div id="completionMessage" class="message"></div>
 
-
-    <!-- =========================
-         MAIN
-    ========================= -->
-
-    <main>
-
-      <section class="hero">
-
-        <div class="hero-label">
-          Making memories together
-        </div>
-
-        <h1 id="heroTitle">
-          Spring Adventures
-        </h1>
-
-        <p id="heroDescription">
-          Little things, big memories, and everything we want to experience together.
-        </p>
-
-      </section>
-
-
-      <!-- STATS -->
-
-      <section class="stats">
-
-        <div class="stat">
-
-          <div
-            class="stat-number"
-            id="totalCount"
-          >
-            0
-          </div>
-
-          <div class="stat-label">
-            Things on this list
-          </div>
-
-        </div>
-
-
-        <div class="stat">
-
-          <div
-            class="stat-number"
-            id="completedCount"
-          >
-            0
-          </div>
-
-          <div class="stat-label">
-            Completed
-          </div>
-
-        </div>
-
-
-        <div class="stat">
-
-          <div
-            class="stat-number"
-            id="percentage"
-          >
-            0%
-          </div>
-
-          <div class="stat-label">
-            Progress
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- PROGRESS -->
-
-      <section class="progress-card">
-
-        <div class="progress-header">
-
-          <span>
-            Our progress
-          </span>
-
-          <span id="progressPercent">
-            0%
-          </span>
-
-        </div>
-
-        <div class="progress-track">
-
-          <div
-            class="progress-fill"
-            id="progressFill"
-          ></div>
-
-        </div>
-
-        <div id="congratulations">
-          🎉 We completed everything on this list! 🎉
-        </div>
-
-      </section>
-
-
-      <!-- LIST -->
-
-      <div class="list-heading">
-
-        <div>
-
-          <h2 id="listTitle">
-            Spring Bucket List
-          </h2>
-
-          <p id="listSubtitle">
-            Add something fun for everyone.
-          </p>
-
-        </div>
-
-      </div>
-
-
-      <!-- ADD ITEM -->
-
-      <div class="new-item">
-
-        <input
-          id="newItemInput"
-          type="text"
-          placeholder="Add something to the list..."
-          maxlength="150"
-          onkeydown="handleNewItemKey(event)"
-        >
-
-        <button onclick="addItem()">
-          Add
-        </button>
-
-      </div>
-
-
-      <!-- ACTIVITIES -->
-
-      <section
-        class="activities"
-        id="activities"
+    <div class="add-box">
+      <input
+        id="newActivity"
+        type="text"
+        placeholder="Add a new family adventure..."
       >
 
-        <div class="loading">
-          Loading...
-        </div>
+      <button onclick="addActivity()">
+        + Add
+      </button>
+    </div>
 
-      </section>
+    <h2 id="seasonTitle" class="season-title">
+      🌷 Spring
+    </h2>
 
-    </main>
+    <div id="activityList" class="activity-list"></div>
 
-  </div>
+  </section>
 
+</main>
 
-  <script>
+<script>
 
-    /* =====================================================
-       SUPABASE
-    ===================================================== */
+  // ============================================
+  // SUPABASE
+  // ============================================
 
-    const SUPABASE_URL =
-      "https://elprfpqivxmdrtvdtojh.supabase.co";
+  const SUPABASE_URL =
+    "https://elprfpqivxmdrtvdtojh.supabase.co";
 
-    const SUPABASE_KEY =
-      "sb_publishable_bgSXEqqOpsyKA9wdgeVkKA_B_WoD23b";
+  const SUPABASE_KEY =
+    "sb_publishable_bgSXEqqOpsyKA9wdgeVkKA_B_WoD23b";
 
-    const db = supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
-
-
-    /* =====================================================
-       STATE
-    ===================================================== */
-
-    let currentUser = null;
-
-    let currentUsername = "";
-
-    let authMode = "login";
-
-    let currentSeason = "spring";
-
-    let currentCustomList = null;
+  const db = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
 
-    const seasons = {
+  // ============================================
+  // STATE
+  // ============================================
 
-      spring: {
-        title: "Spring Adventures",
-        listTitle: "Spring Bucket List",
-        description:
-          "Fresh air, new adventures, and making the most of spring.",
-        icon: "🌸"
-      },
+  let currentUser = null;
+  let currentSeason = "spring";
 
-      summer: {
-        title: "Summer Adventures",
-        listTitle: "Summer Bucket List",
-        description:
-          "Long days, sunshine, adventures, and memories together.",
-        icon: "☀️"
-      },
-
-      fall: {
-        title: "Fall Adventures",
-        listTitle: "Fall Bucket List",
-        description:
-          "Cozy days, changing leaves, and all our favorite fall traditions.",
-        icon: "🍂"
-      },
-
-      winter: {
-        title: "Winter Adventures",
-        listTitle: "Winter Bucket List",
-        description:
-          "Snowy days, cozy nights, holidays, and winter memories.",
-        icon: "❄️"
-      }
-
-    };
+  const seasonNames = {
+    spring: "🌷 Spring",
+    summer: "☀️ Summer",
+    fall: "🍂 Fall",
+    winter: "❄️ Winter"
+  };
 
 
-    /* =====================================================
-       AUTH
-    ===================================================== */
+  // ============================================
+  // GITHUB LOGIN
+  // ============================================
 
-    function cleanUsername(value) {
+  async function loginWithGitHub() {
 
-      return value
-        .trim()
-        .toLowerCase();
+    const { error } =
+      await db.auth.signInWithOAuth({
 
+        provider: "github",
+
+        options: {
+          redirectTo:
+            "https://jaydenrrivera2011.github.io/family-bucket-list/"
+        }
+
+      });
+
+    if (error) {
+      document.getElementById("authMessage").textContent =
+        error.message;
     }
+  }
 
 
-    function validUsername(username) {
+  // ============================================
+  // LOG OUT
+  // ============================================
 
-      return /^[a-z0-9_-]{3,24}$/.test(username);
+  async function logout() {
 
-    }
+    await db.auth.signOut();
 
+    currentUser = null;
 
-    /*
-      Supabase Auth itself uses an email/phone identity.
+    document
+      .getElementById("appSection")
+      .classList.add("hidden");
 
-      The UI only asks the family member for a username.
-      We turn the username into an internal placeholder
-      email that is never displayed or used for email.
+    document
+      .getElementById("loginSection")
+      .classList.remove("hidden");
 
-      Example:
-
-      mom
-      becomes
-      mom@familybucket.example
-    */
-
-    function internalEmail(username) {
-
-      return `${username}@familybucket.example`;
-
-    }
+    document
+      .getElementById("logoutBtn")
+      .classList.add("hidden");
+  }
 
 
-    function switchAuthMode() {
+  // ============================================
+  // AUTH STATE
+  // ============================================
 
-      authMode =
-        authMode === "login"
-          ? "signup"
-          : "login";
+  db.auth.onAuthStateChange(
+    async (event, session) => {
 
-      const button =
-        document.getElementById("authButton");
+      if (session && session.user) {
 
-      const switchButton =
-        document.getElementById("switchAuth");
+        currentUser = session.user;
 
-      const description =
-        document.getElementById("authDescription");
+        document
+          .getElementById("loginSection")
+          .classList.add("hidden");
 
-      const password =
-        document.getElementById("passwordInput");
+        document
+          .getElementById("appSection")
+          .classList.remove("hidden");
 
-      document.getElementById("authMessage").textContent = "";
+        document
+          .getElementById("logoutBtn")
+          .classList.remove("hidden");
 
-      if (authMode === "signup") {
+        const username =
+          getUsername(session.user);
 
-        button.textContent = "Create Account";
+        document.getElementById("userInfo").textContent =
+          "Signed in as " + username;
 
-        switchButton.textContent =
-          "Already have an account? Sign in";
-
-        description.textContent =
-          "Create a username and password for your family account.";
-
-        password.autocomplete = "new-password";
+        await loadActivities();
 
       } else {
 
-        button.textContent = "Sign In";
+        currentUser = null;
 
-        switchButton.textContent =
-          "Create an account";
+        document
+          .getElementById("loginSection")
+          .classList.remove("hidden");
 
-        description.textContent =
-          "Sign in with your family username and password.";
+        document
+          .getElementById("appSection")
+          .classList.add("hidden");
 
-        password.autocomplete = "current-password";
-
+        document
+          .getElementById("logoutBtn")
+          .classList.add("hidden");
       }
-
     }
+  );
 
 
-    async function handleAuth() {
+  // ============================================
+  // GET GITHUB USERNAME
+  // ============================================
 
-      const username =
-        cleanUsername(
-          document.getElementById("usernameInput").value
-        );
+  function getUsername(user) {
 
-      const password =
-        document.getElementById("passwordInput").value;
-
-      const message =
-        document.getElementById("authMessage");
-
-      message.textContent = "";
-
-      if (!validUsername(username)) {
-
-        message.textContent =
-          "Username must be 3–24 characters and only use letters, numbers, _ or -.";
-
-        return;
-
-      }
-
-      if (password.length < 8) {
-
-        message.textContent =
-          "Password must be at least 8 characters.";
-
-        return;
-
-      }
-
-      document.getElementById("authButton").disabled = true;
-
-      try {
-
-        if (authMode === "signup") {
-
-          const {
-            data,
-            error
-          } = await db.auth.signUp({
-
-            email: internalEmail(username),
-
-            password: password,
-
-            options: {
-
-              data: {
-                username: username
-              }
-
-            }
-
-          });
-
-          if (error) {
-            throw error;
-          }
-
-          /*
-            If email confirmation is disabled in Supabase,
-            this should immediately create a session.
-          */
-
-          if (data.session) {
-
-            message.textContent =
-              "Account created!";
-
-          } else {
-
-            message.textContent =
-              "Account created. If you cannot enter the app, check that Confirm Email is turned OFF in Supabase.";
-
-          }
-
-        } else {
-
-          const {
-            data,
-            error
-          } = await db.auth.signInWithPassword({
-
-            email: internalEmail(username),
-
-            password: password
-
-          });
-
-          if (error) {
-            throw error;
-          }
-
-          currentUser = data.user;
-
-        }
-
-      } catch (error) {
-
-        console.error(error);
-
-        message.textContent =
-          error.message || "Something went wrong.";
-
-      } finally {
-
-        document.getElementById("authButton").disabled = false;
-
-      }
-
-    }
-
-
-    async function logout() {
-
-      await db.auth.signOut();
-
-    }
-
-
-    /* =====================================================
-       USERNAME
-    ===================================================== */
-
-    function getUsernameFromUser(user) {
-
-      return (
-        user?.user_metadata?.username ||
-        user?.email?.split("@")[0] ||
-        "Family Member"
-      );
-
-    }
-
-
-    /* =====================================================
-       AUTH STATE
-    ===================================================== */
-
-    db.auth.onAuthStateChange(
-      async (event, session) => {
-
-        if (session?.user) {
-
-          currentUser = session.user;
-
-          currentUsername =
-            getUsernameFromUser(session.user);
-
-          document.getElementById(
-            "headerUsername"
-          ).textContent =
-            "👋 " + currentUsername;
-
-          document.getElementById(
-            "authScreen"
-          ).style.display = "none";
-
-          document.getElementById(
-            "app"
-          ).style.display = "block";
-
-          await loadCustomLists();
-
-          await loadActivities();
-
-        } else {
-
-          currentUser = null;
-
-          currentUsername = "";
-
-          document.getElementById(
-            "authScreen"
-          ).style.display = "flex";
-
-          document.getElementById(
-            "app"
-          ).style.display = "none";
-
-        }
-
-      }
+    return (
+      user.user_metadata?.user_name ||
+      user.user_metadata?.preferred_username ||
+      user.user_metadata?.name ||
+      user.email?.split("@")[0] ||
+      "Family Member"
     );
+  }
 
 
-    /* =====================================================
-       DRAWER
-    ===================================================== */
+  // ============================================
+  // DRAWER
+  // ============================================
 
-    function openDrawer() {
+  function toggleDrawer() {
 
-      document
-        .getElementById("drawer")
-        .classList.add("open");
-
-      document
-        .getElementById("drawerOverlay")
-        .classList.add("open");
-
-    }
+    document
+      .getElementById("drawer")
+      .classList.toggle("open");
+  }
 
 
-    function closeDrawer() {
+  function showSeason(season) {
 
-      document
-        .getElementById("drawer")
-        .classList.remove("open");
+    currentSeason = season;
 
-      document
-        .getElementById("drawerOverlay")
-        .classList.remove("open");
+    document
+      .getElementById("drawer")
+      .classList.remove("open");
 
-    }
+    document
+      .getElementById("seasonTitle")
+      .textContent = seasonNames[season];
 
-
-    /* =====================================================
-       SEASONS
-    ===================================================== */
-
-    function selectSeason(season) {
-
-      currentSeason = season;
-
-      currentCustomList = null;
-
-      document
-        .querySelectorAll(".nav-item")
-        .forEach(button => {
-
-          button.classList.remove("active");
-
-        });
-
-      const active =
-        document.querySelector(
-          `[data-season="${season}"]`
-        );
-
-      if (active) {
-        active.classList.add("active");
-      }
-
-      const info = seasons[season];
-
-      document.getElementById(
-        "heroTitle"
-      ).textContent =
-        info.icon + " " + info.title;
-
-      document.getElementById(
-        "heroDescription"
-      ).textContent =
-        info.description;
-
-      document.getElementById(
-        "listTitle"
-      ).textContent =
-        info.listTitle;
-
-      document.getElementById(
-        "listSubtitle"
-      ).textContent =
-        "Add something fun for everyone.";
-
-      closeDrawer();
-
-      loadActivities();
-
-    }
+    loadActivities();
+  }
 
 
-    /* =====================================================
-       CUSTOM LISTS
-    ===================================================== */
+  // ============================================
+  // LOAD ACTIVITIES
+  // ============================================
 
-    async function loadCustomLists() {
+  async function loadActivities() {
 
-      const container =
-        document.getElementById(
-          "customListsContainer"
-        );
+    if (!currentUser) return;
 
-      const {
-        data,
-        error
-      } = await db
-        .from("custom_lists")
+    const { data, error } =
+      await db
+        .from("activities")
         .select("*")
+        .eq("season", currentSeason)
         .order("created_at", {
           ascending: true
         });
 
-      if (error) {
+    if (error) {
 
-        console.error(error);
+      console.error(error);
 
-        container.innerHTML =
-          `<div style="opacity:.5;font-size:14px;">
-            Could not load custom lists.
-          </div>`;
+      document.getElementById("activityList").innerHTML =
+        "<p>Could not load activities.</p>";
 
-        return;
-
-      }
-
-      if (!data || data.length === 0) {
-
-        container.innerHTML =
-          `<div style="opacity:.5;font-size:14px;">
-            No custom lists yet.
-          </div>`;
-
-        return;
-
-      }
-
-      container.innerHTML = "";
-
-      data.forEach(list => {
-
-        const button =
-          document.createElement("button");
-
-        button.className = "nav-item";
-
-        button.innerHTML = `
-          <span class="nav-icon">📋</span>
-          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;">
-            ${escapeHtml(list.name)}
-          </span>
-          <span
-            class="delete-list"
-            title="Delete list"
-            onclick="deleteCustomList(event, ${list.id})"
-          >
-            🗑
-          </span>
-        `;
-
-        button.onclick = function(event) {
-
-          if (
-            event.target.classList.contains(
-              "delete-list"
-            )
-          ) {
-            return;
-          }
-
-          selectCustomList(list);
-
-        };
-
-        container.appendChild(button);
-
-      });
-
+      return;
     }
 
+    renderActivities(data || []);
 
-    async function createCustomList() {
+    updateStats(data || []);
+  }
 
-      const input =
-        document.getElementById(
-          "customListName"
-        );
 
-      const name =
-        input.value.trim();
+  // ============================================
+  // RENDER
+  // ============================================
 
-      if (!name) {
-        return;
-      }
+  function renderActivities(activities) {
 
-      if (!currentUser) {
-        return;
-      }
+    const list =
+      document.getElementById("activityList");
 
-      const {
-        data,
-        error
-      } = await db
-        .from("custom_lists")
-        .insert({
+    list.innerHTML = "";
 
-          name: name,
+    if (activities.length === 0) {
 
-          created_by:
-            currentUser.id
+      list.innerHTML =
+        "<p>No activities yet. Add one above!</p>";
 
-        })
-        .select()
-        .single();
-
-      if (error) {
-
-        alert(
-          "Could not create list: " +
-          error.message
-        );
-
-        return;
-
-      }
-
-      input.value = "";
-
-      await loadCustomLists();
-
-      selectCustomList(data);
-
+      return;
     }
 
+    activities.forEach(activity => {
 
-    async function deleteCustomList(event, id) {
+      const item =
+        document.createElement("div");
 
-      event.stopPropagation();
+      item.className =
+        "activity" +
+        (activity.done ? " done" : "");
 
-      const confirmed =
-        confirm(
-          "Delete this custom list and all of its items?"
-        );
+      const checkbox =
+        document.createElement("input");
 
-      if (!confirmed) {
-        return;
-      }
+      checkbox.type = "checkbox";
+      checkbox.checked = activity.done;
 
-      const {
-        error
-      } = await db
-        .from("custom_lists")
-        .delete()
-        .eq("id", id);
-
-      if (error) {
-
-        alert(
-          "Could not delete list: " +
-          error.message
-        );
-
-        return;
-
-      }
-
-      currentCustomList = null;
-
-      await loadCustomLists();
-
-      selectSeason("spring");
-
-    }
-
-
-    function selectCustomList(list) {
-
-      currentCustomList = list;
-
-      currentSeason = null;
-
-      document
-        .querySelectorAll(".nav-item")
-        .forEach(button => {
-
-          button.classList.remove("active");
-
-        });
-
-      document.getElementById(
-        "heroTitle"
-      ).textContent =
-        "📋 " + list.name;
-
-      document.getElementById(
-        "heroDescription"
-      ).textContent =
-        "A custom family list made for whatever adventure comes next.";
-
-      document.getElementById(
-        "listTitle"
-      ).textContent =
-        list.name;
-
-      document.getElementById(
-        "listSubtitle"
-      ).textContent =
-        "Your family's custom bucket list.";
-
-      closeDrawer();
-
-      loadActivities();
-
-    }
-
-
-    /* =====================================================
-       ACTIVITIES
-    ===================================================== */
-
-    async function loadActivities() {
-
-      const container =
-        document.getElementById(
-          "activities"
-        );
-
-      container.innerHTML =
-        `<div class="loading">Loading...</div>`;
-
-      let query =
-        db
-          .from("activities")
-          .select("*")
-          .order("created_at", {
-            ascending: false
-          });
-
-      if (currentCustomList) {
-
-        query =
-          query.eq(
-            "list_id",
-            currentCustomList.id
-          );
-
-      } else {
-
-        query =
-          query
-            .eq("season", currentSeason)
-            .is("list_id", null);
-
-      }
-
-      const {
-        data,
-        error
-      } = await query;
-
-      if (error) {
-
-        console.error(error);
-
-        container.innerHTML =
-          `<div class="empty">
-            Could not load the bucket list.
-          </div>`;
-
-        return;
-
-      }
-
-      renderActivities(data || []);
-
-    }
-
-
-    function renderActivities(items) {
-
-      const container =
-        document.getElementById(
-          "activities"
-        );
-
-      container.innerHTML = "";
-
-      if (items.length === 0) {
-
-        container.innerHTML =
-          `<div class="empty">
-            <div style="font-size:40px;margin-bottom:10px;">
-              ✨
-            </div>
-            <div>
-              Nothing here yet. Add the first adventure!
-            </div>
-          </div>`;
-
-        updateStats([]);
-
-        return;
-
-      }
-
-      items.forEach(item => {
-
-        const card =
-          document.createElement("div");
-
-        card.className =
-          "activity" +
-          (item.done ? " done" : "");
-
-        const createdDate =
-          formatDate(item.created_at);
-
-        let completionHTML = "";
-
-        if (item.done) {
-
-          completionHTML = `
-            <span>
-              ✅ Completed by
-              <strong>
-                ${escapeHtml(
-                  item.completed_by_username ||
-                  "Family Member"
-                )}
-              </strong>
-            </span>
-
-            <span>
-              🕒 ${escapeHtml(
-                formatDate(item.completed_at)
-              )}
-            </span>
-          `;
-
-        }
-
-        card.innerHTML = `
-
-          <button
-            class="checkbox"
-            onclick="toggleItem(${item.id}, ${item.done})"
-            aria-label="Complete item"
-          >
-            ${item.done ? "✓" : ""}
-          </button>
-
-          <div class="activity-content">
-
-            <div class="activity-title">
-              ${escapeHtml(item.text)}
-            </div>
-
-            <div class="activity-meta">
-
-              <span>
-                👤 Created by
-                <strong>
-                  ${escapeHtml(
-                    item.created_by_username ||
-                    "Family Member"
-                  )}
-                </strong>
-              </span>
-
-              <span>
-                📅 Created
-                ${escapeHtml(createdDate)}
-              </span>
-
-              ${completionHTML}
-
-            </div>
-
-          </div>
-
-          <button
-            class="delete-btn"
-            onclick="deleteItem(${item.id})"
-            aria-label="Delete item"
-          >
-            🗑
-          </button>
-
-        `;
-
-        container.appendChild(card);
-
-      });
-
-      updateStats(items);
-
-    }
-
-
-    /* =====================================================
-       ADD ITEM
-    ===================================================== */
-
-    function handleNewItemKey(event) {
-
-      if (event.key === "Enter") {
-
-        addItem();
-
-      }
-
-    }
-
-
-    async function addItem() {
-
-      const input =
-        document.getElementById(
-          "newItemInput"
-        );
+      checkbox.onchange = () =>
+        toggleActivity(activity);
 
       const text =
-        input.value.trim();
+        document.createElement("div");
 
-      if (!text) {
-        return;
-      }
+      text.className = "activity-text";
 
-      if (!currentUser) {
-        return;
-      }
+      text.textContent = activity.text;
 
-      const row = {
+      const who =
+        document.createElement("div");
 
-        season:
-          currentCustomList
-            ? "custom"
-            : currentSeason,
+      who.className = "who";
 
-        text: text,
+      if (activity.done) {
 
-        done: false,
-
-        created_by:
-          currentUser.id,
-
-        created_by_username:
-          currentUsername,
-
-        list_id:
-          currentCustomList
-            ? currentCustomList.id
-            : null
-
-      };
-
-      const {
-        error
-      } = await db
-        .from("activities")
-        .insert(row);
-
-      if (error) {
-
-        console.error(error);
-
-        alert(
-          "Could not add item: " +
-          error.message
-        );
-
-        return;
-
-      }
-
-      input.value = "";
-
-      await loadActivities();
-
-    }
-
-
-    /* =====================================================
-       COMPLETE / UNCOMPLETE
-    ===================================================== */
-
-    async function toggleItem(id, currentlyDone) {
-
-      if (!currentUser) {
-        return;
-      }
-
-      let updateData;
-
-      if (!currentlyDone) {
-
-        updateData = {
-
-          done: true,
-
-          completed_at:
-            new Date().toISOString(),
-
-          completed_by:
-            currentUser.id,
-
-          completed_by_username:
-            currentUsername
-
-        };
+        who.textContent =
+          "Completed by " +
+          (activity.completed_by_username ||
+           "Family Member");
 
       } else {
 
-        updateData = {
+        who.textContent =
+          "Added by " +
+          (activity.created_by_username ||
+           "Family Member");
+      }
+
+      text.appendChild(who);
+
+      item.appendChild(checkbox);
+      item.appendChild(text);
+
+      list.appendChild(item);
+    });
+  }
+
+
+  // ============================================
+  // ADD ACTIVITY
+  // ============================================
+
+  async function addActivity() {
+
+    const input =
+      document.getElementById("newActivity");
+
+    const text =
+      input.value.trim();
+
+    if (!text || !currentUser) return;
+
+    const username =
+      getUsername(currentUser);
+
+    const { error } =
+      await db
+        .from("activities")
+        .insert({
+
+          season: currentSeason,
+
+          text: text,
 
           done: false,
 
-          completed_at: null,
+          created_by: currentUser.id,
 
-          completed_by: null,
+          created_by_username: username
+        });
 
-          completed_by_username: null
+    if (error) {
 
-        };
+      alert(error.message);
 
-      }
+      return;
+    }
 
-      const {
-        error
-      } = await db
+    input.value = "";
+
+    await loadActivities();
+  }
+
+
+  // ============================================
+  // COMPLETE / UNCOMPLETE
+  // ============================================
+
+  async function toggleActivity(activity) {
+
+    if (!currentUser) return;
+
+    const username =
+      getUsername(currentUser);
+
+    let updateData;
+
+    if (!activity.done) {
+
+      updateData = {
+
+        done: true,
+
+        completed_at:
+          new Date().toISOString(),
+
+        completed_by:
+          currentUser.id,
+
+        completed_by_username:
+          username
+      };
+
+    } else {
+
+      updateData = {
+
+        done: false,
+
+        completed_at: null,
+
+        completed_by: null,
+
+        completed_by_username: null
+      };
+    }
+
+    const { error } =
+      await db
         .from("activities")
         .update(updateData)
-        .eq("id", id);
+        .eq("id", activity.id);
 
-      if (error) {
+    if (error) {
 
-        console.error(error);
+      alert(error.message);
 
-        alert(
-          "Could not update item: " +
-          error.message
-        );
-
-        return;
-
-      }
-
-      await loadActivities();
-
+      return;
     }
 
+    await loadActivities();
+  }
 
-    /* =====================================================
-       DELETE ITEM
-    ===================================================== */
 
-    async function deleteItem(id) {
+  // ============================================
+  // STATS
+  // ============================================
 
-      const confirmed =
-        confirm(
-          "Remove this item from the bucket list?"
-        );
+  async function updateStats(currentSeasonActivities) {
 
-      if (!confirmed) {
-        return;
-      }
-
-      const {
-        error
-      } = await db
+    const { data: allActivities, error } =
+      await db
         .from("activities")
-        .delete()
-        .eq("id", id);
+        .select("done");
 
-      if (error) {
+    if (error) return;
 
-        console.error(error);
+    const total =
+      allActivities.length;
 
-        alert(
-          "Could not delete item: " +
-          error.message
-        );
+    const completed =
+      allActivities.filter(a => a.done).length;
 
-        return;
+    const percent =
+      total === 0
+        ? 0
+        : Math.round((completed / total) * 100);
 
+    document.getElementById("totalCount")
+      .textContent = total;
+
+    document.getElementById("doneCount")
+      .textContent = completed;
+
+    document.getElementById("percentCount")
+      .textContent = percent + "%";
+
+    document.getElementById("progressFill")
+      .style.width = percent + "%";
+
+    const message =
+      document.getElementById("completionMessage");
+
+    if (total > 0 && percent === 100) {
+
+      message.textContent =
+        "🎉 We did everything! What an amazing family adventure!";
+
+    } else {
+
+      message.textContent = "";
+    }
+  }
+
+
+  // ============================================
+  // ENTER KEY TO ADD
+  // ============================================
+
+  document
+    .getElementById("newActivity")
+    .addEventListener("keydown", event => {
+
+      if (event.key === "Enter") {
+        addActivity();
       }
 
-      await loadActivities();
+    });
 
-    }
-
-
-    /* =====================================================
-       STATS
-    ===================================================== */
-
-    function updateStats(items) {
-
-      const total =
-        items.length;
-
-      const completed =
-        items.filter(
-          item => item.done
-        ).length;
-
-      const percentage =
-        total === 0
-          ? 0
-          : Math.round(
-              (completed / total) * 100
-            );
-
-      document.getElementById(
-        "totalCount"
-      ).textContent =
-        total;
-
-      document.getElementById(
-        "completedCount"
-      ).textContent =
-        completed;
-
-      document.getElementById(
-        "percentage"
-      ).textContent =
-        percentage + "%";
-
-      document.getElementById(
-        "progressPercent"
-      ).textContent =
-        percentage + "%";
-
-      document.getElementById(
-        "progressFill"
-      ).style.width =
-        percentage + "%";
-
-      const congratulations =
-        document.getElementById(
-          "congratulations"
-        );
-
-      if (total > 0 && percentage === 100) {
-
-        congratulations.style.display =
-          "block";
-
-      } else {
-
-        congratulations.style.display =
-          "none";
-
-      }
-
-    }
-
-
-    /* =====================================================
-       DATE FORMATTING
-    ===================================================== */
-
-    function formatDate(value) {
-
-      if (!value) {
-        return "Unknown";
-      }
-
-      const date =
-        new Date(value);
-
-      return date.toLocaleString(
-        undefined,
-        {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-          hour: "numeric",
-          minute: "2-digit"
-        }
-      );
-
-    }
-
-
-    /* =====================================================
-       HTML ESCAPING
-    ===================================================== */
-
-    function escapeHtml(value) {
-
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-
-    }
-
-
-    /* =====================================================
-       ENTER KEY FOR CUSTOM LIST
-    ===================================================== */
-
-    document
-      .getElementById("customListName")
-      .addEventListener(
-        "keydown",
-        function(event) {
-
-          if (event.key === "Enter") {
-
-            createCustomList();
-
-          }
-
-        }
-      );
-
-  </script>
+</script>
 
 </body>
 </html>
