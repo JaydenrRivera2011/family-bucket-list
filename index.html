@@ -944,6 +944,48 @@ main{
   }
 
 }
+
+
+/* SEASONAL COUNTDOWNS */
+
+.countdown-panel {
+  display: grid;
+  gap: 10px;
+  margin: 8px 0 20px;
+}
+
+.countdown-card {
+  background: var(--soft);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.countdown-title {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 7px;
+}
+
+.countdown-time {
+  font-size: 13px;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.countdown-message {
+  background: var(--card);
+  border: 1px dashed var(--accent);
+  border-radius: 14px;
+  padding: 14px 12px;
+  text-align: center;
+  color: var(--accent);
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 65px;
+}
+  
 </style>
 </head>
 
@@ -1006,6 +1048,30 @@ main{
     Public lists appear for everyone. Private lists are
     visible only to their owner until they are made public.
   </p>
+
+  
+<div class="section-label">🎉 Seasonal Countdowns</div>
+
+<div class="countdown-panel">
+  <div class="countdown-card">
+    <div class="countdown-title">🎃 Halloween</div>
+    <div id="halloweenCountdown" class="countdown-time">Loading...</div>
+  </div>
+
+  <div class="countdown-card">
+    <div class="countdown-title">🦃 Thanksgiving</div>
+    <div id="thanksgivingCountdown" class="countdown-time">Loading...</div>
+  </div>
+
+  <div class="countdown-card">
+    <div class="countdown-title">🎄 Christmas</div>
+    <div id="christmasCountdown" class="countdown-time">Loading...</div>
+  </div>
+
+  <div class="countdown-message" id="countdownMessage">
+    Loading some holiday cheer...
+  </div>
+</div>
 
 </aside>
 
@@ -3263,6 +3329,178 @@ document
 
     }
   );
+
+  
+/* =====================================================
+   SEASONAL COUNTDOWNS
+===================================================== */
+
+function getNextThanksgiving(now) {
+  const year = now.getFullYear();
+
+  // Thanksgiving is the fourth Thursday of November.
+  const thanksgiving = new Date(year, 10, 1);
+  const day = thanksgiving.getDay();
+  const firstThursday = 1 + ((4 - day + 7) % 7);
+
+  thanksgiving.setDate(firstThursday + 21);
+  thanksgiving.setHours(0, 0, 0, 0);
+
+  if (now >= thanksgiving) {
+    const next = new Date(year + 1, 10, 1);
+    const nextDay = next.getDay();
+    const nextFirstThursday = 1 + ((4 - nextDay + 7) % 7);
+
+    next.setDate(nextFirstThursday + 21);
+    next.setHours(0, 0, 0, 0);
+    return next;
+  }
+
+  return thanksgiving;
+}
+
+function getNextHoliday(month, day, now) {
+  let target = new Date(now.getFullYear(), month, day);
+  target.setHours(0, 0, 0, 0);
+
+  if (now >= target) {
+    target = new Date(now.getFullYear() + 1, month, day);
+    target.setHours(0, 0, 0, 0);
+  }
+
+  return target;
+}
+
+function formatCountdown(target) {
+  const remaining = Math.max(0, target.getTime() - Date.now());
+  const totalSeconds = Math.floor(remaining / 1000);
+
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+}
+
+function updateHolidayCountdowns() {
+  const now = new Date();
+
+  document.getElementById("halloweenCountdown").textContent =
+    formatCountdown(getNextHoliday(9, 31, now));
+
+  document.getElementById("thanksgivingCountdown").textContent =
+    formatCountdown(getNextThanksgiving(now));
+
+  document.getElementById("christmasCountdown").textContent =
+    formatCountdown(getNextHoliday(11, 25, now));
+}
+
+const holidayMessages = [
+  "Why didn't the skeleton go trick-or-treating? He had no body to go with!",
+  "What do ghosts eat for dinner? Spook-ghetti!",
+  "Why are ghosts so bad at lying? You can see right through them!",
+  "What do you call a witch who lives at the beach? A sand-witch!",
+  "Why didn't the vampire attack Taylor Swift? She had bad blood!",
+  "What is a ghost's favorite dessert? I scream!",
+  "Why are skeletons so calm? Nothing gets under their skin!",
+  "What do you call a fat pumpkin? A plumpkin!",
+  "What room does a ghost avoid? The living room!",
+  "Why did the vampire read the newspaper? He heard it had great circulation!",
+  "Why did the pumpkin sit on the porch? It had nowhere else to squash!",
+  "What is a monster's favorite bean? A human bean!",
+  "What do you call a dancing ghost? The boogie man!",
+  "Why don't mummies take vacations? They're afraid they'll unwind!",
+  "What is a ghost's favorite ride? A roller-ghoster!",
+  "Why did the skeleton cross the road? To get to the body shop!",
+  "What do vampires use to get around? Blood vessels!",
+  "Why did the ghost go to the party? For the boos!",
+  "How do monsters like their eggs? Terri-fried!",
+  "What do you call a spooky cow? A moo-ster!",
+  "Why are graveyards so noisy? Because of all the coffin!",
+  "What kind of music do mummies listen to? Wrap music!",
+  "What do you call a little monster's parents? Mummy and daddy!",
+  "Why did the zombie become a detective? He wanted to follow his gut!",
+  "What's a ghost's favorite fruit? Boo-berries!",
+  "What do you get when you cross a vampire and a snowman? Frostbite!",
+  "Why did the skeleton go to school? To brush up on his bones!",
+  "What is a pumpkin's favorite sport? Squash!",
+  "What do you call a haunted chicken? A poultry-geist!",
+  "Why was the jack-o'-lantern afraid? It had a gut feeling!",
+  "What's a monster's favorite game? Hide and shriek!",
+  "Why did the vampire get a job? He wanted a little stake in the world!",
+  "What do ghosts wear when it's raining? Boo-ts!",
+  "Why did the zombie skip breakfast? He was already stuffed!",
+  "What do you call a spooky horse? A night-mare!",
+  "What's a skeleton's least favorite room? The bone-dry bathroom!",
+  "Have a fang-tastic Halloween!",
+  "Wishing you a boo-tiful night!",
+  "Keep calm and carry a broom!",
+  "Eat, drink, and be scary!",
+  "Trick or treat yourself!",
+  "Creep it real!",
+  "If you've got it, haunt it!",
+  "Too cute to spook!",
+  "Feeling fang-cy tonight!",
+  "Let's get this party startled!",
+  "Boo to you from our crew!",
+  "Spooky vibes and pumpkin pies!",
+  "Have a spook-tacular evening!",
+  "You're the pick of the pumpkin patch!",
+  "I'm just here for the boos!",
+  "It's all treats and no tricks around here!",
+  "Fright night is the best night!",
+  "Something wicked this way comes!",
+  "The moon is full and the candy bowl is too!",
+  "A little pumpkin spice and a whole lot of fright!",
+  "Keep your friends close and your candy closer!",
+  "Caution: Halloween magic in progress!",
+  "Welcome to our boo-tiful haunted corner!",
+  "Shadows, sweets, and spooky treats!",
+  "May your candy stash be endless!",
+  "Let's give them pumpkin to talk about!",
+  "Have a wickedly wonderful Halloween!",
+  "Don't be a scaredy-cat!",
+  "Spells, sparkles, and spooky giggles!",
+  "May your night be full of treats and tiny frights!",
+  "Keep the candy coming and the monsters dancing!",
+  "Pumpkin kisses and harvest wishes!",
+  "Fangs for being a friend!",
+  "You're simply boo-tiful!",
+  "A boo-tiful day for a haunting!",
+  "I'm under your spell!",
+  "Happy Haunting!",
+  "Spook ya later!",
+  "Broommates forever!",
+  "Candy corn and cozy nights!",
+  "Pumpkins glow, chilly winds blow!",
+  "October is for tricks, treats, and spooky little moments!",
+  "May your Halloween be more sweet than spooky!",
+  "Ghosts, goblins, and giggles galore!",
+  "Beware of the candy thief!",
+  "The best memories are made after dark!",
+  "A little spooky, a little sweet, and a whole lot of fun!",
+  "Stay spooky, stay sweet, and save me a treat!"
+];
+
+let holidayMessageIndex = Math.floor(
+  Math.random() * holidayMessages.length
+);
+
+function rotateHolidayMessage() {
+  const message = document.getElementById("countdownMessage");
+
+  message.textContent = holidayMessages[holidayMessageIndex];
+
+  holidayMessageIndex =
+    (holidayMessageIndex + 1) % holidayMessages.length;
+}
+
+updateHolidayCountdowns();
+rotateHolidayMessage();
+
+setInterval(updateHolidayCountdowns, 1000);
+setInterval(rotateHolidayMessage, 20000);
 
 
 /* =====================================================
